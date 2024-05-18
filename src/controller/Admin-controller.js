@@ -17,6 +17,22 @@ class AdminController {
       });
     }
   }
+
+  static async login(req, res) {
+    try {
+      const response = await adminService.login(req.body);
+      return res.status(200).json({
+        success: true,
+        data: response.token,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        sucess: false,
+        data: {},
+        error: error.message,
+      });
+    }
+  }
 }
 
 export default AdminController;
