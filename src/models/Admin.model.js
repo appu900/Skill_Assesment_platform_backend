@@ -2,17 +2,26 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-const adminSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    required: [true, "Email is required"],
-    unique: [true, "email already exists"],
+const adminSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, "Email is required"],
+    },
+    email: {
+      type: String,
+      required: [true, "Email is required"],
+      unique: [true, "email already exists"],
+    },
+    password: {
+      type: String,
+      required: [true, "Password is required"],
+    },
   },
-  password: {
-    type: String,
-    required: [true, "Password is required"],
-  },
-});
+  {
+    timestamps: true,
+  }
+);
 
 // ** hash the password before saving the admin document to db
 adminSchema.pre("save", function (next) {
@@ -23,11 +32,9 @@ adminSchema.pre("save", function (next) {
   next();
 });
 
-
-adminSchema.methods.comparePassword = function compare(inputPassword){
-  return bcrypt.compareSync(inputPassword,this.password)
-}
-
+adminSchema.methods.comparePassword = function compare(inputPassword) {
+  return bcrypt.compareSync(inputPassword, this.password);
+};
 
 adminSchema.methods.generateJwt = function generate() {
   return jwt.sign(
