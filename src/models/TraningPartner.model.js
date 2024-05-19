@@ -50,13 +50,13 @@ const traningPartnerSchema = new mongoose.Schema(
       type: String,
     },
     registered_office_pin: {
-      type: String,
+      type: Number,
     },
     registered_office_telephone: {
       type: String,
     },
     registered_office_mobile: {
-      type: String,
+      type: Number,
     },
     registered_office_fax: {
       type: String,
@@ -80,13 +80,13 @@ const traningPartnerSchema = new mongoose.Schema(
       type: String,
     },
     regional_state_office_pin: {
-      type: String,
+      type: Number,
     },
     regional_state_office_telephone: {
-      type: String,
+      type: Number,
     },
     regional_state_office_mobile: {
-      type: String,
+      type: Number,
     },
     regional_stateoffice_fax: {
       type: String,
@@ -110,7 +110,7 @@ const traningPartnerSchema = new mongoose.Schema(
       type: String,
     },
     head_owner_dob: {
-      type: String,
+      type: Date,
     },
     head_owner_city: {
       type: String,
@@ -122,10 +122,10 @@ const traningPartnerSchema = new mongoose.Schema(
       type: String,
     },
     head_owner_mobile: {
-      type: String,
+      type: Number,
     },
     head_owner_alt_mobile: {
-      type: String,
+      type: Number,
     },
     head_owner_email: {
       type: String,
@@ -161,10 +161,10 @@ const traningPartnerSchema = new mongoose.Schema(
       type: String,
     },
     project_contact_person_mobile: {
-      type: String,
+      type: Number,
     },
     project_contact_person_alt_mobile: {
-      type: String,
+      type: Number,
     },
     project_contact_person_res_address: {
       type: String,
