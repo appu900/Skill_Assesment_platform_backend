@@ -7,7 +7,7 @@ const trainingPartnerSchema = new mongoose.Schema(
     id: { type: String },
     username: { type: String, required: true, unique: true },
     head_owner_email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
+    password: { type: String },
     Scheme: { type: String },
     TP_code: { type: String },
     center_id: { type: String },
