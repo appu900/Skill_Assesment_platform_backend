@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 
 const trainingPartnerSchema = new mongoose.Schema(
   {
-    id: {type:String},
+    id: { type: String },
     username: { type: String, required: true, unique: true },
     head_owner_email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
@@ -84,10 +84,9 @@ trainingPartnerSchema.pre("save", async function (next) {
   if (!trainingPartner.isModified("password")) return next();
   try {
     const salt = await bcrypt.genSalt(10);
-    trainingPartner.password = await bcrypt.hash(
-      trainingPartner.password || generatePassword(),
-      salt
-    );
+    const generatedPassword = generatePassword();
+    console.log(generatedPassword);
+    trainingPartner.password = await bcrypt.hash(generatedPassword, salt);
     next();
   } catch (error) {
     next(error);
