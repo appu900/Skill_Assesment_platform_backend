@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
 const trainingPartnerSchema = new Schema({
-  id: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   username: { type: String, required: true, unique: true },
   organizationName: { type: String, required: true },
@@ -65,4 +64,8 @@ const trainingPartnerSchema = new Schema({
   batch: [{ type: mongoose.Schema.Types.ObjectId, ref: "Batch" }],
 });
 
-module.exports = mongoose.model("TrainingPartner", trainingPartnerSchema);
+const TrainingPartner = mongoose.model(
+  "TrainingPartner",
+  trainingPartnerSchema
+);
+export default TrainingPartner;
