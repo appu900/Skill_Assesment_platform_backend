@@ -8,3 +8,5 @@ router.post("/admin", AdminController.createNewAdmin);
 router.post("/admin/login", AdminController.login);
 
 export default router;
+
+

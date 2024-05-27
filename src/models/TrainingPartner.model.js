@@ -65,4 +65,5 @@ const trainingPartnerSchema = new Schema({
   batch: [{ type: mongoose.Schema.Types.ObjectId, ref: "Batch" }],
 });
 
-module.exports = mongoose.model("TrainingPartner", trainingPartnerSchema);
+const TrainingPartner =  mongoose.model("TrainingPartner", trainingPartnerSchema);
+export default TrainingPartner;
