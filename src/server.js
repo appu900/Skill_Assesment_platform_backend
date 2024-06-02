@@ -5,7 +5,7 @@ import makeDatabaseConnection from "./config/database.conection.js";
 const startServer = async () => {
   try {
     await makeDatabaseConnection();
-    app.listen(8000, () => {
+    app.listen(8000, async () => {
       console.log("Server is running on port 8000");
     });
   } catch (error) {

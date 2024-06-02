@@ -13,6 +13,11 @@ const adminSchema = new mongoose.Schema(
       required: [true, "Email is required"],
       unique: [true, "email already exists"],
     },
+    role: {
+      type: String,
+      default: "Admin",
+      enum: ["Admin"],
+    },
     password: {
       type: String,
       required: [true, "Password is required"],
@@ -40,7 +45,7 @@ adminSchema.methods.generateJwt = function generate() {
   return jwt.sign(
     {
       id: this._id,
-      email: this.email,
+      role: this.role,
     },
     "this is a secrete a key",
     { expiresIn: "1d" }

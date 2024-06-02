@@ -11,12 +11,18 @@ class CrudRepository {
       throw error;
     }
   }
-  
+
   async update(id, data) {
     try {
-      const res = await this.model.findByIdAndUpdate(id, data, {
-        new: true,
-      });
+      console.log(data)
+      const res = await this.model.findByIdAndUpdate(
+        id,
+        {
+          $set: data,
+        },
+        { new: true }
+      );
+      console.log("data after updated", res);
       return res;
     } catch (error) {
       throw error;
@@ -35,6 +41,15 @@ class CrudRepository {
   async destroy(id) {
     try {
       const res = await this.model.findByIdAndDelete(id);
+      return res;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getAll() {
+    try {
+      const res = await this.model.find();
       return res;
     } catch (error) {
       throw error;

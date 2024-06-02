@@ -2,11 +2,18 @@ import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
 const trainingPartnerSchema = new Schema({
-  id: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  username: { type: String, required: true, unique: true },
+  password: { type: String },
   organizationName: { type: String, required: true },
   organizationCategory: { type: String, required: true },
+  applicationStatus: {
+    type: String,
+    default: "Pending",
+    enum: ["Pending", "Approved", "Rejected"],
+  },
+  applicationViewed: {
+    type: Boolean,
+    default: false,
+  },
   centerId: { type: String, required: true },
   tpCode: { type: String, required: true },
   scheme: { type: String, required: true },
@@ -61,9 +68,10 @@ const trainingPartnerSchema = new Schema({
   projectContactPersonAltEmail: { type: String },
   paymentStatus: { type: String },
   status: { type: String },
-  timestamp: { type: Date, default: Date.now },
-  batch: [{ type: mongoose.Schema.Types.ObjectId, ref: "Batch" }],
 });
 
-const TrainingPartner =  mongoose.model("TrainingPartner", trainingPartnerSchema);
+const TrainingPartner = mongoose.model(
+  "TrainingPartner",
+  trainingPartnerSchema
+);
 export default TrainingPartner;
