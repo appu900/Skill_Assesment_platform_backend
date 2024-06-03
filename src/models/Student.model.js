@@ -20,7 +20,6 @@ const studentSchema = new mongoose.Schema({
     type: String,
     required: [true, "Student password is required"],
   },
-  batch: [{ type: mongoose.Schema.Types.ObjectId, ref: "Batch" }],
 });
 
 const Student = mongoose.model("Student", studentSchema);

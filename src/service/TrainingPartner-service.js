@@ -15,6 +15,30 @@ class TrainingPartnerService {
     }
   }
 
+  // ** login functionality of traingPartner
+  async login(email, password ) {
+    try {
+      console.log(email,password,"service layer")
+      const trainingPartner = await this.trainingPartnerRepository.findByEmail(
+        email
+      );
+      if (!trainingPartner) {
+        throw new Error("user not found with this email");
+      }
+      if (!trainingPartner.checkPassword(password)) {
+        throw new Error("incorrect Password");
+      }
+      const token = trainingPartner.generateJwt();
+      const response = {
+        data: trainingPartner,
+        token: token,
+      };
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   // ** get a trainingPartnerData based on Id
   async getTrainingPartnerById(id) {
     try {

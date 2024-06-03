@@ -39,6 +39,19 @@ class TrainingPartnerRepository extends CrudRepository {
       throw error;
     }
   }
+
+  async findByEmail(email) {
+    try {
+      console.log(email)
+      const response = await TrainingPartner.findOne({
+        registeredOfficeEmail: email,
+      });
+      console.log(response)
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default TrainingPartnerRepository;

@@ -1,4 +1,5 @@
 import TrainingPartnerService from "../service/TrainingPartner-service.js";
+import { StatusCodes } from "http-status-codes";
 const tpService = new TrainingPartnerService();
 class TrainingPartnerController {
   //** onBoard TraingPartner application */
@@ -109,6 +110,24 @@ class TrainingPartnerController {
         success: false,
         error: error.message,
         message: "something went wrong in updating status",
+      });
+    }
+  }
+
+  // ** login controller
+  static async login(req, res) {
+    try {
+      const response = await tpService.login(req.body.registeredOfficeEmail, req.body.password);
+      return res.status(StatusCodes.OK).json({
+        success: true,
+        message: "login sucessfull",
+        data: response,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        error: error.message,
+        message: "something went wrong in login process",
       });
     }
   }

@@ -25,6 +25,7 @@ class AdminService {
       if (!admin) {
         throw new Error("Admin not found");
       }
+      
       if (!admin.comparePassword(password)) {
         throw new Error("Incorrect Password");
       }
