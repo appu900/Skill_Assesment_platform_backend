@@ -3,8 +3,8 @@ import { StatusCodes } from "http-status-codes";
 
 const verifyIsTrainingPartner = async (req, res, next) => {
   try {
-
     const token = req.headers["x-access-token"];
+    
     if (!token) {
       return res.status(StatusCodes.BAD_REQUEST).json({
         success: false,
@@ -14,16 +14,17 @@ const verifyIsTrainingPartner = async (req, res, next) => {
     }
 
     const userData = jwt.verify(token, "this is a secrete a key");
+
     console.log(userData);
-    if (userData.role !== "Admin") {
+    if (userData.role !== "TrainingPartner") {
       return res.status(StatusCodes.BAD_REQUEST).json({
         success: false,
         message: "Unauthorized Access",
         error: "UnAuthorizedAccess",
       });
     }
+    req.trainingPartnerId = userData.id
     next();
-    
   } catch (error) {
     return res.status(StatusCodes.UNAUTHORIZED).json({
       success: false,
