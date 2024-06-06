@@ -13,6 +13,7 @@ const TrainerSchema = new mongoose.Schema(
     email: {
       type: String,
       required: [true, "email is required"],
+      unique:[true,"email is alredy registerd"]
     },
     educationQualification_1: {
       type: String,

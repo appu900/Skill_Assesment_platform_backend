@@ -4,7 +4,7 @@ import AdminController from "../../controller/Admin-controller.js";
 import TrainingPartnerController from "../../controller/TrainingPartner-controller.js";
 import verifyIsAdmin from "../../middleware/verifyAdmin.js";
 import verifyIsTrainingPartner from "../../middleware/verifyTrainingPartner.js";
-import { createTrainer } from "../../controller/Trainer-controller.js";
+import { createTrainer, deleteTrainer, getAllTrainers, getTrainerById } from "../../controller/Trainer-controller.js";
 
 const router = express.Router();
 
@@ -27,9 +27,15 @@ router.put(
 );
 router.put("/tp/reject/:id", TrainingPartnerController.updateStatusToRejected);
 
+
+
+
 // ** trainer
 
 router.post("/trainer", verifyIsTrainingPartner,createTrainer);
+router.get("/trainer",getAllTrainers)
+router.get("/trainer/:id",getTrainerById)
+router.delete("/trainer/:id",deleteTrainer)
 
 export default router;
 

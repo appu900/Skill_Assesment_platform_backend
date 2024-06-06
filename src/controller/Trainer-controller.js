@@ -4,10 +4,11 @@ const trainerService = new TrainerService();
 
 const createTrainer = async (req, res) => {
   try {
-    const response = req.trainingPartnerId;
-    console.log(req.trainingPartnerId)
+    const payload = req.body;
+    payload.trainingPartnerId = req.trainingPartnerId;
+    const trainer = await trainerService.createTrainer(payload);
     return res.status(StatusCodes.CREATED).json({
-      data: response,
+      data: trainer,
       success: true,
       message: "Training Parter created",
     });
@@ -20,4 +21,57 @@ const createTrainer = async (req, res) => {
   }
 };
 
-export { createTrainer };
+const getAllTrainers = async (req, res) => {
+  try {
+    const response = await trainerService.getAllTrainer();
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      data: response,
+      message: "data fetched successfully",
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: error.message,
+      message: "Something went wrong",
+    });
+  }
+};
+
+const getTrainerById = async (req, res) => {
+  try {
+    const response = await trainerService.getTrainerById(req.params.id);
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      data: response,
+      message: "data fetched successfully",
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: error.message,
+      message: "Something went wrong",
+    });
+  }
+};
+
+const deleteTrainer = async (req, res) => {
+  try {
+    const response = await trainerService.deleteTrainer(req.params.id)
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      data: response,
+      message: "data fetched successfully",
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: error.message,
+      message: "Something went wrong",
+    });
+  }
+};
+
+
+
+export { createTrainer, getAllTrainers,getTrainerById,deleteTrainer };
