@@ -13,7 +13,7 @@ const TrainerSchema = new mongoose.Schema(
     email: {
       type: String,
       required: [true, "email is required"],
-      unique:[true,"email is alredy registerd"]
+      unique: [true, "email is alredy registerd"],
     },
     educationQualification_1: {
       type: String,
@@ -78,10 +78,16 @@ const TrainerSchema = new mongoose.Schema(
       type: String,
       required: [true, "this field is required"],
     },
-    trainingPartnerId: {
+    trainingPartner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "TrainingPartner",
     },
+    batches: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Batch",
+      },
+    ],
   },
   {
     timestamps: true,
