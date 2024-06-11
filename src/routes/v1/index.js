@@ -7,6 +7,7 @@ import verifyIsTrainingPartner from "../../middleware/verifyTrainingPartner.js";
 import { createTrainer, deleteTrainer, getAllTrainers, getTrainerById } from "../../controller/Trainer-controller.js";
 import { createStudent } from "../../controller/Student-controller.js";
 import { addStudentToBatch, addToTrainerToBatch, createBatch, getBatchDetails } from "../../controller/Batch-controller.js";
+import { assesmentAgencylogin, createAssesmentAgency, updateAssesmentAgencyStatusToApproved, updateAssesmentAgencyStatusToRejected } from "../../controller/Assesment-agency-controller.js";
 
 const router = express.Router();
 
@@ -60,6 +61,13 @@ router.post("/batch/addstudent/:id",verifyIsTrainingPartner,addStudentToBatch)
 router.post("/batch/addtrainer/:id",verifyIsTrainingPartner,addToTrainerToBatch)
 router.get("/batch/:id",getBatchDetails)
 
+
+// *** assesment agency 
+
+router.post("/aa/create",createAssesmentAgency)
+router.post("/aa/login",assesmentAgencylogin)
+router.put("/aa/approve/:id",verifyIsAdmin,updateAssesmentAgencyStatusToApproved)
+router.put("/aa/reject/:id",verifyIsAdmin,updateAssesmentAgencyStatusToRejected)
 
 export default router;
 

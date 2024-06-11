@@ -12,7 +12,6 @@ class BatchRepository extends CrudRepository {
         .populate("students")
         .populate("trainers")
         .populate("createdBy");
-      console.log(batch);
       return batch;
     } catch (error) {
       throw error;
