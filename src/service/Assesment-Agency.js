@@ -67,7 +67,7 @@ class AssesmentAgencyService {
     } catch (error) {
       throw error;
     }
-  }
+  }  
 }
 
 export default AssesmentAgencyService;

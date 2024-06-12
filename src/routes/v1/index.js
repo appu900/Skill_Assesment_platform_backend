@@ -8,6 +8,7 @@ import { createTrainer, deleteTrainer, getAllTrainers, getTrainerById } from "..
 import { createStudent } from "../../controller/Student-controller.js";
 import { addStudentToBatch, addToTrainerToBatch, createBatch, getBatchDetails } from "../../controller/Batch-controller.js";
 import { assesmentAgencylogin, createAssesmentAgency, updateAssesmentAgencyStatusToApproved, updateAssesmentAgencyStatusToRejected } from "../../controller/Assesment-agency-controller.js";
+import { assignAnExam, getALlExams, getALLExamsBelongsToAnAssesmentAgency } from "../../controller/exam-controller.js";
 
 const router = express.Router();
 
@@ -68,6 +69,13 @@ router.post("/aa/create",createAssesmentAgency)
 router.post("/aa/login",assesmentAgencylogin)
 router.put("/aa/approve/:id",verifyIsAdmin,updateAssesmentAgencyStatusToApproved)
 router.put("/aa/reject/:id",verifyIsAdmin,updateAssesmentAgencyStatusToRejected)
+
+
+// ** exam ** will be created by ADMIN
+
+router.post("/exam/create",verifyIsAdmin,assignAnExam);
+router.get("/exam/all",getALlExams)
+router.get("/exam/aa/:id",getALLExamsBelongsToAnAssesmentAgency)
 
 export default router;
 
