@@ -90,6 +90,8 @@ class TrainingPartnerService {
       throw error;
     }
   }
+
+  
 }
 
 export default TrainingPartnerService;

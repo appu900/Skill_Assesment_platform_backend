@@ -43,8 +43,8 @@ class AssesmentAgencyService {
         throw new Error("plaese input the correct parameter");
       }
       const agency = await this.assesmentAgencyRepo.get(id);
-      if(!agency){
-        throw new Error("id is wrong")
+      if (!agency) {
+        throw new Error("id is wrong");
       }
       const response = await this.assesmentAgencyRepo.updateStatusApproved(id);
       return response;
@@ -59,15 +59,33 @@ class AssesmentAgencyService {
         throw new Error("plaese input the correct parameter");
       }
       const agency = await this.assesmentAgencyRepo.get(id);
-      if(!agency){
-        throw new Error("id is wrong")
+      if (!agency) {
+        throw new Error("id is wrong");
       }
       const response = await this.assesmentAgencyRepo.updateStatusRejected(id);
       return response;
     } catch (error) {
       throw error;
     }
-  }  
+  }
+
+  async getAssesmentAgencyById(assesmentId) {
+    try {
+      const response = await this.assesmentAgencyRepo.get(assesmentId);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getAllAssesmentAgency(){
+    try {
+      const res = await this.assesmentAgencyRepo.getAll();
+      return res;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default AssesmentAgencyService;

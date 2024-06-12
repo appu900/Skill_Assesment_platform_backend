@@ -80,9 +80,47 @@ const updateAssesmentAgencyStatusToRejected = async (req, res) => {
   }
 };
 
+const getAssesmentAgencyById = async (req, res) => {
+  try {
+    const assesmentAgency = await assesmentAgencyService.getAssesmentAgencyById(
+      req.params.id
+    );
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      data: assesmentAgency,
+      message: "data fetched sucessfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+      message: "something went wrong in updating status",
+    });
+  }
+};
+
+const getAllAssesmentAgency = async (req, res) => {
+  try {
+    const response = await assesmentAgencyService.getAllAssesmentAgency();
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      data: response,
+      message: "data fetched sucessfully",
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: "something went wrong",
+      error: error.message,
+    });
+  }
+};
+
 export {
   createAssesmentAgency,
   assesmentAgencylogin,
   updateAssesmentAgencyStatusToApproved,
   updateAssesmentAgencyStatusToRejected,
+  getAssesmentAgencyById,
+  getAllAssesmentAgency
 };
