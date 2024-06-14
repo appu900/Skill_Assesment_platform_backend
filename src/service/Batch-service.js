@@ -62,6 +62,16 @@ class BatchService {
       throw error;
     }
   }
+
+ 
+  async getBatchesOfTrainingPartner(id){
+    try {
+      const res = await this.batchRepository.getAllbatchesForAnIndividualTrainingPartner(id);
+      return res
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default BatchService;

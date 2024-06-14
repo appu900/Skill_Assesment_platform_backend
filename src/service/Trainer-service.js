@@ -40,6 +40,20 @@ class TrainerService {
       throw error;
     }
   }
+
+  // ** getinng all trainingpartner belongs to a individual
+
+  async getAllTrainerBelongsToTrainingPartner(trainingPartnerId) {
+    try {
+      const response =
+        await this.trainerRepository.fetchTrainersOfTrainingPartner(
+          trainingPartnerId
+        );
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default TrainerService;

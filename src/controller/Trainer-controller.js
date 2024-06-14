@@ -57,7 +57,7 @@ const getTrainerById = async (req, res) => {
 
 const deleteTrainer = async (req, res) => {
   try {
-    const response = await trainerService.deleteTrainer(req.params.id)
+    const response = await trainerService.deleteTrainer(req.params.id);
     return res.status(StatusCodes.OK).json({
       success: true,
       data: response,
@@ -72,6 +72,30 @@ const deleteTrainer = async (req, res) => {
   }
 };
 
+const getAllTrainersOfaTrainingPartner = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const response = await trainerService.getAllTrainerBelongsToTrainingPartner(
+      id
+    );
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      data: response,
+      message: "data fethed sucessfully",
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: error.message,
+      message: "data fetched sucessfully",
+    });
+  }
+};
 
-
-export { createTrainer, getAllTrainers,getTrainerById,deleteTrainer };
+export {
+  createTrainer,
+  getAllTrainers,
+  getTrainerById,
+  deleteTrainer,
+  getAllTrainersOfaTrainingPartner,
+};

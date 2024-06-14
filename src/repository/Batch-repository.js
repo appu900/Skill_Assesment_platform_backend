@@ -18,6 +18,17 @@ class BatchRepository extends CrudRepository {
     }
   }
 
+  async getAllbatchesForAnIndividualTrainingPartner(id) {
+    try {
+      const response = await Batch.find({
+        createdBy: id,
+      });
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   /**
    *
    * first create batch

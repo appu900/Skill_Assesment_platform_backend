@@ -4,9 +4,9 @@ import AdminController from "../../controller/Admin-controller.js";
 import TrainingPartnerController from "../../controller/TrainingPartner-controller.js";
 import verifyIsAdmin from "../../middleware/verifyAdmin.js";
 import verifyIsTrainingPartner from "../../middleware/verifyTrainingPartner.js";
-import { createTrainer, deleteTrainer, getAllTrainers, getTrainerById } from "../../controller/Trainer-controller.js";
-import { createStudent } from "../../controller/Student-controller.js";
-import { addStudentToBatch, addToTrainerToBatch, createBatch, getBatchDetails } from "../../controller/Batch-controller.js";
+import { createTrainer, deleteTrainer, getAllTrainers, getAllTrainersOfaTrainingPartner, getTrainerById } from "../../controller/Trainer-controller.js";
+import { createStudent, getStudentDetails } from "../../controller/Student-controller.js";
+import { addStudentToBatch, addToTrainerToBatch, createBatch, getBatchDetails, getIndividualTrainingPartnerBatchDetails } from "../../controller/Batch-controller.js";
 import { assesmentAgencylogin, createAssesmentAgency, getAllAssesmentAgency, getAssesmentAgencyById, updateAssesmentAgencyStatusToApproved, updateAssesmentAgencyStatusToRejected } from "../../controller/Assesment-agency-controller.js";
 import { assignAnExam, getALlExams, getALLExamsBelongsToAnAssesmentAgency } from "../../controller/exam-controller.js";
 
@@ -48,10 +48,13 @@ router.post("/trainer", verifyIsTrainingPartner,createTrainer);
 router.get("/trainer",getAllTrainers)
 router.get("/trainer/:id",getTrainerById)
 router.delete("/trainer/:id",deleteTrainer)
+router.get("/trainer/tp/:id",getAllTrainersOfaTrainingPartner)
 
 // ** student
 
 router.post("/student",verifyIsTrainingPartner,createStudent)
+router.get("/student/:id",getStudentDetails)
+
 
 
 
@@ -61,6 +64,7 @@ router.post("/batch/create",verifyIsTrainingPartner,createBatch);
 router.post("/batch/addstudent/:id",verifyIsTrainingPartner,addStudentToBatch)
 router.post("/batch/addtrainer/:id",verifyIsTrainingPartner,addToTrainerToBatch)
 router.get("/batch/:id",getBatchDetails)
+router.get("/batch/tp/:trainingPartnerId",getIndividualTrainingPartnerBatchDetails)
 
 
 // *** assesment agency 

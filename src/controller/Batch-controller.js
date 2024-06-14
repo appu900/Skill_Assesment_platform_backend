@@ -22,8 +22,6 @@ const createBatch = async (req, res) => {
   }
 };
 
-
-
 const addStudentToBatch = async (req, res) => {
   try {
     const studentPayload = req.body;
@@ -43,8 +41,6 @@ const addStudentToBatch = async (req, res) => {
     });
   }
 };
-
-
 
 const addToTrainerToBatch = async (req, res) => {
   try {
@@ -70,7 +66,6 @@ const addToTrainerToBatch = async (req, res) => {
 };
 
 
-
 const getBatchDetails = async (req, res) => {
   try {
     const response = await batchService.getBatchData(req.params.id);
@@ -88,4 +83,32 @@ const getBatchDetails = async (req, res) => {
   }
 };
 
-export { createBatch, addStudentToBatch, addToTrainerToBatch, getBatchDetails };
+
+
+const getIndividualTrainingPartnerBatchDetails = async (req, res) => {
+  try {
+    const trainingPartnerId = req.params.trainingPartnerId;
+    const response = await batchService.getBatchesOfTrainingPartner(trainingPartnerId)
+    return res.status(StatusCodes.OK).json({
+      message: "data fethed sucessfully",
+      success: true,
+      data: response,
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: "something went wrong",
+      error: error.message,
+    });
+  }
+};
+
+
+
+export {
+  createBatch,
+  addStudentToBatch,
+  addToTrainerToBatch,
+  getBatchDetails,
+  getIndividualTrainingPartnerBatchDetails,
+};

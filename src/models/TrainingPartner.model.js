@@ -22,6 +22,7 @@ const trainingPartnerSchema = new Schema(
       default: "TrainingPartner",
       enum: ["TrainingPartner"],
     },
+  
     centerId: { type: String, required: true },
     tpCode: { type: String, required: true },
     scheme: { type: String, required: true },
