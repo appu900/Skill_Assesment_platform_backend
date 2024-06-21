@@ -63,11 +63,13 @@ class BatchService {
     }
   }
 
- 
-  async getBatchesOfTrainingPartner(id){
+  async getBatchesOfTrainingPartner(id) {
     try {
-      const res = await this.batchRepository.getAllbatchesForAnIndividualTrainingPartner(id);
-      return res
+      const res =
+        await this.batchRepository.getAllbatchesForAnIndividualTrainingPartner(
+          id
+        );
+      return res;
     } catch (error) {
       throw error;
     }

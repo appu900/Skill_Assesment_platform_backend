@@ -22,7 +22,9 @@ class BatchRepository extends CrudRepository {
     try {
       const response = await Batch.find({
         createdBy: id,
-      });
+      })
+        .populate("students")
+        .populate("trainers");
       return response;
     } catch (error) {
       throw error;
