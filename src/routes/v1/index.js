@@ -23,13 +23,11 @@ router.post("/admin/login", AdminController.login);
 router.post("/tp", TrainingPartnerController.onBoardTrainingPartner);
 router.post("/tp/login", TrainingPartnerController.login);
 
-
-
-
 router.get("/tp/:id", TrainingPartnerController.getTrainingPartnerById);
 router.get("/tp", TrainingPartnerController.getAllData);
+router.get("/tp/status/pending",TrainingPartnerController.getNewTrainingPartnerApplications)
+router.get("/tp/status/approved",TrainingPartnerController.getApprovedTrainingPartnerData)
 
-  
 
 router.put("/tp/:id", TrainingPartnerController.updateTrainingPartnerStatus);
 router.put(

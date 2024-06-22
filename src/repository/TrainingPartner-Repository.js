@@ -55,7 +55,21 @@ class TrainingPartnerRepository extends CrudRepository {
 
   async getNewPendingRequests() {
     try {
-      const response = await this
+      const response = await TrainingPartner.find({
+        applicationStatus: "Pending",
+      });
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getApprovedApplications() {
+    try {
+      const response = await TrainingPartner.find({
+        applicationStatus: "Approved",
+      });
+      return response;
     } catch (error) {
       throw error;
     }

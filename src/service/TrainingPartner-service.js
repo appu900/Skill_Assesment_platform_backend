@@ -16,9 +16,9 @@ class TrainingPartnerService {
   }
 
   // ** login functionality of traingPartner
-  async login(email, password ) {
+  async login(email, password) {
     try {
-      console.log(email,password,"service layer")
+      console.log(email, password, "service layer");
       const trainingPartner = await this.trainingPartnerRepository.findByEmail(
         email
       );
@@ -91,11 +91,26 @@ class TrainingPartnerService {
     }
   }
 
+  async getNewOnbordedTrainingPartner() {
+    try {
+      const response =
+        await this.trainingPartnerRepository.getNewPendingRequests();
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
 
-
-
-
-  
+  async getAllApprovedTrainingPartner() {
+    try {
+      const response =
+        await this.trainingPartnerRepository.getApprovedApplications();
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default TrainingPartnerService;
+  

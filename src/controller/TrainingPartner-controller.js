@@ -117,7 +117,10 @@ class TrainingPartnerController {
   // ** login controller
   static async login(req, res) {
     try {
-      const response = await tpService.login(req.body.registeredOfficeEmail, req.body.password);
+      const response = await tpService.login(
+        req.body.registeredOfficeEmail,
+        req.body.password
+      );
       return res.status(StatusCodes.OK).json({
         success: true,
         message: "login sucessfull",
@@ -128,6 +131,43 @@ class TrainingPartnerController {
         success: false,
         error: error.message,
         message: "something went wrong in login process",
+      });
+    }
+  }
+
+  static async getNewTrainingPartnerApplications(req, res) {
+    try {
+      const response = await tpService.getNewOnbordedTrainingPartner();
+      return res.status(StatusCodes.OK).json({
+        success: true,
+        data: response,
+        message: "data fetched sucessfully",
+      });
+    } catch (error) {
+      console.log(error)
+      return res.status(500).json({
+        success: false,
+        error: error.message,
+        message: "something went wrong in fetching data",
+      });
+    }
+  }
+
+
+  static async getApprovedTrainingPartnerData(req, res) {
+    try {
+      const response = await tpService.getAllApprovedTrainingPartner();
+      return res.status(StatusCodes.OK).json({
+        success: true,
+        data: response,
+        message: "data fetched sucessfully",
+      });
+    } catch (error) {
+      console.log(error)
+      return res.status(500).json({
+        success: false,
+        error: error.message,
+        message: "something went wrong in fetching data",
       });
     }
   }
