@@ -74,8 +74,15 @@ class BatchService {
       throw error;
     }
   }
+
+  async getAllBatces() {
+    try {
+      const response = await this.batchRepository.getAll();
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default BatchService;
-
-

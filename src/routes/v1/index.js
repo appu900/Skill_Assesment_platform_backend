@@ -5,9 +5,14 @@ import TrainingPartnerController from "../../controller/TrainingPartner-controll
 import verifyIsAdmin from "../../middleware/verifyAdmin.js";
 import verifyIsTrainingPartner from "../../middleware/verifyTrainingPartner.js";
 import { createTrainer, deleteTrainer, getAllTrainers, getAllTrainersOfaTrainingPartner, getTrainerById } from "../../controller/Trainer-controller.js";
+
 import { createStudent, getStudentDetails } from "../../controller/Student-controller.js";
-import { addStudentToBatch, addToTrainerToBatch, createBatch, getBatchDetails, getIndividualTrainingPartnerBatchDetails } from "../../controller/Batch-controller.js";
+
+
+import { addStudentToBatch, addToTrainerToBatch, createBatch, getAllBatchData, getBatchDetails, getIndividualTrainingPartnerBatchDetails } from "../../controller/Batch-controller.js";
+
 import { assesmentAgencylogin, createAssesmentAgency, getAllApprovedAssesmentAgency, getAllAssesmentAgency, getAllPendingAssesmentAgency, getAssesmentAgencyById, updateAssesmentAgencyStatusToApproved, updateAssesmentAgencyStatusToRejected } from "../../controller/Assesment-agency-controller.js";
+
 import { assignAnExam, getALlExams, getALLExamsBelongsToAnAssesmentAgency } from "../../controller/exam-controller.js";
 
 const router = express.Router();
@@ -63,6 +68,7 @@ router.post("/batch/addstudent/:id",verifyIsTrainingPartner,addStudentToBatch)
 router.post("/batch/addtrainer/:id",verifyIsTrainingPartner,addToTrainerToBatch)
 router.get("/batch/:id",getBatchDetails)
 router.get("/batch/tp/:trainingPartnerId",getIndividualTrainingPartnerBatchDetails)
+router.get("/batch",getAllBatchData)
 
 
 // *** assesment agency 

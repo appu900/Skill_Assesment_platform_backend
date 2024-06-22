@@ -118,7 +118,8 @@ const getAllAssesmentAgency = async (req, res) => {
 
 const getAllPendingAssesmentAgency = async (req, res) => {
   try {
-    const response = await assesmentAgencyService.getAllPendingAssesmentAgencyApplocations()
+    const response =
+      await assesmentAgencyService.getAllPendingAssesmentAgencyApplocations();
     return res.status(StatusCodes.OK).json({
       success: true,
       data: response,
@@ -143,7 +144,7 @@ const getAllApprovedAssesmentAgency = async (req, res) => {
       message: "data fetched sucessfully",
     });
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: "something went wrong",
@@ -160,5 +161,5 @@ export {
   getAssesmentAgencyById,
   getAllAssesmentAgency,
   getAllPendingAssesmentAgency,
-  getAllApprovedAssesmentAgency
+  getAllApprovedAssesmentAgency,
 };

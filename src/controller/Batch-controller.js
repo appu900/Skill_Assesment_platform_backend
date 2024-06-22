@@ -65,7 +65,6 @@ const addToTrainerToBatch = async (req, res) => {
   }
 };
 
-
 const getBatchDetails = async (req, res) => {
   try {
     const response = await batchService.getBatchData(req.params.id);
@@ -83,12 +82,12 @@ const getBatchDetails = async (req, res) => {
   }
 };
 
-
-
 const getIndividualTrainingPartnerBatchDetails = async (req, res) => {
   try {
     const trainingPartnerId = req.params.trainingPartnerId;
-    const response = await batchService.getBatchesOfTrainingPartner(trainingPartnerId)
+    const response = await batchService.getBatchesOfTrainingPartner(
+      trainingPartnerId
+    );
     return res.status(StatusCodes.OK).json({
       message: "data fethed sucessfully",
       success: true,
@@ -103,7 +102,22 @@ const getIndividualTrainingPartnerBatchDetails = async (req, res) => {
   }
 };
 
-
+const getAllBatchData = async (req, res) => {
+  try {
+    const response = await batchService.getAllBatces();
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      data: response,
+      message: "all batches data fetched sucessfully",
+    });
+  } catch (error) {
+    return res.status(StatusCodes.OK).json({
+      success: false,
+      data: response,
+      message: "something went wrong",
+    });
+  }
+};
 
 export {
   createBatch,
@@ -111,8 +125,5 @@ export {
   addToTrainerToBatch,
   getBatchDetails,
   getIndividualTrainingPartnerBatchDetails,
+  getAllBatchData,
 };
-
-
-
-
