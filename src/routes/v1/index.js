@@ -7,7 +7,7 @@ import verifyIsTrainingPartner from "../../middleware/verifyTrainingPartner.js";
 import { createTrainer, deleteTrainer, getAllTrainers, getAllTrainersOfaTrainingPartner, getTrainerById } from "../../controller/Trainer-controller.js";
 import { createStudent, getStudentDetails } from "../../controller/Student-controller.js";
 import { addStudentToBatch, addToTrainerToBatch, createBatch, getBatchDetails, getIndividualTrainingPartnerBatchDetails } from "../../controller/Batch-controller.js";
-import { assesmentAgencylogin, createAssesmentAgency, getAllAssesmentAgency, getAssesmentAgencyById, updateAssesmentAgencyStatusToApproved, updateAssesmentAgencyStatusToRejected } from "../../controller/Assesment-agency-controller.js";
+import { assesmentAgencylogin, createAssesmentAgency, getAllApprovedAssesmentAgency, getAllAssesmentAgency, getAllPendingAssesmentAgency, getAssesmentAgencyById, updateAssesmentAgencyStatusToApproved, updateAssesmentAgencyStatusToRejected } from "../../controller/Assesment-agency-controller.js";
 import { assignAnExam, getALlExams, getALLExamsBelongsToAnAssesmentAgency } from "../../controller/exam-controller.js";
 
 const router = express.Router();
@@ -71,8 +71,12 @@ router.post("/aa/create",createAssesmentAgency)
 router.post("/aa/login",assesmentAgencylogin)
 router.put("/aa/approve/:id",verifyIsAdmin,updateAssesmentAgencyStatusToApproved)
 router.put("/aa/reject/:id",verifyIsAdmin,updateAssesmentAgencyStatusToRejected)
+
 router.get("/aa/:id",getAssesmentAgencyById)
 router.get("/aa",getAllAssesmentAgency)
+router.get("/aa/status/approved",getAllApprovedAssesmentAgency)
+router.get("/aa/status/pending",getAllPendingAssesmentAgency)
+
 
 
 // ** exam ** will be created by ADMIN

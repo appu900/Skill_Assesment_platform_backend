@@ -116,11 +116,49 @@ const getAllAssesmentAgency = async (req, res) => {
   }
 };
 
+const getAllPendingAssesmentAgency = async (req, res) => {
+  try {
+    const response = await assesmentAgencyService.getAllPendingAssesmentAgencyApplocations()
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      data: response,
+      message: "data fetched sucessfully",
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: "something went wrong",
+      error: error.message,
+    });
+  }
+};
+
+const getAllApprovedAssesmentAgency = async (req, res) => {
+  try {
+    const response =
+      await assesmentAgencyService.getAllApprovedAssesmentAgency();
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      data: response,
+      message: "data fetched sucessfully",
+    });
+  } catch (error) {
+    console.log(error)
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: "something went wrong",
+      error: error.message,
+    });
+  }
+};
+
 export {
   createAssesmentAgency,
   assesmentAgencylogin,
   updateAssesmentAgencyStatusToApproved,
   updateAssesmentAgencyStatusToRejected,
   getAssesmentAgencyById,
-  getAllAssesmentAgency
+  getAllAssesmentAgency,
+  getAllPendingAssesmentAgency,
+  getAllApprovedAssesmentAgency
 };

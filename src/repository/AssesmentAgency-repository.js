@@ -51,12 +51,27 @@ class AssesmentAgencyRepository extends CrudRepository {
     }
   }
 
+  async getAllApprovedApplications() {
+    try {
+      const response = await AssesmentAgency.find({
+        applicationStatus: "Approved",
+      });
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
 
-
-
-
+  async getAllPendingApplications() {
+    try {
+      const response = await AssesmentAgency.find({
+        applicationStatus: "Pending",
+      });
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
-
-
 
 export default AssesmentAgencyRepository;

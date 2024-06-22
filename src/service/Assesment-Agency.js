@@ -78,10 +78,30 @@ class AssesmentAgencyService {
     }
   }
 
-  async getAllAssesmentAgency(){
+  async getAllAssesmentAgency() {
     try {
       const res = await this.assesmentAgencyRepo.getAll();
       return res;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getAllPendingAssesmentAgencyApplocations() {
+    try {
+      const response =
+        await this.assesmentAgencyRepo.getAllPendingApplications();
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getAllApprovedAssesmentAgency() {
+    try {
+      const response =
+        await this.assesmentAgencyRepo.getAllApprovedApplications();
+      return response;
     } catch (error) {
       throw error;
     }
