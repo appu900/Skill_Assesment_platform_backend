@@ -42,12 +42,20 @@ class TrainingPartnerRepository extends CrudRepository {
 
   async findByEmail(email) {
     try {
-      console.log(email)
+      console.log(email);
       const response = await TrainingPartner.findOne({
         registeredOfficeEmail: email,
       });
-      console.log(response)
+      console.log(response);
       return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getNewPendingRequests() {
+    try {
+      const response = await this
     } catch (error) {
       throw error;
     }

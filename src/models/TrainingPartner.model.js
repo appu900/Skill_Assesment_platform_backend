@@ -107,7 +107,7 @@ trainingPartnerSchema.methods.generateJwt = function generate() {
       role: this.role,
     },
     "this is a secrete a key",
-    { expiresIn: "1d" }
+    { expiresIn: "30d" }
   );
 };
 

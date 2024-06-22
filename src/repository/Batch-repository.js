@@ -5,7 +5,6 @@ class BatchRepository extends CrudRepository {
   constructor() {
     super(Batch);
   }
-
   async getBatchDetails(batchId) {
     try {
       const batch = await Batch.findById(batchId)
@@ -41,3 +40,10 @@ class BatchRepository extends CrudRepository {
 }
 
 export default BatchRepository;
+
+
+
+
+
+
+
