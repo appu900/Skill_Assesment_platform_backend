@@ -4,16 +4,45 @@ import AdminController from "../../controller/Admin-controller.js";
 import TrainingPartnerController from "../../controller/TrainingPartner-controller.js";
 import verifyIsAdmin from "../../middleware/verifyAdmin.js";
 import verifyIsTrainingPartner from "../../middleware/verifyTrainingPartner.js";
-import { createTrainer, deleteTrainer, getAllTrainers, getAllTrainersOfaTrainingPartner, getTrainerById } from "../../controller/Trainer-controller.js";
+import {
+  createTrainer,
+  deleteTrainer,
+  getAllTrainers,
+  getAllTrainersOfaTrainingPartner,
+  getTrainerById,
+} from "../../controller/Trainer-controller.js";
 
-import { createStudent, getStudentDetails } from "../../controller/Student-controller.js";
+import {
+  createStudent,
+  getStudentDetails,
+} from "../../controller/Student-controller.js";
 
+import {
+  addStudentToBatch,
+  addToTrainerToBatch,
+  createBatch,
+  getAllBatchData,
+  getBatchDetails,
+  getIndividualTrainingPartnerBatchDetails,
+} from "../../controller/Batch-controller.js";
 
-import { addStudentToBatch, addToTrainerToBatch, createBatch, getAllBatchData, getBatchDetails, getIndividualTrainingPartnerBatchDetails } from "../../controller/Batch-controller.js";
+import {
+  assesmentAgencylogin,
+  createAssesmentAgency,
+  getAllApprovedAssesmentAgency,
+  getAllAssesmentAgency,
+  getAllPendingAssesmentAgency,
+  getAssesmentAgencyById,
+  updateAssesmentAgencyStatusToApproved,
+  updateAssesmentAgencyStatusToRejected,
+} from "../../controller/Assesment-agency-controller.js";
 
-import { assesmentAgencylogin, createAssesmentAgency, getAllApprovedAssesmentAgency, getAllAssesmentAgency, getAllPendingAssesmentAgency, getAssesmentAgencyById, updateAssesmentAgencyStatusToApproved, updateAssesmentAgencyStatusToRejected } from "../../controller/Assesment-agency-controller.js";
-
-import { assignAnExam, getALlExams, getALLExamsBelongsToAnAssesmentAgency } from "../../controller/exam-controller.js";
+import {
+  assignAnExam,
+  getALlExams,
+  getALLExamsBelongsToAnAssesmentAgency,
+} from "../../controller/exam-controller.js";
+import { uploadMark } from "../../controller/marks-upload-controller.js";
 
 const router = express.Router();
 
@@ -21,18 +50,20 @@ const router = express.Router();
 router.post("/admin", AdminController.createNewAdmin);
 router.post("/admin/login", AdminController.login);
 
-
-
-
 // ** TP
 router.post("/tp", TrainingPartnerController.onBoardTrainingPartner);
 router.post("/tp/login", TrainingPartnerController.login);
 
 router.get("/tp/:id", TrainingPartnerController.getTrainingPartnerById);
 router.get("/tp", TrainingPartnerController.getAllData);
-router.get("/tp/status/pending",TrainingPartnerController.getNewTrainingPartnerApplications)
-router.get("/tp/status/approved",TrainingPartnerController.getApprovedTrainingPartnerData)
-
+router.get(
+  "/tp/status/pending",
+  TrainingPartnerController.getNewTrainingPartnerApplications
+);
+router.get(
+  "/tp/status/approved",
+  TrainingPartnerController.getApprovedTrainingPartnerData
+);
 
 router.put("/tp/:id", TrainingPartnerController.updateTrainingPartnerStatus);
 router.put(
@@ -42,59 +73,67 @@ router.put(
 );
 router.put("/tp/reject/:id", TrainingPartnerController.updateStatusToRejected);
 
-
-
-
 // ** trainer
 
-router.post("/trainer", verifyIsTrainingPartner,createTrainer);
-router.get("/trainer",getAllTrainers)
-router.get("/trainer/:id",getTrainerById)
-router.delete("/trainer/:id",deleteTrainer)
-router.get("/trainer/tp/:id",getAllTrainersOfaTrainingPartner)
+router.post("/trainer", verifyIsTrainingPartner, createTrainer);
+router.get("/trainer", getAllTrainers);
+router.get("/trainer/:id", getTrainerById);
+router.delete("/trainer/:id", deleteTrainer);
+router.get("/trainer/tp/:id", getAllTrainersOfaTrainingPartner);
 
 // ** student
 
-router.post("/student",verifyIsTrainingPartner,createStudent)
-router.get("/student/:id",getStudentDetails)
-
-
-
+router.post("/student", verifyIsTrainingPartner, createStudent);
+router.get("/student/:id", getStudentDetails);
 
 //** batch routes  */
 
-router.post("/batch/create",verifyIsTrainingPartner,createBatch);
-router.post("/batch/addstudent/:id",verifyIsTrainingPartner,addStudentToBatch)
-router.post("/batch/addtrainer/:id",verifyIsTrainingPartner,addToTrainerToBatch)
-router.get("/batch/:id",getBatchDetails)
-router.get("/batch/tp/:trainingPartnerId",getIndividualTrainingPartnerBatchDetails)
-router.get("/batch",getAllBatchData)
+router.post("/batch/create", verifyIsTrainingPartner, createBatch);
+router.post(
+  "/batch/addstudent/:id",
+  verifyIsTrainingPartner,
+  addStudentToBatch
+);
+router.post(
+  "/batch/addtrainer/:id",
+  verifyIsTrainingPartner,
+  addToTrainerToBatch
+);
+router.get("/batch/:id", getBatchDetails);
+router.get(
+  "/batch/tp/:trainingPartnerId",
+  getIndividualTrainingPartnerBatchDetails
+);
+router.get("/batch", getAllBatchData);
 
+// *** assesment agency
 
-// *** assesment agency 
+router.post("/aa/create", createAssesmentAgency);
+router.post("/aa/login", assesmentAgencylogin);
+router.put(
+  "/aa/approve/:id",
+  verifyIsAdmin,
+  updateAssesmentAgencyStatusToApproved
+);
+router.put(
+  "/aa/reject/:id",
+  verifyIsAdmin,
+  updateAssesmentAgencyStatusToRejected
+);
 
-router.post("/aa/create",createAssesmentAgency)
-router.post("/aa/login",assesmentAgencylogin)
-router.put("/aa/approve/:id",verifyIsAdmin,updateAssesmentAgencyStatusToApproved)
-router.put("/aa/reject/:id",verifyIsAdmin,updateAssesmentAgencyStatusToRejected)
-
-router.get("/aa/:id",getAssesmentAgencyById)
-router.get("/aa",getAllAssesmentAgency)
-router.get("/aa/status/approved",getAllApprovedAssesmentAgency)
-router.get("/aa/status/pending",getAllPendingAssesmentAgency)
-
-
+router.get("/aa/:id", getAssesmentAgencyById);
+router.get("/aa", getAllAssesmentAgency);
+router.get("/aa/status/approved", getAllApprovedAssesmentAgency);
+router.get("/aa/status/pending", getAllPendingAssesmentAgency);
 
 // ** exam ** will be created by ADMIN
 
-router.post("/exam/create",verifyIsAdmin,assignAnExam);
-router.get("/exam/all",getALlExams)
-router.get("/exam/aa/:id",getALLExamsBelongsToAnAssesmentAgency)
+router.post("/exam/create", verifyIsAdmin, assignAnExam);
+router.get("/exam/all", getALlExams);
+router.get("/exam/aa/:id", getALLExamsBelongsToAnAssesmentAgency);
 
+// ** upload marks
+
+router.post("/marks/uploadmark", uploadMark);
 
 export default router;
-
-
-
-
-
