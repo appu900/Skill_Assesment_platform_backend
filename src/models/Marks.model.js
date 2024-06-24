@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const markSchema = new mongoose.Schema({
-  studentId: {
+  student: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Student",
   },
@@ -21,6 +21,10 @@ const markSchema = new mongoose.Schema({
 
 const Mark = mongoose.model("Mark", markSchema);
 export default Mark;
+
+
+
+
 
 
 

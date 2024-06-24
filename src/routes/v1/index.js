@@ -42,7 +42,7 @@ import {
   getALlExams,
   getALLExamsBelongsToAnAssesmentAgency,
 } from "../../controller/exam-controller.js";
-import { uploadMark } from "../../controller/marks-upload-controller.js";
+import { getMarksOfBatch, getMarksOfStudent, uploadMark } from "../../controller/marks-upload-controller.js";
 
 const router = express.Router();
 
@@ -135,5 +135,7 @@ router.get("/exam/aa/:id", getALLExamsBelongsToAnAssesmentAgency);
 // ** upload marks
 
 router.post("/marks/uploadmark", uploadMark);
+router.get("/marks/batch/:id", getMarksOfBatch);
+router.get("/marks/student/:id", getMarksOfStudent);
 
 export default router;
