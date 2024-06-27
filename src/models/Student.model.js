@@ -14,7 +14,7 @@ const StudentSchema = new mongoose.Schema(
       type: String,
       required: [true, "Mother's name is required"],
     },
-    dob: {
+    dob: { 
       type: Date,
       required: [true, "Date of Birth is required"],
     },

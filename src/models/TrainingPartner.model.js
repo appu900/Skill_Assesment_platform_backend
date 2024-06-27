@@ -22,7 +22,36 @@ const trainingPartnerSchema = new Schema(
       default: "TrainingPartner",
       enum: ["TrainingPartner"],
     },
-  
+
+    sector: [
+      {
+        type: String,
+        required: [true, "sector name is required"],
+      },
+    ],
+
+    typeOfTraining: {
+      type: String,
+      required: [true, "type of training is required"],
+    },
+
+    certificates: [
+      {
+        type: String,
+      },
+    ],
+
+    pre_payment_invoices: [
+      {
+        type: String,
+      },
+    ],
+    post_payment_invoices: [
+      {
+        type: String,
+      },
+    ],
+
     centerId: { type: String, required: true },
     tpCode: { type: String, required: true },
     scheme: { type: String, required: true },
@@ -36,7 +65,7 @@ const trainingPartnerSchema = new Schema(
     registeredOfficeTelephone: { type: String },
     registeredOfficeMobile: { type: String },
     registeredOfficeFax: { type: String },
-    registeredOfficeEmail: { type: String,required:true },
+    registeredOfficeEmail: { type: String, required: true },
     registeredOfficeGst: { type: String },
     regionalStateOfficeAddress: { type: String },
     regionalStateOfficeDist: { type: String },

@@ -174,3 +174,8 @@ class TrainingPartnerController {
 }
 
 export default TrainingPartnerController;
+
+
+
+
+

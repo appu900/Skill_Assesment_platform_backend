@@ -17,6 +17,10 @@ import {
   getStudentDetails,
 } from "../../controller/Student-controller.js";
 
+// ** assesor
+
+import { createAssessor } from "../../controller/Assessor-controller.js";
+
 import {
   addStudentToBatch,
   addToTrainerToBatch,
@@ -42,7 +46,11 @@ import {
   getALlExams,
   getALLExamsBelongsToAnAssesmentAgency,
 } from "../../controller/exam-controller.js";
-import { getMarksOfBatch, getMarksOfStudent, uploadMark } from "../../controller/marks-upload-controller.js";
+import {
+  getMarksOfBatch,
+  getMarksOfStudent,
+  uploadMark,
+} from "../../controller/marks-upload-controller.js";
 
 const router = express.Router();
 
@@ -137,5 +145,9 @@ router.get("/exam/aa/:id", getALLExamsBelongsToAnAssesmentAgency);
 router.post("/marks/uploadmark", uploadMark);
 router.get("/marks/batch/:id", getMarksOfBatch);
 router.get("/marks/student/:id", getMarksOfStudent);
+
+// ** assessor
+
+router.post("/assessor", createAssessor);
 
 export default router;

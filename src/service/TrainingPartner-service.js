@@ -1,4 +1,6 @@
 import TrainingPartnerRepository from "../repository/TrainingPartner-Repository.js";
+import sender from "../config/emailconfig.js";
+import sendEmail from "./email-service.js";
 
 class TrainingPartnerService {
   constructor() {
@@ -75,6 +77,13 @@ class TrainingPartnerService {
     try {
       const response =
         await this.trainingPartnerRepository.updateStatusApproved(id);
+      console.log("Approved Response Data", response.registeredOfficeEmail);
+      sendEmail(
+        "pabitrasundardakua@gmail.com",
+        response.registeredOfficeEmail,
+        "Application Approved",
+        "Your Application has been Approved by the Admin. You can now login to the portal and start your training services. Thank You"
+      );
       return response;
     } catch (error) {
       throw error;
@@ -113,4 +122,3 @@ class TrainingPartnerService {
 }
 
 export default TrainingPartnerService;
-  
