@@ -51,6 +51,7 @@ import {
   getMarksOfStudent,
   uploadMark,
 } from "../../controller/marks-upload-controller.js";
+import { creareSector } from "../../controller/sectorController.js";
 
 const router = express.Router();
 
@@ -150,4 +151,10 @@ router.get("/marks/student/:id", getMarksOfStudent);
 
 router.post("/assessor", createAssessor);
 
+// ** sector **
+
+router.post("/sector",creareSector)
+
 export default router;
+
+
