@@ -3,7 +3,7 @@ import SectorService from "../service/Sector-Service.js";
 
 const sectorService = new SectorService();
 
-const creareSector = async (req, res) => {
+const createSector = async (req, res) => {
   try {
     const response = await sectorService.create(req.body);
     return res.status(StatusCodes.CREATED).json({
@@ -20,4 +20,4 @@ const creareSector = async (req, res) => {
   }
 };
 
-export { creareSector };
+export { createSector };
