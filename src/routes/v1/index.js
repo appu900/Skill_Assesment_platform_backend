@@ -53,7 +53,7 @@ import {
 } from "../../controller/marks-upload-controller.js";
 
 // ** sector
-import { createSector } from "../../controller/sectorController.js";
+import { createSector, getAllSector } from "../../controller/sectorController.js";
 import { createCourse } from "../../controller/course-controller.js";
 
 const router = express.Router();
@@ -157,6 +157,7 @@ router.post("/assessor", createAssessor);
 // ** sector **
 
 router.post("/sector",createSector)
+router.get("/sector",getAllSector)
 
 // ** course ** s
 

@@ -13,6 +13,15 @@ class SectorService {
       throw error;
     }
   }
+
+  async getAllSector() {
+    try {
+      const response = await this.sectorRepository.getAll();
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default SectorService;
