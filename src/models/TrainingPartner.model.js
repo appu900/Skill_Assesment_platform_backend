@@ -17,12 +17,19 @@ const trainingPartnerSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    editPermission: {
+      type: Boolean,
+      default: false,
+    },
+    noOfEditRequest: {
+      type: Number,
+      default: 0,
+    },
     role: {
       type: String,
       default: "TrainingPartner",
       enum: ["TrainingPartner"],
     },
-
     sector: [
       {
         type: String,
@@ -30,7 +37,7 @@ const trainingPartnerSchema = new Schema(
       },
     ],
 
-    typeOfTraining: {
+    businessesType: {
       type: String,
       required: [true, "type of training is required"],
     },

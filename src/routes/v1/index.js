@@ -58,9 +58,17 @@ import { createCourse } from "../../controller/course-controller.js";
 
 const router = express.Router();
 
+
+
+
 // ** Admin
 router.post("/admin", AdminController.createNewAdmin);
 router.post("/admin/login", AdminController.login);
+
+
+
+
+
 
 // ** TP
 router.post("/tp", TrainingPartnerController.onBoardTrainingPartner);
@@ -85,6 +93,11 @@ router.put(
 );
 router.put("/tp/reject/:id", TrainingPartnerController.updateStatusToRejected);
 
+
+
+
+
+
 // ** trainer
 
 router.post("/trainer", verifyIsTrainingPartner, createTrainer);
@@ -93,10 +106,18 @@ router.get("/trainer/:id", getTrainerById);
 router.delete("/trainer/:id", deleteTrainer);
 router.get("/trainer/tp/:id", getAllTrainersOfaTrainingPartner);
 
+
+
+
+
 // ** student
 
 router.post("/student", verifyIsTrainingPartner, createStudent);
 router.get("/student/:id", getStudentDetails);
+
+
+
+
 
 //** batch routes  */
 
@@ -118,6 +139,9 @@ router.get(
 );
 router.get("/batch", getAllBatchData);
 
+
+
+
 // *** assesment agency
 
 router.post("/aa/create", createAssesmentAgency);
@@ -138,17 +162,29 @@ router.get("/aa", getAllAssesmentAgency);
 router.get("/aa/status/approved", getAllApprovedAssesmentAgency);
 router.get("/aa/status/pending", getAllPendingAssesmentAgency);
 
+
+
+
+
 // ** exam ** will be created by ADMIN
 
 router.post("/exam/create", verifyIsAdmin, assignAnExam);
 router.get("/exam/all", getALlExams);
 router.get("/exam/aa/:id", getALLExamsBelongsToAnAssesmentAgency);
 
+
+
+
+
+
 // ** upload marks
 
 router.post("/marks/uploadmark", uploadMark);
 router.get("/marks/batch/:id", getMarksOfBatch);
 router.get("/marks/student/:id", getMarksOfStudent);
+
+
+
 
 // ** assessor
 

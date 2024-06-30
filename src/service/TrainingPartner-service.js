@@ -65,6 +65,11 @@ class TrainingPartnerService {
 
   async updateTrainingPartnerDetails(id, data) {
     try {
+      const tp = await this.trainingPartnerRepository.get(id);
+
+      if (!tp) {
+        throw new Error("Training Partner details not found");
+      }
       const response = await this.trainingPartnerRepository.update(id, data);
       return response;
     } catch (error) {
