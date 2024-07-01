@@ -4,6 +4,7 @@ import StudentRepository from "../repository/student-repository.js";
 import TrainerRepository from "../repository/Trainer-Repository.js";
 
 class BatchService {
+
   constructor() {
     this.batchRepository = new BatchRepository();
     this.studentRepository = new StudentRepository();
@@ -77,7 +78,7 @@ class BatchService {
 
   async getAllBatces() {
     try {
-      const response = await this.batchRepository.getAll();
+      const response = await this.batchRepository.getAllBatches();
       return response;
     } catch (error) {
       throw error;

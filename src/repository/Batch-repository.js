@@ -5,6 +5,20 @@ class BatchRepository extends CrudRepository {
   constructor() {
     super(Batch);
   }
+
+  async getAllBatches() {
+    try {
+      const response = await Batch.find().populate({
+        path: "createdBy",
+        select: "organizationName",
+      });
+ 
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async getBatchDetails(batchId) {
     try {
       const batch = await Batch.findById(batchId)
@@ -40,10 +54,3 @@ class BatchRepository extends CrudRepository {
 }
 
 export default BatchRepository;
-
-
-
-
-
-
-

@@ -18,13 +18,25 @@ import mongoose from "mongoose";
 
 const batchSchema = new mongoose.Schema(
   {
-    name: {
+    courseName: {
       type: String,
-      required: [true, "batch name can not be null"],
+      required: [true, "Course name is required"],
+    },
+    sectorName: {
+      type: String,
+      required: [true, "Sector name is required"],
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "TrainingPartner",
+    },
+    scheme: {
+      type: String,
+      required: [true, "Scheme is required"],
+    },
+    state: {
+      type: String,
+      required: [true, "State is required"],
     },
     startDate: {
       type: Date,
@@ -40,13 +52,13 @@ const batchSchema = new mongoose.Schema(
     status: {
       type: String,
       default: "onGoing",
-      enum:["Completed","onGoing"]
+      enum: ["Completed", "onGoing"],
     },
     students: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Student",
-      },  
+      },
     ],
     trainers: [
       {
@@ -54,7 +66,12 @@ const batchSchema = new mongoose.Schema(
         ref: "Trainer",
       },
     ],
+    ABN_Number: {
+      type: String,
+      required: [true, "ABN number is required"],
+    },
   },
+
   {
     timestamps: true,
   }

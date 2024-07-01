@@ -149,8 +149,6 @@ class TrainingPartnerService {
         queryObject.scheme = scheme;
       }
 
-     
-      
       const response = await this.trainingPartnerRepository.filterData(
         queryObject
       );
