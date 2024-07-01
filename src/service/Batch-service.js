@@ -2,17 +2,29 @@ import BatchRepository from "../repository/Batch-repository.js";
 import StudentService from "./student-service.js";
 import StudentRepository from "../repository/student-repository.js";
 import TrainerRepository from "../repository/Trainer-Repository.js";
+import TrainingPartnerRepository from "../repository/TrainingPartner-Repository.js";
 
 class BatchService {
-
   constructor() {
     this.batchRepository = new BatchRepository();
     this.studentRepository = new StudentRepository();
     this.trainerRepository = new TrainerRepository();
+    this.trainingPartnerRepository = new TrainingPartnerRepository();
   }
 
   async createBatch(data) {
     try {
+      const trainingPartnerId = data.trainingPartnerId;
+      const trainingPartner = await this.trainingPartnerRepository.get(
+        trainingPartnerId
+      );
+      if (!trainingPartner) {
+        throw new Error("training partner not found");
+      }
+
+      data.trainingOrganization = trainingPartner.organizationName;
+      data.trainingOrganizationId = trainingPartner._id;
+      
       const batch = await this.batchRepository.create(data);
       return batch;
     } catch (error) {

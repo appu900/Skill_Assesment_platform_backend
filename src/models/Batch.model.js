@@ -26,7 +26,11 @@ const batchSchema = new mongoose.Schema(
       type: String,
       required: [true, "Sector name is required"],
     },
-    createdBy: {
+    trainingOrganization: {
+      type: String,
+      required: [true, "Training organization is required"],
+    },
+    trainingOrganizationId:{
       type: mongoose.Schema.Types.ObjectId,
       ref: "TrainingPartner",
     },

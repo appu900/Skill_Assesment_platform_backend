@@ -8,11 +8,7 @@ class BatchRepository extends CrudRepository {
 
   async getAllBatches() {
     try {
-      const response = await Batch.find().populate({
-        path: "createdBy",
-        select: "organizationName",
-      });
- 
+      const response = await Batch.find()
       return response;
     } catch (error) {
       throw error;
@@ -24,7 +20,7 @@ class BatchRepository extends CrudRepository {
       const batch = await Batch.findById(batchId)
         .populate("students")
         .populate("trainers")
-        .populate("createdBy");
+
       return batch;
     } catch (error) {
       throw error;
@@ -34,7 +30,7 @@ class BatchRepository extends CrudRepository {
   async getAllbatchesForAnIndividualTrainingPartner(id) {
     try {
       const response = await Batch.find({
-        createdBy: id,
+        trainingOrganizationId: id,
       })
         .populate("students")
         .populate("trainers");
