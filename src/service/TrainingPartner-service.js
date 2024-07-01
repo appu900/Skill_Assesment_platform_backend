@@ -124,6 +124,21 @@ class TrainingPartnerService {
       throw error;
     }
   }
+
+  // ** filter trainingPartner based on differnet query parameters
+  /**
+   *  scheme
+   *  sector
+   *  state
+   *  course
+   */
+  async getTrainingPartnersAccordingTofilter() {
+    try {
+      
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default TrainingPartnerService;

@@ -7,10 +7,17 @@ class CourseService {
     this.sectorRepository = new SectorRepository();
   }
 
-//   ** sectorId from reques.body
+  //   ** sectorId from reques.body
   async create(data) {
     try {
+      const sectorName = data.sectorName;
+      const sector = await this.sectorRepository.getByName(sectorName);
+      if (!sector) {
+        throw new Error("Sector not found");
+      }
       const course = await this.courseRepository.create(data);
+      sector.courses.push(course);
+      await sector.save();
       return course;
     } catch (error) {
       throw error;

@@ -8,6 +8,11 @@ const trainingPartnerSchema = new Schema(
     password: { type: String, required: true },
     organizationName: { type: String, required: true },
     organizationCategory: { type: String, required: true },
+    courses: [
+      {
+        type: String,
+      },
+    ],
     applicationStatus: {
       type: String,
       default: "Pending",

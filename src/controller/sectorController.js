@@ -20,21 +20,37 @@ const createSector = async (req, res) => {
   }
 };
 
-const getAllSector = async(req,res) =>{
-    try {
-        const response = await sectorService.getAllSector();
-        return res.status(StatusCodes.OK).json({
-            success:true,
-            data:response,
-            message:"data fetched sucessfully"
-        })
-    } catch (error) {
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            success:false,
-            error:error.message,
-            message:"something went wrong"
-        })
-    }
-}
+const getAllSector = async (req, res) => {
+  try {
+    const response = await sectorService.getAllSector();
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      data: response,
+      message: "data fetched sucessfully",
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: error.message,
+      message: "something went wrong",
+    });
+  }
+};
 
-export { createSector,getAllSector };
+const getAllCoursesOfASector = async (req, res) => {
+  try {
+    const sectorName = req.query.name;
+    const response = await sectorService.getCoursesOfSector(sectorName);
+    return res.status(StatusCodes.OK).json({
+      data: response,
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: error.message,
+      message: "something went wrong",
+    });
+  }
+};
+
+export { createSector, getAllSector,getAllCoursesOfASector };

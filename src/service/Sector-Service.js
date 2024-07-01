@@ -22,6 +22,15 @@ class SectorService {
       throw error;
     }
   }
+
+  async getCoursesOfSector(sectorName){
+     try {
+        const response = await this.sectorRepository.getCourseBySector(sectorName);
+        return response.courses;
+     } catch (error) {
+        throw error;
+     }
+  }
 }
 
 export default SectorService;
