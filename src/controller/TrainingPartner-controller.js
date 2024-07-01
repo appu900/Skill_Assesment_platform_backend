@@ -2,6 +2,30 @@ import TrainingPartnerService from "../service/TrainingPartner-service.js";
 import { StatusCodes } from "http-status-codes";
 const tpService = new TrainingPartnerService();
 class TrainingPartnerController {
+  // ** filter data based on different parameters
+
+  static async filterTrainingPartnerData(req, res) {
+    try {
+      const { sector, course, scheme, state } = req.query;
+      
+      const response = await tpService.getTrainingPartnersAccordingTofilter(
+        req.query
+      );
+
+      return res.status(StatusCodes.OK).json({
+        success: true,
+        data: response,
+        message: "data fetched successfully",
+      });
+    } catch (error) {
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        error: error.message,
+        message: "internal Server error",
+      });
+    }
+  }
+
   //** onBoard TraingPartner application */
 
   static async onBoardTrainingPartner(req, res) {
@@ -144,7 +168,7 @@ class TrainingPartnerController {
         message: "data fetched sucessfully",
       });
     } catch (error) {
-      console.log(error)
+      console.log(error);
       return res.status(500).json({
         success: false,
         error: error.message,
@@ -152,7 +176,6 @@ class TrainingPartnerController {
       });
     }
   }
-
 
   static async getApprovedTrainingPartnerData(req, res) {
     try {
@@ -163,7 +186,7 @@ class TrainingPartnerController {
         message: "data fetched sucessfully",
       });
     } catch (error) {
-      console.log(error)
+      console.log(error);
       return res.status(500).json({
         success: false,
         error: error.message,
@@ -174,8 +197,3 @@ class TrainingPartnerController {
 }
 
 export default TrainingPartnerController;
-
-
-
-
-

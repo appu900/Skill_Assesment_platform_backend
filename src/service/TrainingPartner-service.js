@@ -128,13 +128,33 @@ class TrainingPartnerService {
   // ** filter trainingPartner based on differnet query parameters
   /**
    *  scheme
-   *  sector
+   *  sector []
    *  state
-   *  course
+   *  course []
    */
-  async getTrainingPartnersAccordingTofilter() {
+  async getTrainingPartnersAccordingTofilter(query) {
     try {
+      const { sector, registeredOfficeState, course, scheme } = query;
+      const queryObject = {};
+      if (sector) {
+        queryObject.sector = { $in: [sector] };
+      }
+      if (registeredOfficeState) {
+        queryObject.registeredOfficeState = registeredOfficeState;
+      }
+      if (course) {
+        queryObject.courses = { $in: [course] };
+      }
+      if (scheme) {
+        queryObject.scheme = scheme;
+      }
+
+     
       
+      const response = await this.trainingPartnerRepository.filterData(
+        queryObject
+      );
+      return response;
     } catch (error) {
       throw error;
     }

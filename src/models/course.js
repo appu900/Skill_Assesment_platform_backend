@@ -50,32 +50,32 @@ const courseSchema = new mongoose.Schema(
           type: String,
           required: [true, "code is required"],
         },
+        credit: {
+          type: Number,
+          required: [true, "credit is required"],
+        },
+        theoryMarks: {
+          type: Number,
+        },
+        practicalMarks: {
+          type: Number,
+        },
+        vivaMarks: {
+          type: Number,
+        },
+        totalMarks: {
+          type: Number,
+        },
+        nosWisePassPercentage: {
+          type: Number,
+        },
       },
     ],
+
     ncrfLevel: {
       type: Number,
     },
-    credit: {
-      type: Number,
-    },
-
     totalCredit: {
-      type: Number,
-    },
-    theoryMarks: {
-      type: Number,
-    },
-
-    practicalMarks: {
-      type: Number,
-    },
-    vivaMarks: {
-      type: Number,
-    },
-    totalMarks: {
-      type: Number,
-    },
-    nosWisePassPercentage: {
       type: Number,
     },
   },

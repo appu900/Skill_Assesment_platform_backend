@@ -76,6 +76,9 @@ router.post("/tp/login", TrainingPartnerController.login);
 
 router.get("/tp/:id", TrainingPartnerController.getTrainingPartnerById);
 router.get("/tp", TrainingPartnerController.getAllData);
+
+router.get("/tp/all/query",TrainingPartnerController.filterTrainingPartnerData)
+
 router.get(
   "/tp/status/pending",
   TrainingPartnerController.getNewTrainingPartnerApplications

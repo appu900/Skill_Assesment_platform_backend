@@ -74,6 +74,31 @@ class TrainingPartnerRepository extends CrudRepository {
       throw error;
     }
   }
+
+  async filterDataBysectorAndCourse(sectorName, courseName) {
+    try {
+      const response = await TrainingPartner.find({
+        sector: {
+          $in: [sectorName],
+        },
+        courses: {
+          $in: [courseName],
+        },
+      });
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async filterData(query) {
+    try {
+      const res = await TrainingPartner.find(query);
+      return res;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default TrainingPartnerRepository;
