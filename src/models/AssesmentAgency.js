@@ -25,10 +25,18 @@ const assesmentAgencySchema = new mongoose.Schema(
       type: String,
       required: [true, "communication address is required"],
     },
-    subject: {
-      type: String,
-      required: [true, "subject is missing"],
-    },
+    sectors: [
+      {
+        type: String,
+        required: [true, "sector is required"],
+      },
+    ],
+    courses: [
+      {
+        type: String,
+        required: [true, "courses is required"],
+      },
+    ],
     phoneNumber: {
       type: String,
       required: [true, "phone number is missing"],
@@ -137,8 +145,3 @@ const AssesmentAgency = mongoose.model(
 );
 
 export default AssesmentAgency;
-
-
-
-
-

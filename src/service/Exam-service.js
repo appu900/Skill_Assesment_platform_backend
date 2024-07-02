@@ -1,37 +1,58 @@
 import AssesmentAgencyRepository from "../repository/AssesmentAgency-repository.js";
 import BatchRepository from "../repository/Batch-repository.js";
 import ExamRepository from "../repository/Exam-repository.js";
+import TrainingPartnerRepository from "../repository/TrainingPartner-Repository.js";
 
 class ExamService {
   constructor() {
     this.examRepository = new ExamRepository();
     this.batchRepository = new BatchRepository();
     this.assesmentAgencyRepository = new AssesmentAgencyRepository();
+    this.trainingPartnerRepository = new TrainingPartnerRepository();
   }
 
-  async createExam(name, date, batchId, assesmentAgencyId) {
+  async createExam(
+    courseName,
+    date,
+    batchId,
+    assesmentAgencyId,
+    trainingPartnerId
+  ) {
     try {
-      if (!name || !date || !batchId || !assesmentAgencyId) {
-        throw new Error("invalid input");
-      }
       const batch = await this.batchRepository.get(batchId);
       if (!batch) {
-        throw new Error("enter corect details to schedule a exam");
+        throw new Error("batch not found");
       }
+      const trainingPartner = await this.trainingPartnerRepository.get(
+        trainingPartnerId
+      );
+      if (!trainingPartner) {
+        throw new Error("training partner not found");
+      }
+
       const assesmentAgency = await this.assesmentAgencyRepository.get(
         assesmentAgencyId
       );
       if (!assesmentAgency) {
-        throw new Error("assesment agency information is wrong");
+        throw new Error("assesment agency not found");
       }
 
-      const exam = await this.examRepository.create({
-        name: name,
+      const payload = {
+        course: courseName,
         date: date,
-        batch: batch._id,
-        testAgency: assesmentAgency._id,
-      });
-      return exam;
+        sector: batch.sectorName,
+        state: batch.state,
+        scheme: batch.scheme,
+        batchId: batch._id,
+        assesmentAgencyId: assesmentAgency._id,
+        assesmentAgency: assesmentAgency.agencyName,
+        TrainingOrganization: trainingPartner.organizationName,
+        TrainingPartnerId: trainingPartner._id,
+        batchABN: batch.ABN_Number,
+      };
+
+      const response = await this.examRepository.create(payload);
+      return response;
     } catch (error) {
       throw error;
     }

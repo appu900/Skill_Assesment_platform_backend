@@ -14,10 +14,13 @@ class BatchService {
 
   async createBatch(data) {
     try {
-      const trainingPartnerId = data.trainingPartnerId;
+      
+      const trainingPartnerId = data.trainingOrganizationId;
+      console.log(trainingPartnerId);
       const trainingPartner = await this.trainingPartnerRepository.get(
         trainingPartnerId
-      );
+      );  
+
       if (!trainingPartner) {
         throw new Error("training partner not found");
       }

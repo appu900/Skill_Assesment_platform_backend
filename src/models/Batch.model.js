@@ -84,3 +84,9 @@ const batchSchema = new mongoose.Schema(
 const Batch = mongoose.model("Batch", batchSchema);
 
 export default Batch;
+
+
+
+
+
+

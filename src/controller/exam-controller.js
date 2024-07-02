@@ -5,10 +5,11 @@ const examService = new ExamService();
 const assignAnExam = async (req, res) => {
   try {
     const exam = await examService.createExam(
-      req.body.name,
+      req.body.courseName,
       req.body.date,
-      req.body.batch,
-      req.body.assesmentAgency
+      req.body.batchId,
+      req.body.assesmentAgencyId,
+      req.body.trainingPartnerId
     );
     return res.status(StatusCodes.CREATED).json({
       success: true,
@@ -60,3 +61,8 @@ const getALLExamsBelongsToAnAssesmentAgency = async (req, res) => {
 };
 
 export { assignAnExam, getALlExams,getALLExamsBelongsToAnAssesmentAgency };
+
+
+
+
+

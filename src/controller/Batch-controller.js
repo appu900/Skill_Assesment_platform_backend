@@ -6,7 +6,7 @@ const batchService = new BatchService();
 const createBatch = async (req, res) => {
   try {
     const payload = req.body;
-    payload.createdBy = req.trainingPartnerId;
+    payload.trainingOrganizationId = req.trainingPartnerId;
     const batch = await batchService.createBatch(payload);
     return res.status(StatusCodes.CREATED).json({
       success: true,
