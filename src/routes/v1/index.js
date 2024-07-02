@@ -27,6 +27,7 @@ import {
   createBatch,
   getAllBatchData,
   getBatchDetails,
+  getFilteredBatchData,
   getIndividualTrainingPartnerBatchDetails,
 } from "../../controller/Batch-controller.js";
 
@@ -141,6 +142,7 @@ router.get(
   getIndividualTrainingPartnerBatchDetails
 );
 router.get("/batch", getAllBatchData);
+router.get("/batch/all/query",getFilteredBatchData)
 
 
 

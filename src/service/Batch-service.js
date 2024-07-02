@@ -24,7 +24,7 @@ class BatchService {
 
       data.trainingOrganization = trainingPartner.organizationName;
       data.trainingOrganizationId = trainingPartner._id;
-      
+
       const batch = await this.batchRepository.create(data);
       return batch;
     } catch (error) {
@@ -91,6 +91,29 @@ class BatchService {
   async getAllBatces() {
     try {
       const response = await this.batchRepository.getAllBatches();
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async filterQueryData(query) {
+    try {
+      const { state, sector, course, trainingOrganization } = query;
+      const queryObject = {};
+      if (state) {
+        queryObject.state = state;
+      }
+      if (sector) {
+        queryObject.sectorName = sector;
+      }
+      if (course) {
+        queryObject.courseName = course;
+      }
+      if (trainingOrganization) {
+        queryObject.trainingOrganization = trainingOrganization;
+      }
+      const response = await this.batchRepository.filterData(queryObject);
       return response;
     } catch (error) {
       throw error;

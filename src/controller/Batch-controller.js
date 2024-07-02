@@ -119,6 +119,23 @@ const getAllBatchData = async (req, res) => {
   }
 };
 
+const getFilteredBatchData = async (req, res) => {
+  try {
+    const response = await batchService.filterQueryData(req.query);
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      data: response,
+      message: "filtered data fetched sucessfully",
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      data: response,
+      message: "something went wrong",
+    });
+  }
+};
+
 export {
   createBatch,
   addStudentToBatch,
@@ -126,4 +143,5 @@ export {
   getBatchDetails,
   getIndividualTrainingPartnerBatchDetails,
   getAllBatchData,
+  getFilteredBatchData
 };
