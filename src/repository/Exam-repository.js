@@ -9,7 +9,7 @@ class ExamRepository extends CrudRepository {
   async findAllExamsByTestAgencyId(testAgencyId) {
     try {
       const exams = await Exam.findOne({
-        testAgency: testAgencyId,
+        assesmentAgencyId: testAgencyId,
       });
       return exams;
     } catch (error) {
@@ -21,7 +21,7 @@ class ExamRepository extends CrudRepository {
     try {
       const exams = await Exam.find()
         .populate({
-          path: "batch",
+          path: "batchId",
           populate: {
             path: "students",
             model: "Student",
