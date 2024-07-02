@@ -56,6 +56,7 @@ import {
 // ** sector
 import { createSector, getAllCoursesOfASector, getAllSector } from "../../controller/sectorController.js";
 import { createCourse } from "../../controller/course-controller.js";
+import { createScheme } from "../../controller/Scheme-Controller.js";
 
 const router = express.Router();
 
@@ -204,6 +205,10 @@ router.get("/sector",getAllCoursesOfASector)
 // ** course ** s
 
 router.post("/course",createCourse)
+
+// ** scheme 
+
+router.post("/scheme",createScheme)
 
 export default router;
 
