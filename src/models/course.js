@@ -78,6 +78,10 @@ const courseSchema = new mongoose.Schema(
     totalCredit: {
       type: Number,
     },
+
+    aggregatePercentage: {
+      type: Number,
+    },
   },
   {
     timestamps: true,

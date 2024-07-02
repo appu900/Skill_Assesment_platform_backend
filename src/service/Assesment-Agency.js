@@ -106,6 +106,15 @@ class AssesmentAgencyService {
       throw error;
     }
   }
+
+
+  async fiterData(){
+    try {
+      
+    } catch (error) {
+      
+    }
+  }
 }
 
 export default AssesmentAgencyService;
