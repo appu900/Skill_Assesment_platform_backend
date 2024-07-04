@@ -17,8 +17,10 @@ class SectorService {
   async getAllSector() {
     try {
       const response = await this.sectorRepository.getAll();
+      console.log(response);
       return response;
     } catch (error) {
+      console.log(error);
       throw error;
     }
   }

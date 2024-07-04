@@ -23,12 +23,14 @@ const createSector = async (req, res) => {
 const getAllSector = async (req, res) => {
   try {
     const response = await sectorService.getAllSector();
+    console.log(response)
     return res.status(StatusCodes.OK).json({
       success: true,
       data: response,
       message: "data fetched sucessfully",
     });
   } catch (error) {
+    
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
       error: error.message,

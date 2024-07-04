@@ -1,30 +1,22 @@
 import mongoose from "mongoose";
 
-const markSchema = new mongoose.Schema({
-  student: {
+const marksSchema = new mongoose.Schema({
+  studentId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Student",
+    required: true,
   },
   batchId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Batch",
+    required: true,
   },
-  mark: {
+  totalMarks: {
     type: Number,
-    required: [true, "Marks are required"],
-  },
-  grade: {
-    type: String,
-    required: [true, "Grade is required"],
+    required: true,
   },
 });
-
-const Mark = mongoose.model("Mark", markSchema);
-export default Mark;
-
-
-
-
-
-
+   
+const Marks = new mongoose.model("Marks", marksSchema);
+export default Marks;
 

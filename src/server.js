@@ -3,6 +3,7 @@ import makeDatabaseConnection from "./config/database.conection.js";
 
 import sendEmail from "./service/email-service.js";
 import TrainingPartnerRepository from "./repository/TrainingPartner-Repository.js";
+import SectorService from "./service/Sector-Service.js";
 
 // ** function to start server
 const startServer = async () => {
@@ -10,6 +11,8 @@ const startServer = async () => {
     await makeDatabaseConnection();
     app.listen(8000, async () => {
       console.log("Server is running on port 8000");
+      
+      
 
       
 
