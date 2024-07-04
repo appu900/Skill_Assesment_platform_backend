@@ -137,7 +137,7 @@ assesmentAgencySchema.methods.generateJwt = function generate() {
     "this is a secrete a key",
     { expiresIn: "1d" }
   );
-};
+}; 
 
 const AssesmentAgency = mongoose.model(
   "AssesmentAgency",
@@ -145,3 +145,10 @@ const AssesmentAgency = mongoose.model(
 );
 
 export default AssesmentAgency;
+
+
+
+
+
+
+
