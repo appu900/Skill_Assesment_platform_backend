@@ -49,7 +49,9 @@ import {
 } from "../../controller/exam-controller.js";
 
 import {
-  createMark
+  createMark,
+  getIndividualStudentMarks,
+  getStudentMarksByBatchId
 } from "../../controller/marks-upload-controller.js";
 
 // ** sector
@@ -186,6 +188,8 @@ router.get("/exam/aa/:id", getALLExamsBelongsToAnAssesmentAgency);
 // ** upload marks
 
 router.post("/marks/upload",verifyAssesmentAgency,createMark)
+router.get("/mark/student/:id",getIndividualStudentMarks)
+router.get("/mark/batch/:id",getStudentMarksByBatchId)
 
 // router.get("/marks/batch/:id", getMarksOfBatch);
 // router.get("/marks/student/:id", getMarksOfStudent);

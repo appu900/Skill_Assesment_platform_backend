@@ -23,6 +23,26 @@ class MarkService {
       throw error;
     }
   }
+
+  async getIndividualStudentMarks(studentId) {
+    try {
+      const response = await this.markRepository.getMarkByStudentId(studentId);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getStudentMarksByBatchId(batchId) {
+    try {
+      const response = await this.markRepository.getStudentMarksByBatchId(
+        batchId
+      );
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default MarkService;
