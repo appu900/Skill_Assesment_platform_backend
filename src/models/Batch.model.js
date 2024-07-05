@@ -30,7 +30,7 @@ const batchSchema = new mongoose.Schema(
       type: String,
       required: [true, "Training organization is required"],
     },
-    trainingOrganizationId:{
+    trainingOrganizationId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "TrainingPartner",
     },
@@ -74,6 +74,14 @@ const batchSchema = new mongoose.Schema(
       type: String,
       required: [true, "ABN number is required"],
     },
+
+    assessorName: {
+      type: String,
+    },
+    assessorId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Assessor",
+    },
   },
 
   {
@@ -84,9 +92,3 @@ const batchSchema = new mongoose.Schema(
 const Batch = mongoose.model("Batch", batchSchema);
 
 export default Batch;
-
-
-
-
-
-

@@ -47,16 +47,16 @@ import {
   getALlExams,
   getALLExamsBelongsToAnAssesmentAgency,
 } from "../../controller/exam-controller.js";
+
 import {
-  getMarksOfBatch,
-  getMarksOfStudent,
-  uploadMark,
+  createMark
 } from "../../controller/marks-upload-controller.js";
 
 // ** sector
 import { createSector, getAllCoursesOfASector, getAllSector } from "../../controller/sectorController.js";
 import { createCourse } from "../../controller/course-controller.js";
 import { createScheme } from "../../controller/Scheme-Controller.js";
+import verifyAssesmentAgency from "../../middleware/verifyAssesmentAgency.js";
 
 const router = express.Router();
 
@@ -185,9 +185,10 @@ router.get("/exam/aa/:id", getALLExamsBelongsToAnAssesmentAgency);
 
 // ** upload marks
 
-router.post("/marks/uploadmark", uploadMark);
-router.get("/marks/batch/:id", getMarksOfBatch);
-router.get("/marks/student/:id", getMarksOfStudent);
+router.post("/marks/upload",verifyAssesmentAgency,createMark)
+
+// router.get("/marks/batch/:id", getMarksOfBatch);
+// router.get("/marks/student/:id", getMarksOfStudent);
 
 
 

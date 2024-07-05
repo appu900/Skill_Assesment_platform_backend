@@ -16,7 +16,9 @@ class AssesmentAgencyService {
 
   async login(email, password) {
     try {
+      console.log(email, password)
       const user = await this.assesmentAgencyRepo.findUserByEmail(email);
+      console.log(user);
       if (!user) {
         throw new Error("user not found with this email");
       }

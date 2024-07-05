@@ -1,54 +1,96 @@
 import mongoose from "mongoose";
 
-const marksSchema = new mongoose.Schema({
-  studentId: {
+const markSchema = new mongoose.Schema({
+  examId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Student",
+    ref: "Exam",
     required: true,
   },
-  batchId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Batch",
-    required: true,
-  },
-  courseId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Course",
-    required: true,
-  },
+
   courseName: {
     type: String,
     required: true,
   },
-  markParameters: [
-    {
-      parameterName: {
-        type: String,
-        required: true,
-      },
-      marks: {
-        type: Number,
-        required: true,
-      },
-      maxMarks: {
-        type: Number,
-        required: true,
-      },
-      grade: {
-        type: String,
-        required: true,
-      },
-    },
-  ],
-  totalMarks: {
+
+  TrainingPartner: {
+    type: String,
+    required: true,
+  },
+
+  AssesmentAgencyName: {
+    type: String,
+    required: true,
+  },
+
+  studentAttendance: {
+    type: Boolean,
+    required: true,
+  },
+
+  batchABN: {
+    type: String,
+    required: true,
+  },
+
+  batchId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Batch",
+  },
+  examDate: {
+    type: Date,
+  },
+
+  centerCode: {
+    type: String,
+    required: true,
+  },
+
+  sectorName: {
+    type: String,
+    required: true,
+  },
+
+  studentRedgNo: {
+    type: String,
+    required: true,
+  },
+
+  studentName: {
+    type: String,
+    required: true,
+  },
+
+  studentId:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Student",
+    required: true,
+  },
+
+  Theory: {
     type: Number,
     required: true,
   },
+
+  practical: {
+    type: Number,
+    required: true,
+  },
+
+  viva: {
+    type: Number,
+    required: true,
+  },
+  total: {
+    type: Number,
+    required: true,
+  },
+
+  Result: {
+    type: String,
+    required: true,
+    enum: ["Pass", "Fail"],
+  },
 });
 
-const Marks = new mongoose.model("Marks", marksSchema);
-export default Marks;
-
-
-
-
+const Mark = new mongoose.model("Mark", markSchema);
+export default Mark;

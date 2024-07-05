@@ -118,6 +118,10 @@ const StudentSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Batch",
     },
+    marks:{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Marks",
+    }
   },
   {
     timestamps: true,

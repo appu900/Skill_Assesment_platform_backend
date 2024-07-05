@@ -133,6 +133,7 @@ assesmentAgencySchema.methods.generateJwt = function generate() {
     {
       id: this._id,
       role: this.role,
+      name:this.agencyName
     },
     "this is a secrete a key",
     { expiresIn: "1d" }
