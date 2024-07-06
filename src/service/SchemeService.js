@@ -13,6 +13,14 @@ class SchemeService {
       throw error;
     }
   }
+  async getAllSchems(){
+    try {
+      const response = await this.schemeRepo.getAll();
+      return response;
+    } catch (error) {
+      throw error
+    }
+  }
 }
 
 export default SchemeService;

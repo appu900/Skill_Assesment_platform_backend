@@ -61,8 +61,8 @@ import {
   getAllCoursesOfASector,
   getAllSector,
 } from "../../controller/sectorController.js";
-import { createCourse } from "../../controller/course-controller.js";
-import { createScheme } from "../../controller/Scheme-Controller.js";
+import { createCourse, getAllCourses } from "../../controller/course-controller.js";
+import { createScheme, fetchAllSchems } from "../../controller/Scheme-Controller.js";
 import verifyAssesmentAgency from "../../middleware/verifyAssesmentAgency.js";
 
 const router = express.Router();
@@ -187,9 +187,11 @@ router.get("/sector", getAllCoursesOfASector);
 // ** course ** s
 
 router.post("/course", createCourse);
+router.get("/courses",getAllCourses)
 
 // ** scheme
 
 router.post("/scheme", createScheme);
+router.get("/scheme", fetchAllSchems);
 
 export default router;

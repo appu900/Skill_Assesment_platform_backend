@@ -23,6 +23,15 @@ class CourseService {
       throw error;
     }
   }
+
+  async getAllCourses() {
+    try {
+      const response = await this.courseRepository.getAll();
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default CourseService;

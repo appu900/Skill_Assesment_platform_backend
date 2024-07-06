@@ -19,4 +19,22 @@ const createCourse = async (req, res) => {
   }
 };
 
-export { createCourse };
+// ** get all course
+const getAllCourses = async (req, res) => {
+  try {
+    const response = await courseService.getAllCourses();
+    return res.status(200).json({
+      success: true,
+      message: "All courses fetched",
+      data: response,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+      message: "internal Server error",
+    });
+  }
+};
+
+export { createCourse,getAllCourses };

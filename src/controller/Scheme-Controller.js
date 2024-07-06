@@ -20,4 +20,21 @@ const createScheme = async (req, res) => {
   }
 };
 
-export { createScheme };
+const fetchAllSchems = async (req, res) => {
+  try {
+    const response = await schemeService.getAllSchems();
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      data: response,
+      message: "All Schemes fetched successfully",
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: error.message,
+      message: "something went wrong",
+    });
+  }
+};
+
+export { createScheme,fetchAllSchems };
