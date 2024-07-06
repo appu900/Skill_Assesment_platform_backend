@@ -153,6 +153,24 @@ const getAllApprovedAssesmentAgency = async (req, res) => {
   }
 };
 
+const filterAssesmentgency = async (req, res) => {
+  try {
+    const response = await assesmentAgencyService.fiterData(req.query);
+    console.log(response);
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      data: response,
+      message: "data fetched sucessfully",
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: "something went wrong",
+      error: error.message,
+    });
+  }
+};
+
 export {
   createAssesmentAgency,
   assesmentAgencylogin,
@@ -162,4 +180,5 @@ export {
   getAllAssesmentAgency,
   getAllPendingAssesmentAgency,
   getAllApprovedAssesmentAgency,
+  filterAssesmentgency,
 };

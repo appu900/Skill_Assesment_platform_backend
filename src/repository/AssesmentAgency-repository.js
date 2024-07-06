@@ -6,6 +6,15 @@ class AssesmentAgencyRepository extends CrudRepository {
     super(AssesmentAgency);
   }
 
+  async filterData(queryObject) {
+    try {
+      const response = await AssesmentAgency.find(queryObject);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async findUserByEmail(email) {
     try {
       const assesmentAgency = await AssesmentAgency.findOne({

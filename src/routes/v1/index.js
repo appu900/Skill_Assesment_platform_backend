@@ -34,6 +34,7 @@ import {
 import {
   assesmentAgencylogin,
   createAssesmentAgency,
+  filterAssesmentgency,
   getAllApprovedAssesmentAgency,
   getAllAssesmentAgency,
   getAllPendingAssesmentAgency,
@@ -51,28 +52,24 @@ import {
 import {
   createMark,
   getIndividualStudentMarks,
-  getStudentMarksByBatchId
+  getStudentMarksByBatchId,
 } from "../../controller/marks-upload-controller.js";
 
 // ** sector
-import { createSector, getAllCoursesOfASector, getAllSector } from "../../controller/sectorController.js";
+import {
+  createSector,
+  getAllCoursesOfASector,
+  getAllSector,
+} from "../../controller/sectorController.js";
 import { createCourse } from "../../controller/course-controller.js";
 import { createScheme } from "../../controller/Scheme-Controller.js";
 import verifyAssesmentAgency from "../../middleware/verifyAssesmentAgency.js";
 
 const router = express.Router();
 
-
-
-
 // ** Admin
 router.post("/admin", AdminController.createNewAdmin);
 router.post("/admin/login", AdminController.login);
-
-
-
-
-
 
 // ** TP
 router.post("/tp", TrainingPartnerController.onBoardTrainingPartner);
@@ -81,7 +78,10 @@ router.post("/tp/login", TrainingPartnerController.login);
 router.get("/tp/:id", TrainingPartnerController.getTrainingPartnerById);
 router.get("/tp", TrainingPartnerController.getAllData);
 
-router.get("/tp/all/query",TrainingPartnerController.filterTrainingPartnerData)
+router.get(
+  "/tp/all/query",
+  TrainingPartnerController.filterTrainingPartnerData
+);
 
 router.get(
   "/tp/status/pending",
@@ -100,11 +100,6 @@ router.put(
 );
 router.put("/tp/reject/:id", TrainingPartnerController.updateStatusToRejected);
 
-
-
-
-
-
 // ** trainer
 
 router.post("/trainer", verifyIsTrainingPartner, createTrainer);
@@ -113,18 +108,10 @@ router.get("/trainer/:id", getTrainerById);
 router.delete("/trainer/:id", deleteTrainer);
 router.get("/trainer/tp/:id", getAllTrainersOfaTrainingPartner);
 
-
-
-
-
 // ** student
 
 router.post("/student", verifyIsTrainingPartner, createStudent);
 router.get("/student/:id", getStudentDetails);
-
-
-
-
 
 //** batch routes  */
 
@@ -145,7 +132,8 @@ router.get(
   getIndividualTrainingPartnerBatchDetails
 );
 router.get("/batch", getAllBatchData);
-router.get("/batch/all/query",getFilteredBatchData)
+router.get("/batch/all/query", getFilteredBatchData);
+
 
 
 
@@ -169,10 +157,7 @@ router.get("/aa/:id", getAssesmentAgencyById);
 router.get("/aa", getAllAssesmentAgency);
 router.get("/aa/status/approved", getAllApprovedAssesmentAgency);
 router.get("/aa/status/pending", getAllPendingAssesmentAgency);
-
-
-
-
+router.get("/aa/all/query", filterAssesmentgency);
 
 // ** exam ** will be created by ADMIN
 
@@ -180,22 +165,14 @@ router.post("/exam/create", verifyIsAdmin, assignAnExam);
 router.get("/exam/all", getALlExams);
 router.get("/exam/aa/:id", getALLExamsBelongsToAnAssesmentAgency);
 
-
-
-
-
-
 // ** upload marks
 
-router.post("/marks/upload",verifyAssesmentAgency,createMark)
-router.get("/mark/student/:id",getIndividualStudentMarks)
-router.get("/mark/batch/:id",getStudentMarksByBatchId)
+router.post("/marks/upload", verifyAssesmentAgency, createMark);
+router.get("/mark/student/:id", getIndividualStudentMarks);
+router.get("/mark/batch/:id", getStudentMarksByBatchId);
 
 // router.get("/marks/batch/:id", getMarksOfBatch);
 // router.get("/marks/student/:id", getMarksOfStudent);
-
-
-
 
 // ** assessor
 
@@ -203,18 +180,16 @@ router.post("/assessor", createAssessor);
 
 // ** sector **
 
-router.post("/sector",createSector)
-router.get("/sector/all",getAllSector)
-router.get("/sector",getAllCoursesOfASector)
+router.post("/sector", createSector);
+router.get("/sector/all", getAllSector);
+router.get("/sector", getAllCoursesOfASector);
 
 // ** course ** s
 
-router.post("/course",createCourse)
+router.post("/course", createCourse);
 
-// ** scheme 
+// ** scheme
 
-router.post("/scheme",createScheme)
+router.post("/scheme", createScheme);
 
 export default router;
-
-

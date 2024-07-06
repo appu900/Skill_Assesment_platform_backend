@@ -16,7 +16,7 @@ class AssesmentAgencyService {
 
   async login(email, password) {
     try {
-      console.log(email, password)
+      console.log(email, password);
       const user = await this.assesmentAgencyRepo.findUserByEmail(email);
       console.log(user);
       if (!user) {
@@ -109,13 +109,23 @@ class AssesmentAgencyService {
     }
   }
 
-
-  async fiterData(){
+  async fiterData(query) {
     try {
-      
-    } catch (error) {
-      
-    }
+      const { sector, state, course } = query;
+      const queryObject = {};
+      if (sector) {
+        queryObject.sectors = { $in: [sector] };
+      }
+      if (state) {
+        queryObject.state_Under_geographicalRegion = state;
+      }
+      if (course) {
+        queryObject.courses = { $in: [course] };
+      }
+     
+      const response = await this.assesmentAgencyRepo.filterData(queryObject);
+      return response;
+    } catch (error) {}
   }
 }
 
