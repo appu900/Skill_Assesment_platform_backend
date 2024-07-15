@@ -83,6 +83,8 @@ router.post("/tp", TrainingPartnerController.onBoardTrainingPartner);
 router.post("/tp/login", TrainingPartnerController.login);
 
 router.put("/tp/info/email/:id", TrainingPartnerController.updateEmail);
+router.put("/tp/sectors/:id",TrainingPartnerController.updateSector)
+router.put("/tp/courses/:id",TrainingPartnerController.updateCourses)
 
 router.get("/tp/:id", TrainingPartnerController.getTrainingPartnerById);
 router.get("/tp", TrainingPartnerController.getAllData);

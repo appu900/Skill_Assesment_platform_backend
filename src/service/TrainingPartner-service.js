@@ -177,6 +177,35 @@ class TrainingPartnerService {
       throw error;
     }
   }
+
+  async updateSector(id, sectorName) {
+    try {
+      const tp = await this.trainingPartnerRepository.get(id);
+      if (!tp) {
+        throw new Error("training Partner not found");
+      }
+
+      tp.sector.push(sectorName);
+      const response = await tp.save();
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateCourse(id,courseName){
+    try {
+      const trainingPartner = await this.trainingPartnerRepository.get(id);
+      if(!trainingPartner){
+        throw new Error("training partner not found");
+      }
+      trainingPartner.courses.push(courseName);
+      const response = await trainingPartner.save();
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default TrainingPartnerService;

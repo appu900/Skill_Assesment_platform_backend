@@ -212,6 +212,44 @@ class TrainingPartnerController {
        })
     }
   }
+
+  static async updateSector(req,res){
+    try {
+       const id = req.params.id;
+       const sector = req.body.sector;
+       const response = await tpService.updateSector(id,sector)
+       return res.status(StatusCodes.ACCEPTED).json({
+        success:true,
+        message:"new sector added",
+        data:response
+       })
+    } catch (error) {
+       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        success:false,
+        error:error.message,
+        message:"something went wrong in adding new sector"
+       })
+    }
+  }
+
+  static async updateCourses(req,res){
+    try {
+       const id = req.params.id;
+       const course = req.body.course;
+       const response = await tpService.updateCourse(id,course)
+       return res.status(StatusCodes.ACCEPTED).json({
+        success:true,
+        message:"new course added",
+        data:response
+       })
+    } catch (error) {
+       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        success:false,
+        error:error.message,
+        message:"something went wrong in adding new course"
+       })
+    }
+  }
 }
 
 export default TrainingPartnerController;
