@@ -8,3 +8,4 @@ class StudentRepository extends CrudRepository {
 }
 
 export default StudentRepository;
+

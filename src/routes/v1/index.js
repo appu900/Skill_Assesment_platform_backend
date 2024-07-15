@@ -24,6 +24,7 @@ import { createAssessor } from "../../controller/Assessor-controller.js";
 import {
   addStudentToBatch,
   addToTrainerToBatch,
+  bulkTrainersInsertInBatch,
   createBatch,
   getAllBatchData,
   getBatchDetails,
@@ -61,8 +62,14 @@ import {
   getAllCoursesOfASector,
   getAllSector,
 } from "../../controller/sectorController.js";
-import { createCourse, getAllCourses } from "../../controller/course-controller.js";
-import { createScheme, fetchAllSchems } from "../../controller/Scheme-Controller.js";
+import {
+  createCourse,
+  getAllCourses,
+} from "../../controller/course-controller.js";
+import {
+  createScheme,
+  fetchAllSchems,
+} from "../../controller/Scheme-Controller.js";
 import verifyAssesmentAgency from "../../middleware/verifyAssesmentAgency.js";
 
 const router = express.Router();
@@ -126,6 +133,9 @@ router.post(
   verifyIsTrainingPartner,
   addToTrainerToBatch
 );
+
+router.post("/batch/bulkaddTrainer/:id", bulkTrainersInsertInBatch);
+
 router.get("/batch/:id", getBatchDetails);
 router.get(
   "/batch/tp/:trainingPartnerId",
@@ -133,10 +143,6 @@ router.get(
 );
 router.get("/batch", getAllBatchData);
 router.get("/batch/all/query", getFilteredBatchData);
-
-
-
-
 
 // *** assesment agency
 
@@ -175,7 +181,6 @@ router.get("/mark/batch/:id", getStudentMarksByBatchId);
 // router.get("/marks/student/:id", getMarksOfStudent);
 
 // ** assessor
-
 router.post("/assessor", createAssessor);
 
 // ** sector **
@@ -187,7 +192,7 @@ router.get("/sector", getAllCoursesOfASector);
 // ** course ** s
 
 router.post("/course", createCourse);
-router.get("/courses",getAllCourses)
+router.get("/courses", getAllCourses);
 
 // ** scheme
 

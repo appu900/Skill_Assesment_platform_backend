@@ -113,7 +113,7 @@ const getAllBatchData = async (req, res) => {
   } catch (error) {
     return res.status(StatusCodes.OK).json({
       success: false,
-      data: response,
+      error: error.message,
       message: "something went wrong",
     });
   }
@@ -130,7 +130,31 @@ const getFilteredBatchData = async (req, res) => {
   } catch (error) {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
-      data: response,
+      error: error.message,
+      message: "something went wrong",
+    });
+  }
+};
+
+const bulkTrainersInsertInBatch = async (req, res) => {
+  try {
+    const batchId = req.params.id;
+    const trainersData = req.body.trainerIds;
+    const response = await batchService.bulkTeacherInsert(
+      batchId,
+      trainersData
+    );
+
+    return res.status(StatusCodes.ACCEPTED).json({
+      success: true,
+      message: "trainers inserted sucessfully",
+      data: response
+    });
+    
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: error.message,
       message: "something went wrong",
     });
   }
@@ -143,5 +167,6 @@ export {
   getBatchDetails,
   getIndividualTrainingPartnerBatchDetails,
   getAllBatchData,
-  getFilteredBatchData
+  getFilteredBatchData,
+  bulkTrainersInsertInBatch,
 };

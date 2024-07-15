@@ -3,6 +3,7 @@ import StudentService from "./student-service.js";
 import StudentRepository from "../repository/student-repository.js";
 import TrainerRepository from "../repository/Trainer-Repository.js";
 import TrainingPartnerRepository from "../repository/TrainingPartner-Repository.js";
+import mongoose from "mongoose";
 
 class BatchService {
   constructor() {
@@ -14,12 +15,11 @@ class BatchService {
 
   async createBatch(data) {
     try {
-      
       const trainingPartnerId = data.trainingOrganizationId;
       console.log(trainingPartnerId);
       const trainingPartner = await this.trainingPartnerRepository.get(
         trainingPartnerId
-      );  
+      );
 
       if (!trainingPartner) {
         throw new Error("training partner not found");
@@ -117,6 +117,27 @@ class BatchService {
         queryObject.trainingOrganization = trainingOrganization;
       }
       const response = await this.batchRepository.filterData(queryObject);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // ** this will update the teachers in the batch ( data will contains only existing teacher ids coming from frontend)
+
+  async bulkTeacherInsert(batchId, data) {
+    try {
+      const batch = await this.batchRepository.get(batchId);
+      if (!batch) {
+        throw new Error("batch not found with this id");
+      }
+
+      if (!Array.isArray(data)) {
+        throw new Error("data should be in array format!");
+      }
+      const trainerIdObjects = data.map((id) => new mongoose.Types.ObjectId(id));
+      batch.trainers.push(...trainerIdObjects);
+      const response = await batch.save();
       return response;
     } catch (error) {
       throw error;

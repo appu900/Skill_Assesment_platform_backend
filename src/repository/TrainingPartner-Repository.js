@@ -99,6 +99,8 @@ class TrainingPartnerRepository extends CrudRepository {
       throw error;
     }
   }
+
+
 }
 
 export default TrainingPartnerRepository;
