@@ -53,6 +53,21 @@ class TrainingPartnerRepository extends CrudRepository {
     }
   }
 
+  async updateEmail(id, email) {
+    try {
+      const response = await TrainingPartner.findByIdAndUpdate(
+        id,
+        {
+          registeredOfficeEmail: email,
+        },
+        { new: true }
+      );
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async getNewPendingRequests() {
     try {
       const response = await TrainingPartner.find({
@@ -99,8 +114,6 @@ class TrainingPartnerRepository extends CrudRepository {
       throw error;
     }
   }
-
-
 }
 
 export default TrainingPartnerRepository;

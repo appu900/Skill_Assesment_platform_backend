@@ -157,11 +157,26 @@ class TrainingPartnerService {
       throw error;
     }
   }
+
+  // ** update personal information of TrainingPartner sector and email
+
+  async updateEmail(trainingPartnerId, newEmail) {
+    try {
+      const tp = await this.trainingPartnerRepository.get(trainingPartnerId);
+
+      if (!tp) {
+        throw new Error("trainingPartner not found");
+      }
+
+      const response = await this.trainingPartnerRepository.updateEmail(
+        trainingPartnerId,
+        newEmail
+      );
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default TrainingPartnerService;
-
-
-
-
-

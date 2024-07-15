@@ -194,6 +194,24 @@ class TrainingPartnerController {
       });
     }
   }
+
+  static async updateEmail(req,res){
+    try {
+       const id = req.params.id;
+       const email = req.body.email;
+       const response = await tpService.updateEmail(id,email);
+       return res.status(StatusCodes.ACCEPTED).json({
+        success:true,
+        message:"email updated"
+       })
+    } catch (error) {
+       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        success:false,
+        error:error.message,
+        message:"something went wrong in updating email"
+       })
+    }
+  }
 }
 
 export default TrainingPartnerController;
