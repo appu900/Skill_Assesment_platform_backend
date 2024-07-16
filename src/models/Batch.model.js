@@ -59,6 +59,10 @@ const batchSchema = new mongoose.Schema(
       default: "onGoing",
       enum: ["Completed", "onGoing"],
     },
+    isAssigned: {
+      type: Boolean,
+      default: false,
+    },
     students: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -105,10 +109,10 @@ batchSchema.pre("save", async function (next) {
         { $inc: { seq: 1 } },
         { new: true, upsert: true }
       );
-      this.ABN_Number = `B${stateInitial}${courseInitial}${sectorInitial}${sequence.seq}`
-      next()
+      this.ABN_Number = `B${stateInitial}${courseInitial}${sectorInitial}${sequence.seq}`;
+      next();
     } catch (error) {
-      console.log(error.message)
+      console.log(error.message);
       next(error);
     }
   } else {

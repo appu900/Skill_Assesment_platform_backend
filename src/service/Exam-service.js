@@ -23,6 +23,7 @@ class ExamService {
       if (!batch) {
         throw new Error("batch not found");
       }
+
       const trainingPartner = await this.trainingPartnerRepository.get(
         trainingPartnerId
       );
@@ -50,6 +51,9 @@ class ExamService {
         TrainingPartnerId: trainingPartner._id,
         batchABN: batch.ABN_Number,
       };
+
+      batch.isAssigned = true;
+      await batch.save();
 
       const response = await this.examRepository.create(payload);
       return response;
