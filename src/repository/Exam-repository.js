@@ -8,9 +8,9 @@ class ExamRepository extends CrudRepository {
 
   async findAllExamsByTestAgencyId(testAgencyId) {
     try {
-      const exams = await Exam.findOne({
+      const exams = await Exam.find({
         assesmentAgencyId: testAgencyId,
-      });
+      }).populate('batchId');
       return exams;
     } catch (error) {
       throw error;
