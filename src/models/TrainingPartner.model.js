@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import Sequence from "./sequence.model.js";
 const Schema = mongoose.Schema;
 
 const trainingPartnerSchema = new Schema(
@@ -65,7 +66,7 @@ const trainingPartnerSchema = new Schema(
     ],
 
     centerId: { type: String, required: true },
-    tpCode: { type: String, required: true },
+    tpCode: { type: String },
     scheme: { type: String, required: true },
     affiliation: { type: String },
     dateOfIncorporation: { type: Date },
@@ -131,6 +132,25 @@ trainingPartnerSchema.pre("save", function (next) {
   const encryptedPassword = bcrypt.hashSync(trainingPartner.password, SALT);
   trainingPartner.password = encryptedPassword;
   next();
+});
+
+trainingPartnerSchema.pre("save", async function (next) {
+  const tp = this;
+  if (tp.isNew) {
+    try {
+      const sequence = await Sequence.findByIdAndUpdate(
+        "s1",
+        { $inc: { seq: 1 } },
+        { new: true, upsert: true }
+      );
+      tp.tpCode = `TP${sequence.seq}`;
+      next();
+    } catch (error) {
+      next(error);
+    }
+  } else {
+    next();
+  }
 });
 
 // ** compare password function for login

@@ -7,7 +7,7 @@ class TrainingPartnerController {
   static async filterTrainingPartnerData(req, res) {
     try {
       const { sector, course, scheme, state } = req.query;
-      
+
       const response = await tpService.getTrainingPartnersAccordingTofilter(
         req.query
       );
@@ -195,59 +195,59 @@ class TrainingPartnerController {
     }
   }
 
-  static async updateEmail(req,res){
+  static async updateEmail(req, res) {
     try {
-       const id = req.params.id;
-       const email = req.body.email;
-       const response = await tpService.updateEmail(id,email);
-       return res.status(StatusCodes.ACCEPTED).json({
-        success:true,
-        message:"email updated"
-       })
+      const id = req.params.id;
+      const email = req.body.email;
+      const response = await tpService.updateEmail(id, email);
+      return res.status(StatusCodes.ACCEPTED).json({
+        success: true,
+        message: "email updated",
+      });
     } catch (error) {
-       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        success:false,
-        error:error.message,
-        message:"something went wrong in updating email"
-       })
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        error: error.message,
+        message: "something went wrong in updating email",
+      });
     }
   }
 
-  static async updateSector(req,res){
+  static async updateSector(req, res) {
     try {
-       const id = req.params.id;
-       const sector = req.body.sector;
-       const response = await tpService.updateSector(id,sector)
-       return res.status(StatusCodes.ACCEPTED).json({
-        success:true,
-        message:"new sector added",
-        data:response
-       })
+      const id = req.params.id;
+      const sector = req.body.sector;
+      const response = await tpService.updateSector(id, sector);
+      return res.status(StatusCodes.ACCEPTED).json({
+        success: true,
+        message: "new sector added",
+        data: response,
+      });
     } catch (error) {
-       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        success:false,
-        error:error.message,
-        message:"something went wrong in adding new sector"
-       })
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        error: error.message,
+        message: "something went wrong in adding new sector",
+      });
     }
   }
 
-  static async updateCourses(req,res){
+  static async updateCourses(req, res) {
     try {
-       const id = req.params.id;
-       const course = req.body.course;
-       const response = await tpService.updateCourse(id,course)
-       return res.status(StatusCodes.ACCEPTED).json({
-        success:true,
-        message:"new course added",
-        data:response
-       })
+      const id = req.params.id;
+      const course = req.body.course;
+      const response = await tpService.updateCourse(id, course);
+      return res.status(StatusCodes.ACCEPTED).json({
+        success: true,
+        message: "new course added",
+        data: response,
+      });
     } catch (error) {
-       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        success:false,
-        error:error.message,
-        message:"something went wrong in adding new course"
-       })
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        error: error.message,
+        message: "something went wrong in adding new course",
+      });
     }
   }
 }
