@@ -32,9 +32,10 @@ class TrainingPartnerService {
       }
       const token = trainingPartner.generateJwt();
       const response = {
-        data: trainingPartner,
+        trainingPartner,
         token: token,
       };
+      console.log(response);
       return response;
     } catch (error) {
       throw error;
@@ -193,10 +194,10 @@ class TrainingPartnerService {
     }
   }
 
-  async updateCourse(id,courseName){
+  async updateCourse(id, courseName) {
     try {
       const trainingPartner = await this.trainingPartnerRepository.get(id);
-      if(!trainingPartner){
+      if (!trainingPartner) {
         throw new Error("training partner not found");
       }
       trainingPartner.courses.push(courseName);
