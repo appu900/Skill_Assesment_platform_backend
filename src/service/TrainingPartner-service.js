@@ -32,7 +32,7 @@ class TrainingPartnerService {
       }
       const token = trainingPartner.generateJwt();
       const response = {
-        trainingPartner,
+        data:trainingPartner,
         token: token,
       };
       console.log(response);
