@@ -15,6 +15,7 @@
  */
 
 import mongoose from "mongoose";
+import Sequence from "./sequence.model.js";
 
 const batchSchema = new mongoose.Schema(
   {
@@ -72,7 +73,6 @@ const batchSchema = new mongoose.Schema(
     ],
     ABN_Number: {
       type: String,
-      required: [true, "ABN number is required"],
     },
 
     assessorName: {
@@ -89,8 +89,32 @@ const batchSchema = new mongoose.Schema(
   }
 );
 
+batchSchema.pre("save", async function (next) {
+  if (this.isNew) {
+    const stateInitial = this.state ? this.state.charAt(0).toUpperCase() : "";
+    const courseInitial = this.courseName
+      ? this.courseName.charAt(0).toUpperCase()
+      : "";
+    const sectorInitial = this.sectorName
+      ? this.sectorName.charAt(0).toUpperCase()
+      : "";
 
-// batchSchema.pre("save",async function(next())
+    try {
+      const sequence = await Sequence.findByIdAndUpdate(
+        "s1",
+        { $inc: { seq: 1 } },
+        { new: true, upsert: true }
+      );
+      this.ABN_Number = `B${stateInitial}${courseInitial}${sectorInitial}${sequence.seq}`
+      next()
+    } catch (error) {
+      console.log(error.message)
+      next(error);
+    }
+  } else {
+    next();
+  }
+});
 
 const Batch = mongoose.model("Batch", batchSchema);
 

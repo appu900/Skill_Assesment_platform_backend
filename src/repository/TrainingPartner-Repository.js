@@ -15,7 +15,7 @@ class TrainingPartnerRepository extends CrudRepository {
             applicationStatus: "Approved",
           },
         },
-        { new: true }
+        { new: true }  
       );
       return res;
     } catch (error) {
