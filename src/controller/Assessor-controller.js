@@ -5,6 +5,11 @@ const assessorService = new AssessorService();
 
 const createAssessor = async (req, res) => {
   try {
+    let payload = req.body;
+    const imageUrl = req.file?.location;
+    if (imageUrl) {
+      payload.profilePic = imageUrl;
+    }
     const response = await assessorService.create(req.body);
     return res.status(StatusCodes.CREATED).json({
       success: true,

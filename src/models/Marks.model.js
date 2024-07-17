@@ -60,7 +60,11 @@ const markSchema = new mongoose.Schema({
     required: true,
   },
 
-  studentId:{
+  studentProfilePic: {
+    type: String,
+  },
+
+  studentId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Student",
     required: true,

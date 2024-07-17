@@ -72,6 +72,7 @@ import {
   fetchAllSchems,
 } from "../../controller/Scheme-Controller.js";
 import verifyAssesmentAgency from "../../middleware/verifyAssesmentAgency.js";
+import uploadImage from "../../middleware/imageUpload.js";
 
 const router = express.Router();
 
@@ -269,7 +270,7 @@ router.get("/mark/batch/:id", getStudentMarksByBatchId);
 
 
 // ** assessor
-router.post("/assessor", createAssessor);
+router.post("/assessor", uploadImage, createAssessor);
 
 
 
