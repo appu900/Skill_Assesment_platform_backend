@@ -14,16 +14,23 @@ class StudentService {
     }
   }
 
-  async getStudentByid(id){
+  async getStudentByid(id) {
     try {
-        const student = await this.studentRepository.get(id);
-        return student;
+      const student = await this.studentRepository.get(id);
+      return student;
     } catch (error) {
-        throw error;
+      throw error;
     }
   }
 
-  
+  async uploadProfilePic(id, data) {
+    try {
+      const student = await this.studentRepository.updateProfilePic(id, data);
+      return student;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default StudentService;

@@ -15,6 +15,7 @@ import {
 import {
   createStudent,
   getStudentDetails,
+  updateProfilePic,
 } from "../../controller/Student-controller.js";
 
 // ** assesor
@@ -84,6 +85,20 @@ router.post("/admin/login", AdminController.login);
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // ** TP
 router.post("/tp", TrainingPartnerController.onBoardTrainingPartner);
 router.post("/tp/login", TrainingPartnerController.login);
@@ -121,6 +136,13 @@ router.put("/tp/reject/:id", TrainingPartnerController.updateStatusToRejected);
 
 
 
+
+
+
+
+
+
+
 // ** trainer
 router.post("/trainer", verifyIsTrainingPartner, createTrainer);
 router.get("/trainer", getAllTrainers);
@@ -131,9 +153,24 @@ router.get("/trainer/tp/:id", getAllTrainersOfaTrainingPartner);
 
 
 
+
+
 // ** student
 router.post("/student", verifyIsTrainingPartner, createStudent);
 router.get("/student/:id", getStudentDetails);
+router.put("/student/profile/:id",updateProfilePic)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -162,6 +199,14 @@ router.get("/batch/all/query", getFilteredBatchData);
 
 
 
+
+
+
+
+
+
+
+
 // *** assesment agency
 
 router.post("/aa/create", createAssesmentAgency);
@@ -186,10 +231,24 @@ router.get("/aa/all/query", filterAssesmentgency);
 
 
 
+
+
+
+
+
+
+
+
 // ** exam ** will be created by ADMIN
 router.post("/exam/create", verifyIsAdmin, assignAnExam);
 router.get("/exam/all", getALlExams);
 router.get("/exam/aa/:id", getALLExamsBelongsToAnAssesmentAgency);
+
+
+
+
+
+
 
 
 
@@ -201,6 +260,11 @@ router.get("/mark/batch/:id", getStudentMarksByBatchId);
 
 // router.get("/marks/batch/:id", getMarksOfBatch);
 // router.get("/marks/student/:id", getMarksOfStudent);
+
+
+
+
+
 
 
 
