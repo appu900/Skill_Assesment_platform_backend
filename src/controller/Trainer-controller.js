@@ -1,17 +1,30 @@
+import upload from "../config/s3-imageUpload-config.js";
 import TrainerService from "../service/Trainer-service.js";
 import { StatusCodes } from "http-status-codes";
 const trainerService = new TrainerService();
 
+const singleUploader = upload.single("image");
+
 const createTrainer = async (req, res) => {
   try {
-    const payload = req.body;
-    payload.trainingPartnerId = req.trainingPartnerId;
-    const trainer = await trainerService.createTrainer(payload);
-    return res.status(StatusCodes.CREATED).json({
-      data: trainer,
-      success: true,
-      message: "Training Parter created",
+    singleUploader(req, res, async function (err, data) {
+      if (err) {
+        return res
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json({ "message:": "something went wrong" });
+      }
+      const imageUrl = req.file?.location;
+      const payload = req.body;
+      payload.trainingPartner = req.trainingPartnerId;
+      payload.profilePic = imageUrl;
+      const trainer = await trainerService.createTrainer(payload);
+      return res.status(StatusCodes.CREATED).json({
+        data: trainer,
+        success: true,
+        message: "Training Parter created",
+      });
     });
+   
   } catch (error) {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,

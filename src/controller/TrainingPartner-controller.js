@@ -7,7 +7,6 @@ class TrainingPartnerController {
   static async filterTrainingPartnerData(req, res) {
     try {
       const { sector, course, scheme, state } = req.query;
-
       const response = await tpService.getTrainingPartnersAccordingTofilter(
         req.query
       );    
