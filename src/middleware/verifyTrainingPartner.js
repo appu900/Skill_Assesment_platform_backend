@@ -4,7 +4,6 @@ import { StatusCodes } from "http-status-codes";
 const verifyIsTrainingPartner = async (req, res, next) => {
   try {
     const token = req.headers["x-access-token"];
-    
     if (!token) {
       return res.status(StatusCodes.BAD_REQUEST).json({
         success: false,

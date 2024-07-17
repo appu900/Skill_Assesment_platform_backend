@@ -74,9 +74,15 @@ import verifyAssesmentAgency from "../../middleware/verifyAssesmentAgency.js";
 
 const router = express.Router();
 
+
+
+
+
 // ** Admin
 router.post("/admin", AdminController.createNewAdmin);
 router.post("/admin/login", AdminController.login);
+
+
 
 // ** TP
 router.post("/tp", TrainingPartnerController.onBoardTrainingPartner);
@@ -111,21 +117,27 @@ router.put(
 );
 router.put("/tp/reject/:id", TrainingPartnerController.updateStatusToRejected);
 
-// ** trainer
 
+
+
+
+// ** trainer
 router.post("/trainer", verifyIsTrainingPartner, createTrainer);
 router.get("/trainer", getAllTrainers);
 router.get("/trainer/:id", getTrainerById);
 router.delete("/trainer/:id", deleteTrainer);
 router.get("/trainer/tp/:id", getAllTrainersOfaTrainingPartner);
 
-// ** student
 
+
+
+// ** student
 router.post("/student", verifyIsTrainingPartner, createStudent);
 router.get("/student/:id", getStudentDetails);
 
-//** batch routes  */
 
+
+//** batch routes  */
 router.post("/batch/create", verifyIsTrainingPartner, createBatch);
 router.post(
   "/batch/addstudent/:id",
@@ -148,6 +160,8 @@ router.get(
 router.get("/batch", getAllBatchData);
 router.get("/batch/all/query", getFilteredBatchData);
 
+
+
 // *** assesment agency
 
 router.post("/aa/create", createAssesmentAgency);
@@ -169,14 +183,18 @@ router.get("/aa/status/approved", getAllApprovedAssesmentAgency);
 router.get("/aa/status/pending", getAllPendingAssesmentAgency);
 router.get("/aa/all/query", filterAssesmentgency);
 
-// ** exam ** will be created by ADMIN
 
+
+
+// ** exam ** will be created by ADMIN
 router.post("/exam/create", verifyIsAdmin, assignAnExam);
 router.get("/exam/all", getALlExams);
 router.get("/exam/aa/:id", getALLExamsBelongsToAnAssesmentAgency);
 
-// ** upload marks
 
+
+
+// ** upload marks
 router.post("/marks/upload", verifyAssesmentAgency, createMark);
 router.get("/mark/student/:id", getIndividualStudentMarks);
 router.get("/mark/batch/:id", getStudentMarksByBatchId);
@@ -184,22 +202,34 @@ router.get("/mark/batch/:id", getStudentMarksByBatchId);
 // router.get("/marks/batch/:id", getMarksOfBatch);
 // router.get("/marks/student/:id", getMarksOfStudent);
 
+
+
 // ** assessor
 router.post("/assessor", createAssessor);
 
-// ** sector **
 
+
+
+
+
+
+// ** sector **
 router.post("/sector", createSector);
 router.get("/sector/all", getAllSector);
 router.get("/sector", getAllCoursesOfASector);
 
-// ** course ** s
 
+
+
+
+
+// ** course ** s
 router.post("/course", createCourse);
 router.get("/courses", getAllCourses);
 
-// ** scheme
 
+
+// ** scheme
 router.post("/scheme", createScheme);
 router.get("/scheme", fetchAllSchems);
 

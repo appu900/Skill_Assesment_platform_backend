@@ -86,6 +86,23 @@ const batchSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Assessor",
     },
+    prePaymentInvoice: {
+      type: String,
+    },
+    postPaymentInvoice: {
+      type: String,
+    },
+    paymentStatus: {
+      type: Boolean,
+      default: false,
+    },
+    batchActivePermission: {
+      type: Boolean,
+      default: false,
+    },
+    amountToPaid: {
+      type: Number,
+    },
   },
 
   {
