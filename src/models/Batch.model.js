@@ -54,6 +54,9 @@ const batchSchema = new mongoose.Schema(
     examDate: {
       type: Date,
     },
+    transactionId: {
+      type: String,
+    },
     status: {
       type: String,
       default: "onGoing",
@@ -106,16 +109,16 @@ const batchSchema = new mongoose.Schema(
     },
     amountToPaid: {
       type: Number,
-      default:0,
+      default: 0,
     },
     modeOfPayment: {
       type: String,
       enum: ["Online", "Offline"],
     },
-    corporatePaymentType:{
+    corporatePaymentType: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
 
   {

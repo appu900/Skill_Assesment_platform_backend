@@ -33,6 +33,7 @@ import {
   getBatchDetails,
   getFilteredBatchData,
   getIndividualTrainingPartnerBatchDetails,
+  uploadBatchPaymentDetails,
 } from "../../controller/Batch-controller.js";
 
 import {
@@ -204,6 +205,7 @@ router.get("/batch/all/query", getFilteredBatchData);
 
 router.put("/batch/active/:id",activeBatch);
 router.put("/batch/addpayment/:id",addBatchPaymentAmount);
+router.put("/batch/paymentdetails/:id",uploadBatchPaymentDetails)
 
 
 

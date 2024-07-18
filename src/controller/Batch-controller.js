@@ -1,7 +1,13 @@
+import upload from "../config/s3-imageUpload-config.js";
 import BatchService from "../service/Batch-service.js";
 import { StatusCodes } from "http-status-codes";
 
 const batchService = new BatchService();
+
+const uploadFiles = upload.fields([
+  { name: "preInvoice", maxCount: 1 },
+  { name: "postInvoice", maxCount: 1 },
+]);
 
 const createBatch = async (req, res) => {
   try {
@@ -199,6 +205,43 @@ const addBatchPaymentAmount = async (req, res) => {
   }
 };
 
+const uploadBatchPaymentDetails = async (req, res) => {
+  try {
+    uploadFiles(req, res, async function (err) {
+      if (err) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+          success: false,
+          error: err.message,
+          message: "something went wrong",
+        });
+      }
+      const preInvoiceUrl = req.files.preInvoice[0].location;
+      const postInvoiceUrl = req.files.postInvoice[0].location;
+      console.log(preInvoiceUrl, postInvoiceUrl);
+      const batchId = req.params.id;
+      const transactionId = req.body.transactionId;
+
+      const response = await batchService.updateClientPaymentDetails(
+        batchId,
+        preInvoiceUrl,
+        postInvoiceUrl,
+        transactionId
+      );
+      
+      return res.status(StatusCodes.OK).json({
+        success: true,
+        message: "payment details uploaded successfully",
+      });
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: error.message,
+      message: "something went wrong",
+    });
+  }
+};
+
 export {
   createBatch,
   addStudentToBatch,
@@ -210,4 +253,5 @@ export {
   bulkTrainersInsertInBatch,
   activeBatch,
   addBatchPaymentAmount,
+  uploadBatchPaymentDetails,
 };

@@ -20,7 +20,6 @@ class BatchService {
   async createBatch(data) {
     try {
       const trainingPartnerId = data.trainingOrganizationId;
-      console.log(trainingPartnerId);
       const trainingPartner = await this.trainingPartnerRepository.get(
         trainingPartnerId
       );
@@ -239,7 +238,7 @@ class BatchService {
         payer: "TrainingPartner",
         payee: "Admin",
         purpose: "batch payment",
-        payAbleamount:amount,
+        payAbleamount: amount,
         paidAmount: 0,
         paymentStatus: false,
         TrainingPartnerId: batch.trainingOrganizationId,
@@ -248,6 +247,29 @@ class BatchService {
       this.invoiceService.createInvoice(invoiceData).catch((error) => {
         console.log("error in invoice generation", error);
       });
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // ** tp will update the payment clientsidepayement status with pre and post invoice
+  async updateClientPaymentDetails(
+    batchId,
+    preinVoiceUrl,
+    postInvoiceUrl,
+    transactionId
+  ) {
+    try {
+      const batch = await this.batchRepository.get(batchId);
+      if (!batch) {
+        throw new Error("batch not found");
+      }
+      batch.clientPaymentStatus = true;
+      batch.prePaymentInvoice = preinVoiceUrl;
+      batch.postPaymentInvoice = postInvoiceUrl;
+      batch.transactionId = transactionId;
+      const response = await batch.save();
       return response;
     } catch (error) {
       throw error;

@@ -23,13 +23,26 @@ const upload = multer({
         s3:s3,
         bucket:process.env.AWS_BUCKET_NAME,
         acl:'public-read',
+        contentType:multerS3.AUTO_CONTENT_TYPE,
         metadata:(req,file,cb)=>{
             cb(null,{fieldName:file.fieldname})
         },
         key:(req,file,cb)=>{
             cb(null,Date.now().toString())
         }
-    })
+    }),
+    fileFilter: (req, file, cb) => {
+        if (
+          file.mimetype === 'image/jpeg' ||
+          file.mimetype === 'image/png' ||
+          file.mimetype === 'application/pdf'
+        ) {
+          cb(null, true);
+        } else {
+          cb(new Error('Invalid file type, only JPEG, PNG, and PDF are allowed!'), false);
+        }
+      }
+
 });
 
 export default upload;
