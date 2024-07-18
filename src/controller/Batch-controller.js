@@ -227,7 +227,7 @@ const uploadBatchPaymentDetails = async (req, res) => {
         postInvoiceUrl,
         transactionId
       );
-      
+
       return res.status(StatusCodes.OK).json({
         success: true,
         message: "payment details uploaded successfully",
@@ -242,6 +242,41 @@ const uploadBatchPaymentDetails = async (req, res) => {
   }
 };
 
+const getAllBatchPaymentNotification = async(req,res) =>{
+  try {
+    const response = await batchService.getAllPaymentNotifications();
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      data: response,
+      message: "all payment notification fetched successfully",
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: error.message,
+      message: "something went wrong",
+    });
+  }
+}
+
+const getAllCorporatePaymentBatch = async(req,res) =>{
+  try {
+    const response = await batchService.getBatchByCorporatePayment();
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      data: response,
+      message: "all corporate payment batch fetched successfully",
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: error.message,
+      message: "something went wrong",
+    });
+  }
+
+}
+
 export {
   createBatch,
   addStudentToBatch,
@@ -254,4 +289,7 @@ export {
   activeBatch,
   addBatchPaymentAmount,
   uploadBatchPaymentDetails,
+  getAllBatchPaymentNotification,
+  getAllCorporatePaymentBatch
 };
+  

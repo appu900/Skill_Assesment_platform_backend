@@ -109,6 +109,35 @@ class BatchRepository extends CrudRepository {
     }
   }
 
+  async getAllBatchByCorporatePayment() {
+    try {
+      const response = await Batch.find({
+        corporatePaymentType: true,
+        paymentStatus: false,
+        clientPaymentStatus: false,
+        batchActivePermission: true,
+        amountToPaid: 0,
+      });
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getBatchesByPendingPayment() {
+    try {
+      const response = await Batch.find({
+        paymentStatus: false,
+        clientPaymentStatus: true,
+        batchActivePermission: true,
+        amountToPaid: { $ne: 0 },
+      });
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   /**
    *
    * first create batch

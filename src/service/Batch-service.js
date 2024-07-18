@@ -3,7 +3,6 @@ import StudentService from "./student-service.js";
 import StudentRepository from "../repository/student-repository.js";
 import TrainerRepository from "../repository/Trainer-Repository.js";
 import TrainingPartnerRepository from "../repository/TrainingPartner-Repository.js";
-import mongoose from "mongoose";
 import PriceService from "./Price-service.js";
 import InvoiceService from "./InvoiceService.js";
 
@@ -275,6 +274,25 @@ class BatchService {
       throw error;
     }
   }
+
+  async getAllPaymentNotifications(){
+    try {
+      const response = await this.batchRepository.getBatchesByPendingPayment();
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+  
+  async getBatchByCorporatePayment() {
+    try {
+      const response = await this.batchRepository.getAllBatchByCorporatePayment();
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
 }
 
 export default BatchService;

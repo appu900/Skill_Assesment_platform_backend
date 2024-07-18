@@ -30,6 +30,8 @@ import {
   bulkTrainersInsertInBatch,
   createBatch,
   getAllBatchData,
+  getAllBatchPaymentNotification,
+  getAllCorporatePaymentBatch,
   getBatchDetails,
   getFilteredBatchData,
   getIndividualTrainingPartnerBatchDetails,
@@ -202,6 +204,8 @@ router.get(
 );
 router.get("/batch", getAllBatchData);
 router.get("/batch/all/query", getFilteredBatchData);
+router.get("/batch/all/paymentnotification",getAllBatchPaymentNotification)
+router.get("/batch/all/corporate",getAllCorporatePaymentBatch)
 
 router.put("/batch/active/:id",activeBatch);
 router.put("/batch/addpayment/:id",addBatchPaymentAmount);
