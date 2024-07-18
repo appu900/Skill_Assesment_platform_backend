@@ -177,6 +177,28 @@ const activeBatch = async (req, res) => {
   }
 };
 
+const addBatchPaymentAmount = async (req, res) => {
+  try {
+    const batchId = req.params.id;
+    const amount = req.body.amount;
+    const response = await batchService.addPaymentCorporatePayment(
+      batchId,
+      amount
+    );
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      data: response,
+      message: "payment added successfully",
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: error.message,
+      message: "something went wrong",
+    });
+  }
+};
+
 export {
   createBatch,
   addStudentToBatch,
@@ -187,4 +209,5 @@ export {
   getFilteredBatchData,
   bulkTrainersInsertInBatch,
   activeBatch,
+  addBatchPaymentAmount,
 };

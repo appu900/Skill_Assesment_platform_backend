@@ -24,6 +24,7 @@ import { createAssessor } from "../../controller/Assessor-controller.js";
 
 import {
   activeBatch,
+  addBatchPaymentAmount,
   addStudentToBatch,
   addToTrainerToBatch,
   bulkTrainersInsertInBatch,
@@ -202,6 +203,7 @@ router.get("/batch", getAllBatchData);
 router.get("/batch/all/query", getFilteredBatchData);
 
 router.put("/batch/active/:id",activeBatch);
+router.put("/batch/addpayment/:id",addBatchPaymentAmount);
 
 
 

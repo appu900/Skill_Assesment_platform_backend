@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 
 // ** batchId -> ABN number of the training partner
 // **  request -> batch
+// **  response -> batch
 
 const examSchema = new mongoose.Schema(
   {

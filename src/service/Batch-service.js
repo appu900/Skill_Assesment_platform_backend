@@ -179,6 +179,7 @@ class BatchService {
   async activeBatch(batchId) {
     try {
       const batch = await this.batchRepository.get(batchId);
+
       if (batch.scheme === "Corporate") {
         batch.corporate = true;
       }
@@ -214,6 +215,40 @@ class BatchService {
       );
 
       return true;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // ** manual payment amount add from admin
+
+  async addPaymentCorporatePayment(batchId, amount) {
+    try {
+      const batch = await this.batchRepository.get(batchId);
+      if (batch.corporatePaymentType === false) {
+        throw new Error("this batch is not corporate type");
+      }
+
+      if (batch.batchActivePermission === false) {
+        throw new Error("this batch is not ready to accept payment");
+      }
+
+      batch.amountToPaid = amount;
+      const response = await batch.save();
+      const invoiceData = {
+        payer: "TrainingPartner",
+        payee: "Admin",
+        purpose: "batch payment",
+        payAbleamount: amount,
+        paidAmount: 0,
+        paymentStatus: false,
+        onModel: "TrainingPartner",
+        modelId: batch.trainingOrganizationId,
+      };
+      this.invoiceService.createInvoice(invoiceData).catch((error) => {
+        console.log("error in invoice generation", error);
+      });
+      return response;
     } catch (error) {
       throw error;
     }

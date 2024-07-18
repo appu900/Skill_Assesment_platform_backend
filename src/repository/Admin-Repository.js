@@ -18,3 +18,4 @@ class AdminRepository extends CrudRepository {
 }
 
 export default AdminRepository;
+

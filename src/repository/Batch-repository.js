@@ -98,6 +98,17 @@ class BatchRepository extends CrudRepository {
     }
   }
 
+  async updateCorporatePaymentAmount(batchId, amount) {
+    try {
+      const response = await Batch.findByIdAndUpdate(batchId, {
+        amountToPaid: amount,
+      });
+      return response.amountToPaid;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   /**
    *
    * first create batch
