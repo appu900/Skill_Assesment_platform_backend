@@ -49,6 +49,55 @@ class BatchRepository extends CrudRepository {
     }
   }
 
+  // ** update payment status of a batch from a clinet
+  async updateClientPaymentStatus(batchId, preInvoiceUrl, postInvoiceUrl) {
+    try {
+      const response = await Batch.findByIdAndUpdate(batchId, {
+        clientPaymentStatus: true,
+        prePaymentInvoice: preInvoiceUrl,
+        postPaymentInvoice: postInvoiceUrl,
+      });
+      return true;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // ** update payment status of a batch from admin
+
+  async updatePayamentStatus(batchId) {
+    try {
+      const response = await Batch.findByIdAndUpdate(batchId, {
+        paymentStatus: true,
+      });
+      return true;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async activateBatchByClient(batchId) {
+    try {
+      const response = await Batch.findByIdAndUpdate(batchId, {
+        batchActivePermission: true,
+      });
+      return true;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async assignPriceToBatch(batchId, amount) {
+    try {
+      const response = await Batch.findByIdAndUpdate(batchId, {
+        amountToPaid: amount,
+      });
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   /**
    *
    * first create batch

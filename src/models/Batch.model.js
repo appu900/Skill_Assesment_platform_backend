@@ -92,6 +92,10 @@ const batchSchema = new mongoose.Schema(
     postPaymentInvoice: {
       type: String,
     },
+    clientPaymentStatus: {
+      type: Boolean,
+      default: false,
+    },
     paymentStatus: {
       type: Boolean,
       default: false,
@@ -102,7 +106,16 @@ const batchSchema = new mongoose.Schema(
     },
     amountToPaid: {
       type: Number,
+      default:0,
     },
+    modeOfPayment: {
+      type: String,
+      enum: ["Online", "Offline"],
+    },
+    corporatePaymentType:{
+      type: Boolean,
+      default: false
+    }
   },
 
   {

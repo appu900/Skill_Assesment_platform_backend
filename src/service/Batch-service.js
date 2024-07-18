@@ -4,6 +4,8 @@ import StudentRepository from "../repository/student-repository.js";
 import TrainerRepository from "../repository/Trainer-Repository.js";
 import TrainingPartnerRepository from "../repository/TrainingPartner-Repository.js";
 import mongoose from "mongoose";
+import PriceService from "./Price-service.js";
+import InvoiceService from "./InvoiceService.js";
 
 class BatchService {
   constructor() {
@@ -11,6 +13,8 @@ class BatchService {
     this.studentRepository = new StudentRepository();
     this.trainerRepository = new TrainerRepository();
     this.trainingPartnerRepository = new TrainingPartnerRepository();
+    this.priceService = new PriceService();
+    this.invoiceService = new InvoiceService();
   }
 
   async createBatch(data) {
@@ -135,10 +139,81 @@ class BatchService {
       if (!Array.isArray(data)) {
         throw new Error("data should be in array format!");
       }
-      const trainerIdObjects = data.map((id) => new mongoose.Types.ObjectId(id));
+      const trainerIdObjects = data.map(
+        (id) => new mongoose.Types.ObjectId(id)
+      );
       batch.trainers.push(...trainerIdObjects);
       const response = await batch.save();
       return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // ** this will update the batch payment status(client payment status) with invoice(pre & post)
+  async updateClientPayment(batchId, preInvoiceUrl, postInvoiceUrl) {
+    try {
+      const response = await this.batchRepository.updateClientPaymentStatus(
+        batchId,
+        preInvoiceUrl,
+        postInvoiceUrl
+      );
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // ** this will update the batch payment status(admin payment status)
+  async updatefinalPaymentStatus(batchId) {
+    try {
+      const response = await this.batchRepository.updatePayamentStatus(batchId);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // ** active batch permission from client end
+
+  async activeBatch(batchId) {
+    try {
+      const batch = await this.batchRepository.get(batchId);
+      if (batch.scheme === "Corporate") {
+        batch.corporate = true;
+      }
+
+      // ** if the batch scheme if not corporate then calculate the price and update the field
+      // ** if the batch scheme is corporate then update the field as corporate
+
+      if (batch.scheme !== "Corporate") {
+        const price = await this.priceService.getPriceDetails(batch.scheme);
+        const totalAmount = price.amountPerStudent * batch.students.length;
+        batch.amountToPaid = totalAmount;
+        await batch.save();
+        const invoiceData = {
+          payer: "TrainingPartner",
+          payee: "Admin",
+          purpose: "batch payment",
+          payAbleamount: totalAmount,
+          paidAmount: 0,
+          paymentStatus: false,
+          onModel: "TrainingPartner",
+          modelId: batch.trainingOrganizationId,
+        };
+        this.invoiceService.createInvoice(invoiceData).catch((error) => {
+          console.log("error in invoice generation", error);
+        });
+      } else {
+        batch.corporatePaymentType = true;
+        await batch.save();
+      }
+
+      const response = await this.batchRepository.activateBatchByClient(
+        batchId
+      );
+
+      return true;
     } catch (error) {
       throw error;
     }

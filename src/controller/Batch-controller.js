@@ -148,9 +148,26 @@ const bulkTrainersInsertInBatch = async (req, res) => {
     return res.status(StatusCodes.ACCEPTED).json({
       success: true,
       message: "trainers inserted sucessfully",
-      data: response
+      data: response,
     });
-    
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: error.message,
+      message: "something went wrong",
+    });
+  }
+};
+
+const activeBatch = async (req, res) => {
+  try {
+    const batchId = req.params.id;
+    const response = await batchService.activeBatch(batchId);
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      data: response,
+      message: "active batch fetched sucessfully",
+    });
   } catch (error) {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
@@ -169,4 +186,5 @@ export {
   getAllBatchData,
   getFilteredBatchData,
   bulkTrainersInsertInBatch,
+  activeBatch,
 };

@@ -23,6 +23,7 @@ import {
 import { createAssessor } from "../../controller/Assessor-controller.js";
 
 import {
+  activeBatch,
   addStudentToBatch,
   addToTrainerToBatch,
   bulkTrainersInsertInBatch,
@@ -73,6 +74,7 @@ import {
 } from "../../controller/Scheme-Controller.js";
 import verifyAssesmentAgency from "../../middleware/verifyAssesmentAgency.js";
 import uploadImage from "../../middleware/imageUpload.js";
+import { createPrice } from "../../controller/PriceController.js";
 
 const router = express.Router();
 
@@ -177,6 +179,7 @@ router.put("/student/profile/:id",updateProfilePic)
 
 //** batch routes  */
 router.post("/batch/create", verifyIsTrainingPartner, createBatch);
+
 router.post(
   "/batch/addstudent/:id",
   verifyIsTrainingPartner,
@@ -197,6 +200,8 @@ router.get(
 );
 router.get("/batch", getAllBatchData);
 router.get("/batch/all/query", getFilteredBatchData);
+
+router.put("/batch/active/:id",activeBatch);
 
 
 
@@ -285,9 +290,6 @@ router.get("/sector", getAllCoursesOfASector);
 
 
 
-
-
-
 // ** course ** s
 router.post("/course", createCourse);
 router.get("/courses", getAllCourses);
@@ -297,5 +299,10 @@ router.get("/courses", getAllCourses);
 // ** scheme
 router.post("/scheme", createScheme);
 router.get("/scheme", fetchAllSchems);
+
+
+// ** Price
+
+router.post("/price",createPrice)
 
 export default router;
