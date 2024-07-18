@@ -23,15 +23,27 @@ const invoiceSchema = new mongoose.Schema({
   paymentDate: {
     type: Date,
   },
-  onModel: {
-    type: String,
-    enum: ["TrainingPartner", "Admin", "AssesmentAgency"],
+  TrainingPartnerId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "TrainingPartner",
+  },
+  AssesmentAgencyId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "AssesmentAgency",
+  },
+  BatchId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Batch",
   },
 
-  modelId: {
-    type: mongoose.Schema.Types.ObjectId,
-    refPath: "onModel",
-  },
+  // onModel: {
+  //   type: String,
+  //   enum: ["TrainingPartner", "Admin", "AssesmentAgency"],
+  // },
+  // modelId: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   refPath: "onModel",
+  // },
 });
 
 const Invoice = mongoose.model("Invoice", invoiceSchema);

@@ -199,8 +199,8 @@ class BatchService {
           payAbleamount: totalAmount,
           paidAmount: 0,
           paymentStatus: false,
-          onModel: "TrainingPartner",
-          modelId: batch.trainingOrganizationId,
+          TrainingPartnerId: batch.trainingOrganizationId,
+          BatchId: batch._id,
         };
         this.invoiceService.createInvoice(invoiceData).catch((error) => {
           console.log("error in invoice generation", error);
@@ -239,11 +239,11 @@ class BatchService {
         payer: "TrainingPartner",
         payee: "Admin",
         purpose: "batch payment",
-        payAbleamount: amount,
+        payAbleamount:amount,
         paidAmount: 0,
         paymentStatus: false,
-        onModel: "TrainingPartner",
-        modelId: batch.trainingOrganizationId,
+        TrainingPartnerId: batch.trainingOrganizationId,
+        BatchId: batch._id,
       };
       this.invoiceService.createInvoice(invoiceData).catch((error) => {
         console.log("error in invoice generation", error);
