@@ -275,7 +275,7 @@ class BatchService {
     }
   }
 
-  async getAllPaymentNotifications(){
+  async getAllPaymentNotifications() {
     try {
       const response = await this.batchRepository.getBatchesByPendingPayment();
       return response;
@@ -283,16 +283,29 @@ class BatchService {
       throw error;
     }
   }
-  
+
   async getBatchByCorporatePayment() {
     try {
-      const response = await this.batchRepository.getAllBatchByCorporatePayment();
+      const response =
+        await this.batchRepository.getAllBatchByCorporatePayment();
       return response;
     } catch (error) {
       throw error;
     }
   }
 
+  async updateFinalPaymentStatus(batchId) {
+    try {
+      const response = await this.batchRepository.updatePayamentStatus(batchId);
+      const invoice = await this.invoiceService.getInvoiceByBatchId(batchId);
+      invoice.paymentStatus = true;
+      invoice.paymentDate = new Date();
+      await invoice.save();
+      return true;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default BatchService;

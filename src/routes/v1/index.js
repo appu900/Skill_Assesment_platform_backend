@@ -35,6 +35,7 @@ import {
   getBatchDetails,
   getFilteredBatchData,
   getIndividualTrainingPartnerBatchDetails,
+  updateBatchPaymentStatus,
   uploadBatchPaymentDetails,
 } from "../../controller/Batch-controller.js";
 
@@ -210,6 +211,7 @@ router.get("/batch/all/corporate",getAllCorporatePaymentBatch)
 router.put("/batch/active/:id",activeBatch);
 router.put("/batch/addpayment/:id",addBatchPaymentAmount);
 router.put("/batch/paymentdetails/:id",uploadBatchPaymentDetails)
+router.put("/batch/paymentstatus/:id",updateBatchPaymentStatus)
 
 
 

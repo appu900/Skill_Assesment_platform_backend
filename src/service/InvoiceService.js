@@ -12,6 +12,15 @@ class InvoiceService {
       throw error;
     }
   }
+
+  async getInvoiceByBatchId(batchId) {
+    try {
+      const response = await this.invoiceRepository.getByBatchId(batchId);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
-export default InvoiceService;  
+export default InvoiceService;

@@ -242,7 +242,7 @@ const uploadBatchPaymentDetails = async (req, res) => {
   }
 };
 
-const getAllBatchPaymentNotification = async(req,res) =>{
+const getAllBatchPaymentNotification = async (req, res) => {
   try {
     const response = await batchService.getAllPaymentNotifications();
     return res.status(StatusCodes.OK).json({
@@ -257,9 +257,9 @@ const getAllBatchPaymentNotification = async(req,res) =>{
       message: "something went wrong",
     });
   }
-}
+};
 
-const getAllCorporatePaymentBatch = async(req,res) =>{
+const getAllCorporatePaymentBatch = async (req, res) => {
   try {
     const response = await batchService.getBatchByCorporatePayment();
     return res.status(StatusCodes.OK).json({
@@ -274,8 +274,24 @@ const getAllCorporatePaymentBatch = async(req,res) =>{
       message: "something went wrong",
     });
   }
+};
 
-}
+const updateBatchPaymentStatus = async (req, res) => {
+  try {
+    const response = await batchService.updateFinalPaymentStatus(req.params.id);
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      data: response,
+      message: "payment status updated successfully",
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: error.message,
+      message: "something went wrong",
+    });
+  }
+};
 
 export {
   createBatch,
@@ -290,6 +306,6 @@ export {
   addBatchPaymentAmount,
   uploadBatchPaymentDetails,
   getAllBatchPaymentNotification,
-  getAllCorporatePaymentBatch
+  getAllCorporatePaymentBatch,
+  updateBatchPaymentStatus
 };
-  
