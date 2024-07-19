@@ -1,17 +1,17 @@
 import mongoose from "mongoose";
 
-
 // ** batchId -> ABN number of the training partner
 // **  request -> batch
 // **  response -> batch
 
 const examSchema = new mongoose.Schema(
   {
-    batchABN:{
+    batchABN: {
       type: String,
-      required: true
+      required: true,
     },
     course: { type: String, required: true },
+    courseCode:{ type: String, required: true },
     date: { type: Date, required: true },
     status: {
       type: String,
@@ -53,6 +53,14 @@ const examSchema = new mongoose.Schema(
       ref: "TrainingPartner",
       required: true,
     },
+    AssessorId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Assessor",
+    },
+    totalStudents: {
+      type: Number,
+      required: true,
+    },
   },
   {
     timestamps: true,
@@ -61,15 +69,3 @@ const examSchema = new mongoose.Schema(
 
 const Exam = new mongoose.model("Exam", examSchema);
 export default Exam;
-
-
-
-
-
-
-
-
-
-
-
-

@@ -10,6 +10,7 @@ import {
   getAllTrainers,
   getAllTrainersOfaTrainingPartner,
   getTrainerById,
+  uploadTrainerResultSheet,
 } from "../../controller/Trainer-controller.js";
 
 import {
@@ -20,7 +21,7 @@ import {
 
 // ** assesor
 
-import { createAssessor } from "../../controller/Assessor-controller.js";
+import { createAssessor, uploadAssesorMarkSheet } from "../../controller/Assessor-controller.js";
 
 import {
   activeBatch,
@@ -157,6 +158,7 @@ router.get("/trainer", getAllTrainers);
 router.get("/trainer/:id", getTrainerById);
 router.delete("/trainer/:id", deleteTrainer);
 router.get("/trainer/tp/:id", getAllTrainersOfaTrainingPartner);
+router.put("/trainer/marksheet/:id",uploadTrainerResultSheet)
 
 
 
@@ -286,6 +288,7 @@ router.get("/mark/batch/:id", getStudentMarksByBatchId);
 
 // ** assessor
 router.post("/assessor", uploadImage, createAssessor);
+router.put("/assessor/marksheet/:id",uploadAssesorMarkSheet)
 
 
 

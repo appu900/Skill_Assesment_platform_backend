@@ -60,6 +60,11 @@ const markSchema = new mongoose.Schema({
     required: true,
   },
 
+  studentDOB: {
+    type: String,
+    required: true,
+  },
+
   studentProfilePic: {
     type: String,
   },
@@ -70,24 +75,38 @@ const markSchema = new mongoose.Schema({
     required: true,
   },
 
-  Theory: {
-    type: Number,
-    required: true,
-  },
+  Nos: [
+    {
+      name: String,
+      Theory: Number,
+      Practical: Number,
+      Total: Number,
+      passMark: Number,
+      MarksObtained: Number,
+    },
+  ],
 
-  practical: {
-    type: Number,
-    required: true,
-  },
-
-  viva: {
-    type: Number,
-    required: true,
-  },
   total: {
     type: Number,
     required: true,
   },
+
+  totalTheorymark:{
+    type: Number,
+    required: true,
+  },
+
+  totalPracticalMark:{
+    type: Number,
+    required: true,
+  },
+  
+  totalVivaMark:{
+    type: Number,
+    required: true,
+  },
+  
+  
 
   Result: {
     type: String,

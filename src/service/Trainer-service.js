@@ -54,6 +54,20 @@ class TrainerService {
       throw error;
     }
   }
+
+  async uploadTResultSheet(trainerId, resultSheetUrl) {
+    try {
+      const trainer = await this.trainerRepository.get(trainerId);
+      if (!trainer) {
+        throw new Error("Trainer not Found");
+      }
+      trainer.resultSheet = resultSheetUrl;
+      const response = await trainer.save();
+      return true;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default TrainerService;

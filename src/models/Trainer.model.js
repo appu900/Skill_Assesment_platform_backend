@@ -82,6 +82,9 @@ const TrainerSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "TrainingPartner",
     },
+    resultSheet:{
+      type:String,
+    },
     batches: [
       {
         type: mongoose.Schema.Types.ObjectId,

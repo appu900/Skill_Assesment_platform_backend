@@ -4,6 +4,7 @@ import { StatusCodes } from "http-status-codes";
 const trainerService = new TrainerService();
 
 const singleUploader = upload.single("image");
+const singleUploaderTwo = upload.single("resultSheet");
 
 const createTrainer = async (req, res) => {
   try {
@@ -24,7 +25,6 @@ const createTrainer = async (req, res) => {
         message: "Training Parter created",
       });
     });
-   
   } catch (error) {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
@@ -105,10 +105,39 @@ const getAllTrainersOfaTrainingPartner = async (req, res) => {
   }
 };
 
+const uploadTrainerResultSheet = async (req, res) => {
+  try {
+    singleUploaderTwo(req, res, async function (err) {
+      if (err) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+          success: false,
+          error: err.message,
+          message: "something went wrong",
+        });
+      }
+      const imageUrl = req.file?.location;
+      const id = req.params.id;
+      const response = await trainerService.uploadTResultSheet(id, imageUrl);
+      return res.status(StatusCodes.OK).json({
+        success: true,
+        message: "result sheet uploaded",
+        data: response,
+      });
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: error.message,
+      message: "cannot upload result sheet",
+    });
+  }
+};
+
 export {
   createTrainer,
   getAllTrainers,
   getTrainerById,
   deleteTrainer,
   getAllTrainersOfaTrainingPartner,
+  uploadTrainerResultSheet,
 };

@@ -13,6 +13,20 @@ class AssessorService {
       throw error;
     }
   }
+
+  async uploadAssessorMarkSheet(id, marksheetUrlLink) {
+    try {
+      const assessor = await this.assessorRepository.get(id);
+      if (!assessor) {
+        throw new Error("Assessor Not found");
+      }
+      assessor.resultSheet = marksheetUrlLink;
+      await assessor.save();
+      return true;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default AssessorService;

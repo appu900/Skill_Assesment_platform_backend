@@ -86,9 +86,15 @@ const assessorSchema = new mongoose.Schema({
     required: true,
     enum: ["Yes", "No"],
   },
+  resultSheet:{
+    type:String,
+  },
   profilePic: {
     type: String,
   },
+  
+  
+
 });
 
 const Assessor = mongoose.model("Assessor", assessorSchema);
