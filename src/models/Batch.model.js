@@ -19,6 +19,10 @@ import Sequence from "./sequence.model.js";
 
 const batchSchema = new mongoose.Schema(
   {
+    centerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Center",
+    },
     courseName: {
       type: String,
       required: [true, "Course name is required"],

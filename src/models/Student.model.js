@@ -121,6 +121,9 @@ const StudentSchema = new mongoose.Schema(
     marks:{
       type: mongoose.Schema.Types.ObjectId,
       ref: "Marks",
+    },
+    absent:{
+      type: Boolean,
     }
   },
   {
