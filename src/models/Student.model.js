@@ -14,7 +14,7 @@ const StudentSchema = new mongoose.Schema(
       type: String,
       required: [true, "Mother's name is required"],
     },
-    dob: { 
+    dob: {
       type: Date,
       required: [true, "Date of Birth is required"],
     },
@@ -118,13 +118,18 @@ const StudentSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Batch",
     },
-    marks:{
+    marks: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Marks",
     },
-    absent:{
+    absent: {
       type: Boolean,
-    }
+      default: false,
+    },
+    redg_No: {
+      type: String,
+      required: [true, "Registration number is required"],
+    },
   },
   {
     timestamps: true,
@@ -133,6 +138,3 @@ const StudentSchema = new mongoose.Schema(
 
 const Student = mongoose.model("Student", StudentSchema);
 export default Student;
-
-
-
