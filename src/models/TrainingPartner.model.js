@@ -64,7 +64,12 @@ const trainingPartnerSchema = new Schema(
         type: String,
       },
     ],
-
+    centers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Center",
+      },
+    ],
     centerId: { type: String, required: true },
     tpCode: { type: String },
     scheme: { type: String, required: true },

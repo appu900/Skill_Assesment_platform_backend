@@ -81,6 +81,7 @@ import {
 import verifyAssesmentAgency from "../../middleware/verifyAssesmentAgency.js";
 import uploadImage from "../../middleware/imageUpload.js";
 import { createPrice } from "../../controller/PriceController.js";
+import { createCenter } from "../../controller/CenterController.js";
 
 const router = express.Router();
 
@@ -96,8 +97,9 @@ router.post("/admin/login", AdminController.login);
 
 
 
+// ** Center code**
 
-
+router.post("/center",verifyIsTrainingPartner,createCenter);
 
 
 
@@ -162,22 +164,10 @@ router.put("/trainer/marksheet/:id",uploadTrainerResultSheet)
 
 
 
-
-
-
 // ** student
 router.post("/student", verifyIsTrainingPartner, createStudent);
 router.get("/student/:id", getStudentDetails);
 router.put("/student/profile/:id",updateProfilePic)
-
-
-
-
-
-
-
-
-
 
 
 
