@@ -1,3 +1,6 @@
+
+import Exam from "../models/Exam.model.js";
+import ExamRepository from "../repository/Exam-repository.js";
 import MarkRepository from "../repository/Mark-repository.js";
 import StudentRepository from "../repository/student-repository.js";
 
@@ -5,6 +8,7 @@ class MarkService {
   constructor() {
     this.markRepository = new MarkRepository();
     this.studentRepository = new StudentRepository();
+    this.examRepository = new ExamRepository();
   }
 
   // batchid,
@@ -43,6 +47,15 @@ class MarkService {
         batchId
       );
       return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getAllAttendanceSheetDetails(examId) {
+    try {
+      const examDetails = await this.examRepository.get(examId);
+      return examDetails;
     } catch (error) {
       throw error;
     }

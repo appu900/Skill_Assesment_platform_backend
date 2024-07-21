@@ -82,7 +82,7 @@ import {
 import verifyAssesmentAgency from "../../middleware/verifyAssesmentAgency.js";
 import uploadImage from "../../middleware/imageUpload.js";
 import { createPrice } from "../../controller/PriceController.js";
-import { createCenter } from "../../controller/CenterController.js";
+import { createCenter, getAllCentersOfTrainingPartner } from "../../controller/CenterController.js";
 
 const router = express.Router();
 
@@ -101,6 +101,7 @@ router.post("/admin/login", AdminController.login);
 // ** Center code**
 
 router.post("/center",verifyIsTrainingPartner,createCenter);
+router.get("/center/tp/:id",getAllCentersOfTrainingPartner)
 
 
 

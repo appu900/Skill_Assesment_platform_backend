@@ -23,6 +23,16 @@ const batchSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Center",
     },
+    centerName: {
+      type: String,
+      required: [true, "Center name is required"],
+    },
+
+    CenterCode: {
+      type: String,
+      required: [true, "Center code is required"],
+    },
+
     courseName: {
       type: String,
       required: [true, "Course name is required"],

@@ -4,6 +4,7 @@ import ExamRepository from "../repository/Exam-repository.js";
 import TrainingPartnerRepository from "../repository/TrainingPartner-Repository.js";
 
 class ExamService {
+  
   constructor() {
     this.examRepository = new ExamRepository();
     this.batchRepository = new BatchRepository();
@@ -20,6 +21,7 @@ class ExamService {
   ) {
     try {
       const batch = await this.batchRepository.get(batchId);
+
       if (!batch) {
         throw new Error("batch not found");
       }
@@ -27,6 +29,7 @@ class ExamService {
       const trainingPartner = await this.trainingPartnerRepository.get(
         trainingPartnerId
       );
+
       if (!trainingPartner) {
         throw new Error("training partner not found");
       }
@@ -34,6 +37,7 @@ class ExamService {
       const assesmentAgency = await this.assesmentAgencyRepository.get(
         assesmentAgencyId
       );
+
       if (!assesmentAgency) {
         throw new Error("assesment agency not found");
       }
@@ -44,6 +48,8 @@ class ExamService {
         sector: batch.sectorName,
         state: batch.state,
         scheme: batch.scheme,
+        CenterName: batch.CenterName,
+        CenterCode: batch.CenterCode,
         batchId: batch._id,
         assesmentAgencyId: assesmentAgency._id,
         assesmentAgency: assesmentAgency.agencyName,
@@ -91,7 +97,7 @@ class ExamService {
       const batch = await this.batchRepository.get(exam.batchId);
       batch.assessorId = assesorId;
       await batch.save();
-      return true
+      return true;
     } catch (error) {
       throw error;
     }

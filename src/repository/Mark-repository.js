@@ -15,11 +15,20 @@ class MarkRepository extends CrudRepository {
     }
   }
 
-  async getStudentMarksByBatchId(batchId){
-    try{
-      const response = await Mark.find({batchId: batchId});
+  async getStudentMarksByBatchId(batchId) {
+    try {
+      const response = await Mark.find({ batchId: batchId });
       return response;
-    } catch(error){
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getAllMarksByExam(examId) {
+    try {
+      const response = await Mark.find({ examId: examId });
+      return response;
+    } catch (error) {
       throw error;
     }
   }

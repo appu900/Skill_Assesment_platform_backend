@@ -11,7 +11,13 @@ const examSchema = new mongoose.Schema(
       required: true,
     },
     course: { type: String, required: true },
-    courseCode:{ type: String, required: true },
+    courseCode: { type: String, required: true },
+    CenterName: {
+      type: String,
+    },
+    CenterCode: {
+      type: String,
+    },
     date: { type: Date, required: true },
     status: {
       type: String,

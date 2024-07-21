@@ -5,6 +5,17 @@ class CenterRepository extends CrudRepository {
   constructor() {
     super(Center);
   }
+
+  async getCenterByTrainingPartnerId(trainingPartnerId) {
+    try {
+      const response = await Center.find({
+        trainingOrganizationId: trainingPartnerId,
+      });
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default CenterRepository;

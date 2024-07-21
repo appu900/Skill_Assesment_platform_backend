@@ -18,7 +18,7 @@ const createCenter = async (req, res) => {
       const payload = req.body;
       payload.trainingOrganizationId = req.trainingPartnerId;
       payload.sanction_order_letter = req.file.location;
-      const response = await centerService.create(payload)
+      const response = await centerService.create(payload);
       return res.status(StatusCodes.CREATED).json({
         success: true,
         message: "Center created",
@@ -34,4 +34,21 @@ const createCenter = async (req, res) => {
   }
 };
 
-export { createCenter };
+const getAllCentersOfTrainingPartner = async (req, res) => {
+  try {
+    const response = await centerService.get(req.params.id);
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      message: "Centers fetched",
+      data: response,
+    })
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: error.message,
+      message: "Cannot fetch centers",
+    });
+  }
+};
+
+export { createCenter, getAllCentersOfTrainingPartner };

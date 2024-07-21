@@ -23,6 +23,17 @@ class CenterService {
       throw error;
     }
   }
+
+  async get(id) {
+    try {
+      const response = await this.centerRepository.getCenterByTrainingPartnerId(
+        id
+      );
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default CenterService;
