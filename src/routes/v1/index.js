@@ -54,6 +54,7 @@ import {
 
 import {
   assignAnExam,
+  assignAssesorToExam,
   getALlExams,
   getALLExamsBelongsToAnAssesmentAgency,
 } from "../../controller/exam-controller.js";
@@ -241,6 +242,7 @@ router.get("/aa/all/query", filterAssesmentgency);
 router.post("/exam/create", verifyIsAdmin, assignAnExam);
 router.get("/exam/all", getALlExams);
 router.get("/exam/aa/:id", getALLExamsBelongsToAnAssesmentAgency);
+router.put("/exam/addassessor/:id",assignAssesorToExam)
 
 
 
@@ -265,6 +267,7 @@ router.get("/mark/batch/:id", getStudentMarksByBatchId);
 router.post("/assessor", uploadImage, createAssessor);
 router.put("/assessor/marksheet/:id",uploadAssesorMarkSheet)
 router.get("/assessor/aa/:id",getAllAssesor)
+
 
 
 

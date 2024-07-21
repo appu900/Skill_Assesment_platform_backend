@@ -81,6 +81,21 @@ class ExamService {
       throw error;
     }
   }
+
+  async assignAssesor(examId, assesorId) {
+    try {
+      const exam = await this.examRepository.addAssessorToExam(
+        examId,
+        assesorId
+      );
+      const batch = await this.batchRepository.get(exam.batchId);
+      batch.assessorId = assesorId;
+      await batch.save();
+      return true
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default ExamService;

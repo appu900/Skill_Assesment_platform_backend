@@ -60,9 +60,23 @@ const getALLExamsBelongsToAnAssesmentAgency = async (req, res) => {
   }
 };
 
-export { assignAnExam, getALlExams,getALLExamsBelongsToAnAssesmentAgency };
+const assignAssesorToExam = async (req, res) => {
+  try {
+    const examId = req.params.id;
+    const assessorId = req.body.assessorId;
+    const response = await examService.assignAssesor(examId, assessorId);
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      message: "assesor assigned",
+      data: response,
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: error.message,
+      message: "something went wrong",
+    });
+  }
+};
 
-
-
-
-
+export { assignAnExam, getALlExams, getALLExamsBelongsToAnAssesmentAgency,assignAssesorToExam };

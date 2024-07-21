@@ -10,7 +10,7 @@ class ExamRepository extends CrudRepository {
     try {
       const exams = await Exam.find({
         assesmentAgencyId: testAgencyId,
-      }).populate('batchId');
+      }).populate("batchId");
       return exams;
     } catch (error) {
       throw error;
@@ -29,6 +29,21 @@ class ExamRepository extends CrudRepository {
         })
         .lean();
       return exams;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async addAssessorToExam(examId, assesorId) {
+    try {
+      const response = await Exam.findByIdAndUpdate(
+        examId,
+        {
+          AssessorId: assesorId,
+        },
+        { new: true }
+      );
+      return response;
     } catch (error) {
       throw error;
     }
