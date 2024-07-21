@@ -59,4 +59,23 @@ const uploadAssesorMarkSheet = async (req, res) => {
   }
 };
 
-export { createAssessor,uploadAssesorMarkSheet };
+const getAllAssesor = async (req, res) => {
+  try {
+    const response = await assessorService.getAllAssesorOfAssesmentAgency(
+      req.params.id
+    );
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      message: "all assessor fetched",
+      data: response,
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: error.message,
+      message,
+    });
+  }
+};
+
+export { createAssessor, uploadAssesorMarkSheet,getAllAssesor };

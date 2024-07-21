@@ -21,7 +21,7 @@ import {
 
 // ** assesor
 
-import { createAssessor, uploadAssesorMarkSheet } from "../../controller/Assessor-controller.js";
+import { createAssessor, getAllAssesor, uploadAssesorMarkSheet } from "../../controller/Assessor-controller.js";
 
 import {
   activeBatch,
@@ -279,6 +279,7 @@ router.get("/mark/batch/:id", getStudentMarksByBatchId);
 // ** assessor
 router.post("/assessor", uploadImage, createAssessor);
 router.put("/assessor/marksheet/:id",uploadAssesorMarkSheet)
+router.get("/assessor/aa/:id",getAllAssesor)
 
 
 

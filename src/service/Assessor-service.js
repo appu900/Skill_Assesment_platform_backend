@@ -27,6 +27,18 @@ class AssessorService {
       throw error;
     }
   }
+
+  async getAllAssesorOfAssesmentAgency(assesmentAgencyId) {
+    try {
+      const response =
+        await this.assessorRepository.getAllAssesorByAssesmentAgencyId(
+          assesmentAgencyId
+        );
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default AssessorService;

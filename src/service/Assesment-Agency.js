@@ -122,7 +122,7 @@ class AssesmentAgencyService {
       if (course) {
         queryObject.courses = { $in: [course] };
       }
-     
+
       const response = await this.assesmentAgencyRepo.filterData(queryObject);
       return response;
     } catch (error) {}
