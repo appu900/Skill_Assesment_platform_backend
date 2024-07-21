@@ -123,6 +123,17 @@ class ExamService {
       throw error;
     }
   }
+
+  async updateExamStatus(examId) {
+    try {
+      const exam = await this.examRepository.get(examId);
+      exam.markUploadAndExamCompleteStatus = true;
+      await exam.save();
+      return exam;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default ExamService;

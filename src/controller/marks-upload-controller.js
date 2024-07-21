@@ -6,7 +6,6 @@ const markService = new MarkService();
 const createMark = async (req, res) => {
   try {
     const payload = req.body;
-    payload.AssesmentAgencyName = req.assesmentAgencyName;
     const response = await markService.create(payload);
     return res.status(StatusCodes.CREATED).json({
       success: true,

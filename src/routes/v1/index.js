@@ -56,6 +56,7 @@ import {
 import {
   assignAnExam,
   assignAssesorToExam,
+  changeExamCompleteStatus,
   fetchAExamDetails,
   getALlExams,
   getALLExamsBelongsToAnAssesmentAgency,
@@ -238,16 +239,13 @@ router.get("/aa/all/query", filterAssesmentgency);
 
 
 
-    
-
-
-
 
 // ** exam ** will be created by ADMIN
 router.post("/exam/create", verifyIsAdmin, assignAnExam);
 router.get("/exam/all", getALlExams);
 router.get("/exam/aa/:id", getALLExamsBelongsToAnAssesmentAgency);
 router.put("/exam/addassessor/:id",assignAssesorToExam)
+router.put("/exam/status/:id",changeExamCompleteStatus)
 
 router.get("/exam/:id",fetchAExamDetails)
 router.get("/exam/attendance/:id",getAttendanceSheetForExam)
@@ -255,8 +253,9 @@ router.get("/exam/attendance/:id",getAttendanceSheetForExam)
 
 
 
+
 // ** upload marks
-router.post("/marks/upload", verifyAssesmentAgency, createMark);
+router.post("/marks/upload", createMark);
 router.get("/mark/student/:id", getIndividualStudentMarks);
 router.get("/mark/batch/:id", getStudentMarksByBatchId);
 

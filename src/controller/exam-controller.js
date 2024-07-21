@@ -113,6 +113,23 @@ const getAttendanceSheetForExam = async (req, res) => {
   }
 };
 
+async function changeExamCompleteStatus(req, res) {
+  try {
+    const response = await examService.updateExamStatus(req.params.id);
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      message: "exam status updated",
+      data: response,
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: error.message,
+      message: "something went wrong",
+    });
+  }
+}
+
 export {
   assignAnExam,
   getALlExams,
@@ -120,4 +137,5 @@ export {
   assignAssesorToExam,
   fetchAExamDetails,
   getAttendanceSheetForExam,
+  changeExamCompleteStatus
 };
