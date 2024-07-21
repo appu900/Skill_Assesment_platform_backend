@@ -79,4 +79,21 @@ const assignAssesorToExam = async (req, res) => {
   }
 };
 
-export { assignAnExam, getALlExams, getALLExamsBelongsToAnAssesmentAgency,assignAssesorToExam };
+const fetchAExamDetails = async(req,res) =>{
+  try {
+      const response = await examService.getAExamDetails(req.params.id);
+      return res.status(StatusCodes.OK).json({
+        success: true,
+        data: response,
+        message: "data fetched sucessfully",
+      });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: error.message,
+      message: "something went wrong",
+    });
+  }
+}
+
+export { assignAnExam, getALlExams, getALLExamsBelongsToAnAssesmentAgency,assignAssesorToExam ,fetchAExamDetails};

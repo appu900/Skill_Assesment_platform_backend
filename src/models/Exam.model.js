@@ -67,6 +67,12 @@ const examSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    attendanceSheet:{
+      type: String,
+    },
+    examSheet:{
+      type: String,
+    },
   },
   {
     timestamps: true,

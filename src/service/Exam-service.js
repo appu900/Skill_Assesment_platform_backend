@@ -102,6 +102,18 @@ class ExamService {
       throw error;
     }
   }
+
+
+  async getAExamDetails(examId){
+    try {
+      const exam = await this.examRepository.getAExam(examId);
+      return exam;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default ExamService;
+
+

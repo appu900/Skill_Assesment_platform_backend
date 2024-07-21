@@ -55,6 +55,7 @@ import {
 import {
   assignAnExam,
   assignAssesorToExam,
+  fetchAExamDetails,
   getALlExams,
   getALLExamsBelongsToAnAssesmentAgency,
 } from "../../controller/exam-controller.js";
@@ -245,6 +246,8 @@ router.get("/exam/all", getALlExams);
 router.get("/exam/aa/:id", getALLExamsBelongsToAnAssesmentAgency);
 router.put("/exam/addassessor/:id",assignAssesorToExam)
 
+router.get("/exam/:id",fetchAExamDetails)
+
 
 
 
@@ -267,7 +270,7 @@ router.get("/mark/batch/:id", getStudentMarksByBatchId);
 // ** assessor
 router.post("/assessor", uploadImage, createAssessor);
 router.put("/assessor/marksheet/:id",uploadAssesorMarkSheet)
-router.get("/assessor/aa/:id",getAllAssesor)
+router.get("/assessor/aa/:id",getAllAssesor)  
 
 
 

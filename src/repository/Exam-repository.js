@@ -6,6 +6,15 @@ class ExamRepository extends CrudRepository {
     super(Exam);
   }
 
+  async getAExam(examId) {
+    try {
+      const exam = await Exam.findById(examId).populate("batchId");
+      return exam;
+    } catch (error) {
+      throw error;
+  }
+}
+
   async findAllExamsByTestAgencyId(testAgencyId) {
     try {
       const exams = await Exam.find({

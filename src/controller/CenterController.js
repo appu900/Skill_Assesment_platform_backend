@@ -52,3 +52,4 @@ const getAllCentersOfTrainingPartner = async (req, res) => {
 };
 
 export { createCenter, getAllCentersOfTrainingPartner };
+                              
