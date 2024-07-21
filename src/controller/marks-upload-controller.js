@@ -14,7 +14,7 @@ const createMark = async (req, res) => {
       message: "mark uploaded sucessfully",
     });
   } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({  
       success: false,
       error: error.message,
       message: "something went wrong",

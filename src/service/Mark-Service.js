@@ -15,8 +15,12 @@ class MarkService {
       if (!student) {
         throw new Error("student details not found");
       }
+      if (student.markUploadStatus == true) {
+        throw new Error("Mark already uploaded for this student");
+      }
       const mark = await this.markRepository.create(data);
       student.marks = mark._id;
+      student.markUploadStatus = true;
       await student.save();
       return mark;
     } catch (error) {

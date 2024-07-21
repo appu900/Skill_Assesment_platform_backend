@@ -146,14 +146,6 @@ router.put("/tp/reject/:id", TrainingPartnerController.updateStatusToRejected);
 
 
 
-
-
-
-
-
-
-
-
 // ** trainer
 router.post("/trainer", verifyIsTrainingPartner, createTrainer);
 router.get("/trainer", getAllTrainers);
@@ -163,13 +155,10 @@ router.get("/trainer/tp/:id", getAllTrainersOfaTrainingPartner);
 router.put("/trainer/marksheet/:id",uploadTrainerResultSheet)
 
 
-
 // ** student
 router.post("/student", verifyIsTrainingPartner, createStudent);
 router.get("/student/:id", getStudentDetails);
 router.put("/student/profile/:id",updateProfilePic)
-
-
 
 
 
@@ -187,6 +176,7 @@ router.post(
   verifyIsTrainingPartner,
   addToTrainerToBatch
 );
+
 
 router.post("/batch/bulkaddTrainer/:id", bulkTrainersInsertInBatch);
 
@@ -242,7 +232,7 @@ router.get("/aa/all/query", filterAssesmentgency);
 
 
 
-
+    
 
 
 
@@ -271,11 +261,6 @@ router.get("/mark/batch/:id", getStudentMarksByBatchId);
 
 
 
-
-
-
-
-
 // ** assessor
 router.post("/assessor", uploadImage, createAssessor);
 router.put("/assessor/marksheet/:id",uploadAssesorMarkSheet)
@@ -283,12 +268,8 @@ router.get("/assessor/aa/:id",getAllAssesor)
 
 
 
-
-
-
-
 // ** sector **
-router.post("/sector", createSector);
+router.post("/sector", createSector);  
 router.get("/sector/all", getAllSector);
 router.get("/sector", getAllCoursesOfASector);
 

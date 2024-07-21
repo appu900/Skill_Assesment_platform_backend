@@ -6,6 +6,10 @@ const StudentSchema = new mongoose.Schema(
       type: String,
       required: [true, "Name is required"],
     },
+    markUploadStatus:{
+      type: Boolean,
+      default: false,
+    },
     fathername: {
       type: String,
       required: [true, "Father's name is required"],
@@ -128,7 +132,7 @@ const StudentSchema = new mongoose.Schema(
     },
     redg_No: {
       type: String,
-      required: [true, "Registration number is required"],
+      // required: [true, "Registration number is required"],
     },
   },
   {
