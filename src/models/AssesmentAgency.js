@@ -106,6 +106,9 @@ const assesmentAgencySchema = new mongoose.Schema(
     LETTER_OF_NCVET: {
       type: String,
     },
+    logo:{
+      type:String,
+    }
   },
   {
     timestamps: true,

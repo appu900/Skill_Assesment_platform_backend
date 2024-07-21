@@ -31,6 +31,20 @@ class StudentService {
       throw error;
     }
   }
+
+  async updateStudentAsAbsent(studentId){
+    try {
+      const student = await this.studentRepository.get(studentId);
+      if(!student){
+        throw new Error("Student not found");
+      }
+      student.absent = true;
+      await student.save();
+      return true;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default StudentService;

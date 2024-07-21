@@ -24,8 +24,6 @@ const createStudent = async (req, res) => {
   }
 };
 
-
-
 const getStudentDetails = async (req, res) => {
   try {
     const studentId = req.params.id;
@@ -43,9 +41,6 @@ const getStudentDetails = async (req, res) => {
     });
   }
 };
-
-
-
 
 const updateProfilePic = async (req, res) => {
   try {
@@ -87,4 +82,22 @@ const updateProfilePic = async (req, res) => {
   }
 };
 
-export { createStudent, getStudentDetails, updateProfilePic };
+const markStudentAbsent = async (req, res) => {
+  try {
+    const studentId = req.params.id;
+    const response = await studentService.updateStudentAsAbsent(studentId);
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      data: response,
+      message: "student marked as absent",
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: error.message,
+      message: "something went wrong",
+    });
+  }
+};
+
+export { createStudent, getStudentDetails, updateProfilePic,markStudentAbsent };

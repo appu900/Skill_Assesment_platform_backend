@@ -16,6 +16,7 @@ import {
 import {
   createStudent,
   getStudentDetails,
+  markStudentAbsent,
   updateProfilePic,
 } from "../../controller/Student-controller.js";
 
@@ -163,6 +164,7 @@ router.put("/trainer/marksheet/:id",uploadTrainerResultSheet)
 router.post("/student", verifyIsTrainingPartner, createStudent);
 router.get("/student/:id", getStudentDetails);
 router.put("/student/profile/:id",updateProfilePic)
+router.put("/student/absent/:id",markStudentAbsent)
 
 
 
@@ -253,12 +255,6 @@ router.get("/exam/attendance/:id",getAttendanceSheetForExam)
 
 
 
-
-
-
-
-
-
 // ** upload marks
 router.post("/marks/upload", verifyAssesmentAgency, createMark);
 router.get("/mark/student/:id", getIndividualStudentMarks);
@@ -273,7 +269,6 @@ router.get("/mark/batch/:id", getStudentMarksByBatchId);
 router.post("/assessor", uploadImage, createAssessor);
 router.put("/assessor/marksheet/:id",uploadAssesorMarkSheet)
 router.get("/assessor/aa/:id",getAllAssesor)  
-
 
 
 
