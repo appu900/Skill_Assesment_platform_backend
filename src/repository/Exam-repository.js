@@ -8,7 +8,12 @@ class ExamRepository extends CrudRepository {
 
   async getAExam(examId) {
     try {
-      const exam = await Exam.findById(examId).populate("batchId");
+      const exam = await Exam.findById(examId).populate({
+        path:'batchId',
+        populate:{
+          path:'students',
+        }
+      });
       return exam;
     } catch (error) {
       throw error;
