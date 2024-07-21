@@ -58,6 +58,7 @@ import {
   fetchAExamDetails,
   getALlExams,
   getALLExamsBelongsToAnAssesmentAgency,
+  getAttendanceSheetForExam,
 } from "../../controller/exam-controller.js";
 
 import {
@@ -247,6 +248,7 @@ router.get("/exam/aa/:id", getALLExamsBelongsToAnAssesmentAgency);
 router.put("/exam/addassessor/:id",assignAssesorToExam)
 
 router.get("/exam/:id",fetchAExamDetails)
+router.get("/exam/attendance/:id",getAttendanceSheetForExam)
 
 
 

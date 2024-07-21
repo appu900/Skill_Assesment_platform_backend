@@ -23,8 +23,14 @@ class BatchService {
         trainingPartnerId
       );
 
+
+
       if (!trainingPartner) {
         throw new Error("training partner not found");
+      }
+
+      if(trainingPartner.applicationStatus !== "Approved"){
+        throw new Error("training partner is not approved");
       }
 
       data.trainingOrganization = trainingPartner.organizationName;

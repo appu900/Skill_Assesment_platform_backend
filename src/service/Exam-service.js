@@ -4,7 +4,6 @@ import ExamRepository from "../repository/Exam-repository.js";
 import TrainingPartnerRepository from "../repository/TrainingPartner-Repository.js";
 
 class ExamService {
-  
   constructor() {
     this.examRepository = new ExamRepository();
     this.batchRepository = new BatchRepository();
@@ -24,6 +23,10 @@ class ExamService {
 
       if (!batch) {
         throw new Error("batch not found");
+      }
+
+      if (batch.isAssigned) {
+        throw new Error("batch is already assigned to an exam");
       }
 
       const trainingPartner = await this.trainingPartnerRepository.get(
@@ -103,8 +106,16 @@ class ExamService {
     }
   }
 
+  async getAExamDetails(examId) {
+    try {
+      const exam = await this.examRepository.getAExam(examId);
+      return exam;
+    } catch (error) {
+      throw error;
+    }
+  }
 
-  async getAExamDetails(examId){
+  async getAttendanceSheet(examId) {
     try {
       const exam = await this.examRepository.getAExam(examId);
       return exam;
@@ -115,5 +126,3 @@ class ExamService {
 }
 
 export default ExamService;
-
-

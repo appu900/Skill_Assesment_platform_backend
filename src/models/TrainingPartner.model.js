@@ -43,10 +43,7 @@ const trainingPartnerSchema = new Schema(
       },
     ],
 
-    businessesType: {
-      type: String,
-      required: [true, "type of training is required"],
-    },
+ 
 
     certificates: [
       {

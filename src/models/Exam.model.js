@@ -11,7 +11,7 @@ const examSchema = new mongoose.Schema(
       required: true,
     },
     course: { type: String, required: true },
-    courseCode: { type: String, required: true },
+    courseCode: { type: String},
     CenterName: {
       type: String,
     },
@@ -65,7 +65,6 @@ const examSchema = new mongoose.Schema(
     },
     totalStudents: {
       type: Number,
-      required: true,
     },
     attendanceSheet:{
       type: String,
