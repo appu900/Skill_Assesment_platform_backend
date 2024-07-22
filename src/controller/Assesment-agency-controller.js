@@ -1,7 +1,13 @@
 import { StatusCodes } from "http-status-codes";
 import AssesmentAgencyService from "../service/Assesment-Agency.js";
+import upload from "../config/s3-imageUpload-config.js";
 
 const assesmentAgencyService = new AssesmentAgencyService();
+const fileUploader = upload.fields([
+  { name: "registrationCertificate", maxCount: 1 },
+  { name: "panCard", maxCount: 1 },
+  { name: "logo", maxCount: 1 },
+])
 
 const createAssesmentAgency = async (req, res) => {
   try {
@@ -182,3 +188,11 @@ export {
   getAllApprovedAssesmentAgency,
   filterAssesmentgency,
 };
+
+
+
+
+
+
+
+

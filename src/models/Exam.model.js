@@ -72,7 +72,13 @@ const examSchema = new mongoose.Schema(
     resultSheet:{
       type: String,
     },
-    
+
+    images:[
+      {
+        type:String,
+      }
+    ]
+       
   },
   {
     timestamps: true,

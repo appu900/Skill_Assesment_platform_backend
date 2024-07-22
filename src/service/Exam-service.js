@@ -52,6 +52,7 @@ class ExamService {
         state: batch.state,
         scheme: batch.scheme,
         CenterName: batch.CenterName,
+        courseCode: batch.courseCode,
         CenterCode: batch.CenterCode,
         batchId: batch._id,
         assesmentAgencyId: assesmentAgency._id,
@@ -124,7 +125,7 @@ class ExamService {
     }
   }
 
-  async updateExamStatus(examId,attendanceSheetUrl,resultSheetUrl) {
+  async updateExamStatus(examId, attendanceSheetUrl, resultSheetUrl) {
     try {
       const exam = await this.examRepository.get(examId);
       exam.markUploadAndExamCompleteStatus = true;
@@ -137,6 +138,16 @@ class ExamService {
     }
   }
 
+  async uploadMultiplePhotos(examId, imagePayload) {
+    try {
+      const exam = await this.examRepository.get(examId);
+      exam.images = imagePayload;
+      await exam.save();
+      return exam.images;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default ExamService;

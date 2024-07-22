@@ -8,6 +8,8 @@ const fileUploader = upload.fields([
   { name: "resultSheet", maxCount: 1 },
 ]);
 
+const multiplePhotoUploader = upload.array("photos", 2);
+
 const assignAnExam = async (req, res) => {
   try {
     const exam = await examService.createExam(
@@ -133,7 +135,7 @@ async function changeExamCompleteStatus(req, res) {
       const examId = req.params.id;
       const attendanceSheet = req.files?.attendanceSheet[0].location;
       const resultSheet = req.files?.resultSheet[0].location;
-     
+
       const response = await examService.updateExamStatus(
         examId,
         attendanceSheet,
@@ -155,6 +157,34 @@ async function changeExamCompleteStatus(req, res) {
   }
 }
 
+const uploadPhotos = async (req, res) => {
+  try {
+    multiplePhotoUploader(req, res, async function (err) {
+      if (err) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+          success: false,
+          error: err.message,
+          message: "something went wrong in uploading files",
+        });
+      }
+      const id = req.params.id;
+      const imagePayload = req.files?.map((item)=>item.location)
+      const response = await examService.uploadMultiplePhotos(id, imagePayload);
+      return res.status(StatusCodes.OK).json({
+        success: true,
+        message: "photos uploaded",
+        data:response,
+      });
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: error.message,
+      message: "something went wrong",
+    });
+  }
+};
+
 export {
   assignAnExam,
   getALlExams,
@@ -163,4 +193,5 @@ export {
   fetchAExamDetails,
   getAttendanceSheetForExam,
   changeExamCompleteStatus,
+  uploadPhotos,
 };

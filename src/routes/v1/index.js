@@ -61,6 +61,7 @@ import {
   getALlExams,
   getALLExamsBelongsToAnAssesmentAgency,
   getAttendanceSheetForExam,
+  uploadPhotos,
 } from "../../controller/exam-controller.js";
 
 import {
@@ -246,7 +247,7 @@ router.get("/exam/all", getALlExams);
 router.get("/exam/aa/:id", getALLExamsBelongsToAnAssesmentAgency);
 router.put("/exam/addassessor/:id",assignAssesorToExam)
 router.put("/exam/status/:id",changeExamCompleteStatus)
-
+router.put("/exam/images/:id",uploadPhotos)
 router.get("/exam/:id",fetchAExamDetails)
 router.get("/exam/attendance/:id",getAttendanceSheetForExam)
 
