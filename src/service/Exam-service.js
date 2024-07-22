@@ -124,16 +124,19 @@ class ExamService {
     }
   }
 
-  async updateExamStatus(examId) {
+  async updateExamStatus(examId,attendanceSheetUrl,resultSheetUrl) {
     try {
       const exam = await this.examRepository.get(examId);
       exam.markUploadAndExamCompleteStatus = true;
+      exam.attendanceSheet = attendanceSheetUrl;
+      exam.resultSheet = resultSheetUrl;
       await exam.save();
       return exam;
     } catch (error) {
       throw error;
     }
   }
+
 }
 
 export default ExamService;

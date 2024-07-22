@@ -230,6 +230,7 @@ const uploadBatchPaymentDetails = async (req, res) => {
 
       return res.status(StatusCodes.OK).json({
         success: true,
+        data: response,
         message: "payment details uploaded successfully",
       });
     });

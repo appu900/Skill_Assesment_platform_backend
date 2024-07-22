@@ -1,6 +1,12 @@
 import { StatusCodes } from "http-status-codes";
 import ExamService from "../service/Exam-service.js";
+import upload from "../config/s3-imageUpload-config.js";
 const examService = new ExamService();
+
+const fileUploader = upload.fields([
+  { name: "attendanceSheet", maxCount: 1 },
+  { name: "resultSheet", maxCount: 1 },
+]);
 
 const assignAnExam = async (req, res) => {
   try {
@@ -115,11 +121,30 @@ const getAttendanceSheetForExam = async (req, res) => {
 
 async function changeExamCompleteStatus(req, res) {
   try {
-    const response = await examService.updateExamStatus(req.params.id);
-    return res.status(StatusCodes.OK).json({
-      success: true,
-      message: "exam status updated",
-      data: response,
+    fileUploader(req, res, async function (err) {
+      if (err) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+          success: false,
+          error: err.message,
+          message: "something went wrong in uploading files",
+        });
+      }
+
+      const examId = req.params.id;
+      const attendanceSheet = req.files?.attendanceSheet[0].location;
+      const resultSheet = req.files?.resultSheet[0].location;
+     
+      const response = await examService.updateExamStatus(
+        examId,
+        attendanceSheet,
+        resultSheet
+      );
+
+      return res.status(StatusCodes.OK).json({
+        success: true,
+        message: "exam status changed",
+        data: response,
+      });
     });
   } catch (error) {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -137,5 +162,5 @@ export {
   assignAssesorToExam,
   fetchAExamDetails,
   getAttendanceSheetForExam,
-  changeExamCompleteStatus
+  changeExamCompleteStatus,
 };
