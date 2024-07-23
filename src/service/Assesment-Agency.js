@@ -137,6 +137,29 @@ class AssesmentAgencyService {
       return response;
     } catch (error) {}
   }
+
+  async addbankDetails(
+    assesmentAgencyId,
+    accountNumber,
+    IFSC_Code,
+    bankName,
+    branchName,
+   
+  ){
+    try {
+       const response = await this.assesmentAgencyRepo.updateBankDetails(
+          assesmentAgencyId,
+          accountNumber,
+          IFSC_Code,
+          bankName,
+          branchName, 
+        );
+       
+       return response;     
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default AssesmentAgencyService;

@@ -1,4 +1,4 @@
-import { StatusCodes } from "http-status-codes";
+import { INTERNAL_SERVER_ERROR, StatusCodes } from "http-status-codes";
 import AssesmentAgencyService from "../service/Assesment-Agency.js";
 import upload from "../config/s3-imageUpload-config.js";
 
@@ -53,7 +53,7 @@ const updateAssesmentAgencyStatusToApproved = async (req, res) => {
     const percentage = req.body.percentage;
     const response = await assesmentAgencyService.updateStatusToApproved(
       req.params.id,
-      percentage,
+      percentage
     );
     return res.status(200).json({
       success: true,
@@ -179,6 +179,29 @@ const filterAssesmentgency = async (req, res) => {
   }
 };
 
+const updateBankDetails = async (req, res) => {
+  try {
+    const response = await assesmentAgencyService.addbankDetails(
+      req.params.id,
+      req.body.accountNumber,
+      req.body.IFSC_Code,
+      req.body.bankName,
+      req.body.branchName
+    )
+    return res.status(200).json({
+      success: true,
+      data: response,
+      message: "Bank details added sucessfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+      message: "something went wrong in updating status",
+    });
+  }
+};
+
 export {
   createAssesmentAgency,
   assesmentAgencylogin,
@@ -189,4 +212,5 @@ export {
   getAllPendingAssesmentAgency,
   getAllApprovedAssesmentAgency,
   filterAssesmentgency,
+  updateBankDetails
 };

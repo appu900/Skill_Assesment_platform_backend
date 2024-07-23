@@ -51,6 +51,7 @@ import {
   getAssesmentAgencyById,
   updateAssesmentAgencyStatusToApproved,
   updateAssesmentAgencyStatusToRejected,
+  updateBankDetails,
 } from "../../controller/Assesment-agency-controller.js";
 
 import {
@@ -236,6 +237,7 @@ router.get("/aa", getAllAssesmentAgency);
 router.get("/aa/status/approved", getAllApprovedAssesmentAgency);
 router.get("/aa/status/pending", getAllPendingAssesmentAgency);
 router.get("/aa/all/query", filterAssesmentgency);
+router.put("/aa/bdt/:id",updateBankDetails)
 
 
 

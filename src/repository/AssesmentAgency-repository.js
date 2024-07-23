@@ -82,6 +82,33 @@ class AssesmentAgencyRepository extends CrudRepository {
       throw error;
     }
   }
+
+  async updateBankDetails(
+    assesmentAgencyId,
+    accountNumber,
+    IFSC_Code,
+    bankName,
+    branchName,
+  
+  ) {
+    try {
+      const response = await AssesmentAgency.findByIdAndUpdate(
+        assesmentAgencyId,
+        {
+          $set: {
+            AccountNumber: accountNumber,
+            IFSC_Code: IFSC_Code,
+            BankName: bankName,
+            BranchName: branchName,
+          },
+        },
+        { new: true }
+      );
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default AssesmentAgencyRepository;

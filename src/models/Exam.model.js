@@ -10,6 +10,10 @@ const examSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+
+    batchPaymentAmount: {
+      type: Number,
+    },
     markUploadAndExamCompleteStatus: {
       type: Boolean,
       default: false,
@@ -79,6 +83,9 @@ const examSchema = new mongoose.Schema(
     totalStudents: {
       type: Number,
     },
+    presentStudents: {
+      type: Number,
+    },
     totalNoOfStudentAbsent: {
       type: Number,
     },
@@ -92,6 +99,9 @@ const examSchema = new mongoose.Schema(
     },
     resultSheet: {
       type: String,
+    },
+    perStudentCost: {
+      type: Number,
     },
 
     images: [
@@ -107,3 +117,5 @@ const examSchema = new mongoose.Schema(
 
 const Exam = new mongoose.model("Exam", examSchema);
 export default Exam;
+
+// end point of

@@ -198,15 +198,20 @@ class BatchService {
 
       // ** calculate payment amount if schemeType is Corporate
       let totalAmount = 0;
+      let perStudentCost = 0;
 
       if (batch.schemeType === "Corporate") {
         totalAmount =
           tp.organizationCorporatePaymentFee * batch.students.length;
         batch.amountToPaid = totalAmount;
+        perStudentCost = tp.organizationCorporatePaymentFee;
       } else {
         //  ** fetch scheme code and calculate payment amount based on scheme code
-        const scheme = await this.schemeRepository.findBySchemeName(batch.scheme)
+        const scheme = await this.schemeRepository.findBySchemeName(
+          batch.scheme
+        );
         totalAmount = scheme.pricePerStudent * batch.students.length;
+        perStudentCost = scheme.pricePerStudent;
       }
 
       const invoiceData = {
@@ -225,12 +230,13 @@ class BatchService {
 
       const response = await this.batchRepository.activateBatchByClient(
         batchId,
-        totalAmount
+        totalAmount,
+        perStudentCost
       );
 
       return true;
     } catch (error) {
-      console.log(error.message)
+      console.log(error.message);
       throw error;
     }
   }
@@ -290,7 +296,7 @@ class BatchService {
     } catch (error) {
       throw error;
     }
-  }  
+  }
 
   async getAllPaymentNotifications() {
     try {

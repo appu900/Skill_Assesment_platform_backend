@@ -102,6 +102,26 @@ class ExamRepository extends CrudRepository {
       throw error;
     }
   }
+
+  // ** filter all exams of a assesmentAgency by month and year
+  async filterExamByMonthAndYear(assesmentAgencyId, month, year) {
+    try {
+      const response = await Exam.find({
+        assesmentAgencyId: assesmentAgencyId,
+        month: month,
+        year: year,
+        markUploadAndExamCompleteStatus:true
+      });
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+
+ 
+
+
 }
 
 export default ExamRepository;

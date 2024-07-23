@@ -38,6 +38,10 @@ const batchSchema = new mongoose.Schema(
     //   default: false,
     // },
 
+    perStudentCost:{
+      type:Number,
+    },
+
     schemeType: {
       type: String,
       required: [true, "Scheme type is required"],

@@ -13,7 +13,6 @@ class ExamService {
 
   async createExam(
     courseName,
-    date,
     batchId,
     assesmentAgencyId,
     trainingPartnerId
@@ -47,7 +46,6 @@ class ExamService {
 
       const payload = {
         course: courseName,
-        date: date,
         sector: batch.sectorName,
         state: batch.state,
         scheme: batch.scheme,
@@ -60,6 +58,9 @@ class ExamService {
         TrainingOrganization: trainingPartner.organizationName,
         TrainingPartnerId: trainingPartner._id,
         batchABN: batch.ABN_Number,
+        batchPaymentAmount: batch.amountToPaid,
+        totalStudents: batch.students.length,  
+        perStudentCost:batch.perStudentCost
       };
 
       batch.isAssigned = true;
