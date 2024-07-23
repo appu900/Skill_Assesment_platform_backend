@@ -37,4 +37,23 @@ const fetchAllSchems = async (req, res) => {
   }
 };
 
-export { createScheme,fetchAllSchems };
+const fetchAllSchemeOfSchemeType = async (req, res) => {
+  try {
+    const response = await schemeService.getSchemeBySchemeType(
+      req.body.schemeType
+    );
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      data: response,
+      message: "All Schemes fetched successfully",
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: error.message,
+      message: "something went wrong",
+    });
+  }
+};
+
+export { createScheme, fetchAllSchems,fetchAllSchemeOfSchemeType };

@@ -13,12 +13,21 @@ class SchemeService {
       throw error;
     }
   }
-  async getAllSchems(){
+  async getAllSchems() {
     try {
       const response = await this.schemeRepo.getAll();
       return response;
     } catch (error) {
-      throw error
+      throw error;
+    }
+  }
+
+  async getSchemeBySchemeType(schemeType) {
+    try {
+      const response = await this.schemeRepo.findBySchemeType(schemeType);
+      return response;
+    } catch (error) {
+      throw error;
     }
   }
 }

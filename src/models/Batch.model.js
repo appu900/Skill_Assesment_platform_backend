@@ -144,10 +144,6 @@ const batchSchema = new mongoose.Schema(
       type: String,
       enum: ["Online", "Offline"],
     },
-    corporatePaymentType: {
-      type: Boolean,
-      default: false,
-    },
   },
 
   {

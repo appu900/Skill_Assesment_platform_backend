@@ -82,6 +82,7 @@ import {
 } from "../../controller/course-controller.js";
 import {
   createScheme,
+  fetchAllSchemeOfSchemeType,
   fetchAllSchems,
 } from "../../controller/Scheme-Controller.js";
 import verifyAssesmentAgency from "../../middleware/verifyAssesmentAgency.js";
@@ -288,6 +289,7 @@ router.get("/courses", getAllCourses);
 // ** scheme
 router.post("/scheme", createScheme);
 router.get("/scheme", fetchAllSchems);
+router.get("/scheme/query",fetchAllSchemeOfSchemeType)
 
 
 // ** Price

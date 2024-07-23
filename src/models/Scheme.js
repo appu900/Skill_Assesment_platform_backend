@@ -19,7 +19,7 @@ const schemeSchema = new mongoose.Schema({
   },
   pricePerStudent: {
     type: Number,
-    required: true,
+    default: 0,
   },
 });
 
