@@ -10,19 +10,25 @@ const examSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    markUploadAndExamCompleteStatus:{
+    markUploadAndExamCompleteStatus: {
       type: Boolean,
       default: false,
     },
     course: { type: String, required: true },
-    courseCode: { type: String},
+    courseCode: { type: String },
     CenterName: {
       type: String,
     },
     CenterCode: {
       type: String,
     },
-    date: { type: Date, required: true },
+    assesmentdate: { type: String },
+    month: {
+      type: String,
+    },
+    year: {
+      type: String,
+    },
     status: {
       type: String,
       default: "not-started",
@@ -31,6 +37,9 @@ const examSchema = new mongoose.Schema(
     scheme: {
       type: String,
       required: true,
+    },
+    tpcode: {
+      type: String,
     },
     sector: {
       type: String,
@@ -70,19 +79,26 @@ const examSchema = new mongoose.Schema(
     totalStudents: {
       type: Number,
     },
-    attendanceSheet:{
+    totalNoOfStudentAbsent: {
+      type: Number,
+    },
+    paymentStatus: {
+      type: Boolean,
+      default: false,
+    },
+
+    attendanceSheet: {
       type: String,
     },
-    resultSheet:{
+    resultSheet: {
       type: String,
     },
 
-    images:[
+    images: [
       {
-        type:String,
-      }
-    ]
-       
+        type: String,
+      },
+    ],
   },
   {
     timestamps: true,

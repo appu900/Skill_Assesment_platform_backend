@@ -40,7 +40,7 @@ const fetchAllSchems = async (req, res) => {
 const fetchAllSchemeOfSchemeType = async (req, res) => {
   try {
     const response = await schemeService.getSchemeBySchemeType(
-      req.body.schemeType
+      req.query.schemeType
     );
     return res.status(StatusCodes.OK).json({
       success: true,

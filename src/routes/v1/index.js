@@ -54,6 +54,7 @@ import {
 } from "../../controller/Assesment-agency-controller.js";
 
 import {
+  addAssesmentDate,
   assignAnExam,
   assignAssesorToExam,
   changeExamCompleteStatus,
@@ -61,6 +62,7 @@ import {
   getALlExams,
   getALLExamsBelongsToAnAssesmentAgency,
   getAttendanceSheetForExam,
+  updateExamPaymentStatus,
   uploadPhotos,
 } from "../../controller/exam-controller.js";
 
@@ -251,6 +253,8 @@ router.put("/exam/status/:id",changeExamCompleteStatus)
 router.put("/exam/images/:id",uploadPhotos)
 router.get("/exam/:id",fetchAExamDetails)
 router.get("/exam/attendance/:id",getAttendanceSheetForExam)
+router.put("/exam/assesmentdate/:id",addAssesmentDate)
+router.put("/exam/paymentstatus/:id",updateExamPaymentStatus)
 
 
 

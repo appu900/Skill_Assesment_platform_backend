@@ -8,7 +8,7 @@ const fileUploader = upload.fields([
   { name: "resultSheet", maxCount: 1 },
 ]);
 
-const multiplePhotoUploader = upload.array("photos", 2);
+const multiplePhotoUploader = upload.array("photos", 10);
 
 const assignAnExam = async (req, res) => {
   try {
@@ -167,14 +167,53 @@ const uploadPhotos = async (req, res) => {
           message: "something went wrong in uploading files",
         });
       }
+      console.log(req.files);
       const id = req.params.id;
-      const imagePayload = req.files?.map((item)=>item.location)
+      const imagePayload = req.files?.map((item) => item.location);
       const response = await examService.uploadMultiplePhotos(id, imagePayload);
       return res.status(StatusCodes.OK).json({
         success: true,
         message: "photos uploaded",
-        data:response,
+        data: response,
       });
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: error.message,
+      message: "something went wrong",
+    });
+  }
+};
+
+const addAssesmentDate = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const date = req.body.date;
+    const response = await examService.updateAssesmentDate(id, date);
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      message: "date updated",
+      data: response,
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: error.message,
+      message: "something went wrong",
+    });
+  }
+};
+
+const updateExamPaymentStatus = async (req, res) => {
+  try {
+    const examId = req.params.id;
+    console.log(examId)
+    const response = await examService.updatePaymentStatus(examId);
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      message: "payment status updated",
+      data: response,
     });
   } catch (error) {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -194,4 +233,6 @@ export {
   getAttendanceSheetForExam,
   changeExamCompleteStatus,
   uploadPhotos,
+  updateExamPaymentStatus,
+  addAssesmentDate,
 };

@@ -172,7 +172,7 @@ const activeBatch = async (req, res) => {
     return res.status(StatusCodes.OK).json({
       success: true,
       data: response,
-      message: "active batch fetched sucessfully",
+      message: "batch submission done sucessfully",
     });
   } catch (error) {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({

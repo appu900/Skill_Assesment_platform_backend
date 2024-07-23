@@ -148,6 +148,25 @@ class ExamService {
       throw error;
     }
   }
+
+  async updatePaymentStatus(examId) {
+    try {
+      console.log("examId", examId);
+      const response = await this.examRepository.updatePaymentStatus(examId);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateAssesmentDate(examId, date) {
+    try {
+      const response = await this.examRepository.updateExamDate(examId, date);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default ExamService;
