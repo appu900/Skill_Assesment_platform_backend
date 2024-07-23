@@ -32,12 +32,16 @@ const batchSchema = new mongoose.Schema(
     //   type: Boolean,
     //   default: false,
     // },
-    
-    courseCode:{
+
+    schemeType: {
+      type: String,
+      required: [true, "Scheme type is required"],
+    },
+
+    courseCode: {
       type: String,
       required: [true, "Course code is required"],
     },
-    
 
     CenterCode: {
       type: String,
