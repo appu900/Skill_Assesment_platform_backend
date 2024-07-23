@@ -64,6 +64,7 @@ import {
   getALLExamsBelongsToAnAssesmentAgency,
   getAttendanceSheetForExam,
   updateExamPaymentStatus,
+  updateStudentAttendanceNumber,
   uploadPhotos,
 } from "../../controller/exam-controller.js";
 
@@ -257,6 +258,7 @@ router.get("/exam/:id",fetchAExamDetails)
 router.get("/exam/attendance/:id",getAttendanceSheetForExam)
 router.put("/exam/assesmentdate/:id",addAssesmentDate)
 router.put("/exam/paymentstatus/:id",updateExamPaymentStatus)
+router.put("/exam/attendance/:id",updateStudentAttendanceNumber)
 
 
 

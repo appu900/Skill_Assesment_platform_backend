@@ -207,11 +207,31 @@ const addAssesmentDate = async (req, res) => {
 const updateExamPaymentStatus = async (req, res) => {
   try {
     const examId = req.params.id;
-    console.log(examId)
+    console.log(examId);
     const response = await examService.updatePaymentStatus(examId);
     return res.status(StatusCodes.OK).json({
       success: true,
       message: "payment status updated",
+      data: response,
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: error.message,
+      message: "something went wrong",
+    });
+  }
+};
+
+const updateStudentAttendanceNumber = async (req, res) => {
+  try {
+    const response = await examService.updateCandidateAttendanceNumber(
+      req.params.id,
+      req.body.attendanceNumber
+    );
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      message: "attendance number updated",
       data: response,
     });
   } catch (error) {
@@ -234,4 +254,5 @@ export {
   uploadPhotos,
   updateExamPaymentStatus,
   addAssesmentDate,
+  updateStudentAttendanceNumber
 };

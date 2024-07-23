@@ -81,9 +81,8 @@ class ExamRepository extends CrudRepository {
         { new: true }
       );
       return response;
-      
     } catch (error) {
-      console.log("repository layer error",error)
+      console.log("repository layer error", error);
       throw error;
     }
   }
@@ -110,7 +109,7 @@ class ExamRepository extends CrudRepository {
         assesmentAgencyId: assesmentAgencyId,
         month: month,
         year: year,
-        markUploadAndExamCompleteStatus:true
+        markUploadAndExamCompleteStatus: true,
       });
       return response;
     } catch (error) {
@@ -118,10 +117,20 @@ class ExamRepository extends CrudRepository {
     }
   }
 
-
- 
-
-
+  async updateStudentAttendance(examId, data) {
+    try {
+      const response = await Exam.findByIdAndUpdate(
+        examId,
+        {
+          presentStudents: data,
+        },
+        { new: true }
+      );
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default ExamRepository;

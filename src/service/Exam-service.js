@@ -11,12 +11,7 @@ class ExamService {
     this.trainingPartnerRepository = new TrainingPartnerRepository();
   }
 
-  async createExam(
-    courseName,
-    batchId,
-    assesmentAgencyId,
-    trainingPartnerId
-  ) {
+  async createExam(courseName, batchId, assesmentAgencyId, trainingPartnerId) {
     try {
       const batch = await this.batchRepository.get(batchId);
 
@@ -59,8 +54,8 @@ class ExamService {
         TrainingPartnerId: trainingPartner._id,
         batchABN: batch.ABN_Number,
         batchPaymentAmount: batch.amountToPaid,
-        totalStudents: batch.students.length,  
-        perStudentCost:batch.perStudentCost
+        totalStudents: batch.students.length,
+        perStudentCost: batch.perStudentCost,
       };
 
       batch.isAssigned = true;
@@ -163,6 +158,19 @@ class ExamService {
   async updateAssesmentDate(examId, date) {
     try {
       const response = await this.examRepository.updateExamDate(examId, date);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateCandidateAttendanceNumber(examId, attendanceNumber) {
+    try {
+      const response =
+        await this.examRepository.updateStudentAttendance(
+          examId,
+          attendanceNumber
+        );
       return response;
     } catch (error) {
       throw error;
