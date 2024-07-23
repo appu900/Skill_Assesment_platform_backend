@@ -16,6 +16,7 @@
 
 import mongoose from "mongoose";
 import Sequence from "./sequence.model.js";
+import getStateCode from "../utils/stateCodes.js";
 
 const batchSchema = new mongoose.Schema(
   {
@@ -23,6 +24,10 @@ const batchSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Center",
     },
+    tpcode:{
+      type:String,
+    },
+    
     centerName: {
       type: String,
       required: [true, "Center name is required"],
@@ -153,13 +158,11 @@ const batchSchema = new mongoose.Schema(
 
 batchSchema.pre("save", async function (next) {
   if (this.isNew) {
-    const stateInitial = this.state ? this.state.charAt(0).toUpperCase() : "";
-    const courseInitial = this.courseName
-      ? this.courseName.charAt(0).toUpperCase()
-      : "";
-    const sectorInitial = this.sectorName
-      ? this.sectorName.charAt(0).toUpperCase()
-      : "";
+    
+     const stateInitial = getStateCode(this.state);
+     const courseInitial = this.courseCode.slice(-4).toUpperCase();
+     const tpcode = this.tpcode;
+
 
     try {
       const sequence = await Sequence.findByIdAndUpdate(
@@ -167,7 +170,7 @@ batchSchema.pre("save", async function (next) {
         { $inc: { seq: 1 } },
         { new: true, upsert: true }
       );
-      this.ABN_Number = `B${stateInitial}${courseInitial}${sectorInitial}${sequence.seq}`;
+      this.ABN_Number = `${stateInitial}-${tpcode}-${courseInitial}-${sequence.seq}`;
       next();
     } catch (error) {
       console.log(error.message);

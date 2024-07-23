@@ -10,18 +10,24 @@ const invoiceSchema = new mongoose.Schema({
   purpose: {
     type: String,
   },
-  payAbleamount: {
+  amount: {
     type: Number,
   },
-  paidAmount: {
-    type: Number,
-  },
+ 
   paymentStatus: {
     type: Boolean,
     default: false,
   },
   paymentDate: {
     type: Date,
+  },
+  UTR: {
+    type: String,
+    default: "null",
+  },
+  transactionId: {
+    type: String,
+    default: "null",
   },
   TrainingPartnerId: {
     type: mongoose.Schema.Types.ObjectId,

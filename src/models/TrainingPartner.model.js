@@ -15,6 +15,7 @@ const trainingPartnerSchema = new Schema(
 
     organizationCorporatePaymentFee: {
       type: Number,
+      default: 0,
     },
 
     courses: [

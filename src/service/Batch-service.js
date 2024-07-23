@@ -5,6 +5,7 @@ import TrainerRepository from "../repository/Trainer-Repository.js";
 import TrainingPartnerRepository from "../repository/TrainingPartner-Repository.js";
 import PriceService from "./Price-service.js";
 import InvoiceService from "./InvoiceService.js";
+import SchemeRepository from "../repository/SchemeRepository.js";
 
 class BatchService {
   constructor() {
@@ -14,6 +15,7 @@ class BatchService {
     this.trainingPartnerRepository = new TrainingPartnerRepository();
     this.priceService = new PriceService();
     this.invoiceService = new InvoiceService();
+    this.schemeRepository = new SchemeRepository();
   }
 
   async createBatch(data) {
@@ -23,13 +25,11 @@ class BatchService {
         trainingPartnerId
       );
 
-
-
       if (!trainingPartner) {
         throw new Error("training partner not found");
       }
 
-      if(trainingPartner.applicationStatus !== "Approved"){
+      if (trainingPartner.applicationStatus !== "Approved") {
         throw new Error("training partner is not approved");
       }
 
@@ -184,42 +184,53 @@ class BatchService {
     try {
       const batch = await this.batchRepository.get(batchId);
 
-      if (batch.scheme === "Corporate") {
-        batch.corporate = true;
+      if (!batch) {
+        throw new Error("batch not found");
       }
 
-      // ** if the batch scheme if not corporate then calculate the price and update the field
-      // ** if the batch scheme is corporate then update the field as corporate
+      if (batch.students.length === 0) {
+        throw new Error("batch complete the batch with students first");
+      }
 
-      if (batch.scheme !== "Corporate") {
-        const price = await this.priceService.getPriceDetails(batch.scheme);
-        const totalAmount = price.amountPerStudent * batch.students.length;
+      const tp = await this.trainingPartnerRepository.get(
+        batch.trainingOrganizationId
+      );
+
+      // ** calculate payment amount if schemeType is Corporate
+      let totalAmount = 0;
+
+      if (batch.schemeType === "Corporate") {
+        totalAmount =
+          tp.organizationCorporatePaymentFee * batch.students.length;
         batch.amountToPaid = totalAmount;
-        await batch.save();
-        const invoiceData = {
-          payer: "TrainingPartner",
-          payee: "Admin",
-          purpose: "batch payment",
-          payAbleamount: totalAmount,
-          paidAmount: 0,
-          paymentStatus: false,
-          TrainingPartnerId: batch.trainingOrganizationId,
-          BatchId: batch._id,
-        };
-        this.invoiceService.createInvoice(invoiceData).catch((error) => {
-          console.log("error in invoice generation", error);
-        });
       } else {
-        batch.corporatePaymentType = true;
-        await batch.save();
+        //  ** fetch scheme code and calculate payment amount based on scheme code
+        const scheme = await this.schemeRepository.findBySchemeName(batch.scheme)
+        totalAmount = scheme.pricePerStudent * batch.students.length;
       }
+
+      const invoiceData = {
+        payer: "TrainingPartner",
+        payee: "Admin",
+        purpose: "batch payment",
+        amount: totalAmount,
+        paymentStatus: false,
+        TrainingPartnerId: batch.trainingOrganizationId,
+        BatchId: batch._id,
+      };
+
+      this.invoiceService.createInvoice(invoiceData).catch((error) => {
+        console.log("error in invoice generation", error);
+      });
 
       const response = await this.batchRepository.activateBatchByClient(
-        batchId
+        batchId,
+        totalAmount
       );
 
       return true;
     } catch (error) {
+      console.log(error.message)
       throw error;
     }
   }

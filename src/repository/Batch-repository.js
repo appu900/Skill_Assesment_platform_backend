@@ -76,10 +76,11 @@ class BatchRepository extends CrudRepository {
     }
   }
 
-  async activateBatchByClient(batchId) {
+  async activateBatchByClient(batchId,paymentAmount) {
     try {
       const response = await Batch.findByIdAndUpdate(batchId, {
         batchActivePermission: true,
+        amountToPaid: paymentAmount,
       });
       return true;
     } catch (error) {
