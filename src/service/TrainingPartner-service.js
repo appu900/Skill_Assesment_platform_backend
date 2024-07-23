@@ -82,7 +82,7 @@ class TrainingPartnerService {
   async ApproveApplication(id,paymentAmount) {
     try {
       const response =
-        await this.trainingPartnerRepository.updateStatusApproved(id,paymentAmount);
+      await this.trainingPartnerRepository.updateStatusApproved(id,paymentAmount);
       console.log("Approved Response Data", response.registeredOfficeEmail);
       sendEmail(
         "pabitrasundardakua@gmail.com",

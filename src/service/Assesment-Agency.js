@@ -1,4 +1,5 @@
 import AssesmentAgencyRepository from "../repository/AssesmentAgency-repository.js";
+import sendEmail from "./email-service.js";
 
 class AssesmentAgencyService {
   constructor() {
@@ -39,7 +40,7 @@ class AssesmentAgencyService {
     }
   }
 
-  async updateStatusToApproved(id) {
+  async updateStatusToApproved(id, percentage) {
     try {
       if (!id) {
         throw new Error("plaese input the correct parameter");
@@ -48,7 +49,16 @@ class AssesmentAgencyService {
       if (!agency) {
         throw new Error("id is wrong");
       }
-      const response = await this.assesmentAgencyRepo.updateStatusApproved(id);
+      const response = await this.assesmentAgencyRepo.updateStatusApproved(
+        id,
+        percentage
+      );
+      sendEmail(
+        "pabitrasundardakua@gmail.com",
+        response.email,
+        "Application Approved",
+        "Your Application has been Approved by the Admin. You can now login to the portal and start your Assesment service services. Thank You"
+      );
       return response;
     } catch (error) {
       throw error;

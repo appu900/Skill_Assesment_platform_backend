@@ -7,7 +7,7 @@ const fileUploader = upload.fields([
   { name: "registrationCertificate", maxCount: 1 },
   { name: "panCard", maxCount: 1 },
   { name: "logo", maxCount: 1 },
-])
+]);
 
 const createAssesmentAgency = async (req, res) => {
   try {
@@ -50,8 +50,10 @@ const assesmentAgencylogin = async (req, res) => {
 
 const updateAssesmentAgencyStatusToApproved = async (req, res) => {
   try {
+    const percentage = req.body.percentage;
     const response = await assesmentAgencyService.updateStatusToApproved(
-      req.params.id
+      req.params.id,
+      percentage,
     );
     return res.status(200).json({
       success: true,
@@ -188,11 +190,3 @@ export {
   getAllApprovedAssesmentAgency,
   filterAssesmentgency,
 };
-
-
-
-
-
-
-
-

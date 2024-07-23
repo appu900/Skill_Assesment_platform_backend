@@ -290,7 +290,7 @@ class BatchService {
     } catch (error) {
       throw error;
     }
-  }
+  }  
 
   async getAllPaymentNotifications() {
     try {

@@ -8,8 +8,9 @@ const assesmentAgencySchema = new mongoose.Schema(
       type: String,
       required: [true, "name is missing here"],
     },
-    paymentPercentage:{
-      type:Number,
+    paymentPercentage: {
+      type: Number,
+      default: 0,
     },
     officeAddress: {
       type: String,
@@ -109,9 +110,30 @@ const assesmentAgencySchema = new mongoose.Schema(
     LETTER_OF_NCVET: {
       type: String,
     },
-    logo:{
-      type:String,
-    }
+    logo: {
+      type: String,
+    },
+
+    AccountNumber: {
+      type: String,
+    },
+
+    IFSC_Code: {
+      type: String,
+    },
+
+    MICR_code: {
+      type: String,
+    },
+    AccountType: {
+      type: String,
+    },
+    BankName: {
+      type: String,
+    },
+    BranchName: {
+      type: String,
+    },
   },
   {
     timestamps: true,
@@ -139,12 +161,12 @@ assesmentAgencySchema.methods.generateJwt = function generate() {
     {
       id: this._id,
       role: this.role,
-      name:this.agencyName
+      name: this.agencyName,
     },
     "this is a secrete a key",
     { expiresIn: "1d" }
   );
-}; 
+};
 
 const AssesmentAgency = mongoose.model(
   "AssesmentAgency",
@@ -152,10 +174,3 @@ const AssesmentAgency = mongoose.model(
 );
 
 export default AssesmentAgency;
-
-
-
-
-
-
-

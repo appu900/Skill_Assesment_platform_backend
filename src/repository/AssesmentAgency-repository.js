@@ -26,13 +26,14 @@ class AssesmentAgencyRepository extends CrudRepository {
     }
   }
 
-  async updateStatusApproved(assesmentAgencyId) {
+  async updateStatusApproved(assesmentAgencyId, amountPercentange) {
     try {
       const res = await AssesmentAgency.findByIdAndUpdate(
         assesmentAgencyId,
         {
           $set: {
             applicationStatus: "Approved",
+            paymentPercentage: amountPercentange,
           },
         },
         { new: true }
