@@ -28,10 +28,10 @@ const batchSchema = new mongoose.Schema(
       required: [true, "Center name is required"],
     },
 
-    markUploadAndExamCompleteStatus: {
-      type: Boolean,
-      default: false,
-    },
+    // markUploadAndExamCompleteStatus: {
+    //   type: Boolean,
+    //   default: false,
+    // },
     
     courseCode:{
       type: String,

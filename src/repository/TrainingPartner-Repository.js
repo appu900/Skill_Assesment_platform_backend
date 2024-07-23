@@ -6,13 +6,14 @@ class TrainingPartnerRepository extends CrudRepository {
     super(TrainingPartner);
   }
 
-  async updateStatusApproved(trainingPartnerId) {
+  async updateStatusApproved(trainingPartnerId,paymentAmount) {
     try {
       const res = await TrainingPartner.findByIdAndUpdate(
         trainingPartnerId,
         {
           $set: {
             applicationStatus: "Approved",
+            organizationCorporatePaymentFee: paymentAmount,
           },
         },
         { new: true }  

@@ -8,6 +8,9 @@ const assesmentAgencySchema = new mongoose.Schema(
       type: String,
       required: [true, "name is missing here"],
     },
+    paymentPercentage:{
+      type:Number,
+    },
     officeAddress: {
       type: String,
       required: [true, "Address is missing"],

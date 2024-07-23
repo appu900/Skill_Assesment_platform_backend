@@ -9,14 +9,13 @@ class TrainingPartnerController {
       const { sector, course, scheme, state } = req.query;
       const response = await tpService.getTrainingPartnersAccordingTofilter(
         req.query
-      );    
+      );
 
       return res.status(StatusCodes.OK).json({
         success: true,
         data: response,
         message: "data fetched successfully",
       });
-      
     } catch (error) {
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
@@ -106,7 +105,11 @@ class TrainingPartnerController {
 
   static async updateStatusToApproved(req, res) {
     try {
-      const response = await tpService.ApproveApplication(req.params.id);
+      const paymentAmountPerStudent = req.body.amount;
+      const response = await tpService.ApproveApplication(
+        req.params.id,
+        paymentAmountPerStudent
+      );
       return res.status(200).json({
         success: true,
         data: response,

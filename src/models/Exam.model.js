@@ -10,6 +10,10 @@ const examSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    markUploadAndExamCompleteStatus:{
+      type: Boolean,
+      default: false,
+    },
     course: { type: String, required: true },
     courseCode: { type: String},
     CenterName: {

@@ -9,6 +9,14 @@ const trainingPartnerSchema = new Schema(
     password: { type: String, required: true },
     organizationName: { type: String, required: true },
     organizationCategory: { type: String, required: true },
+    schemeType: {
+      type: String,
+    },
+
+    organizationCorporatePaymentFee: {
+      type: Number,
+    },
+
     courses: [
       {
         type: String,
@@ -43,24 +51,13 @@ const trainingPartnerSchema = new Schema(
       },
     ],
 
- 
-
     certificates: [
       {
         type: String,
       },
     ],
 
-    pre_payment_invoices: [
-      {
-        type: String,
-      },
-    ],
-    post_payment_invoices: [
-      {
-        type: String,
-      },
-    ],
+   
     centers: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -179,3 +176,6 @@ const TrainingPartner = mongoose.model(
   trainingPartnerSchema
 );
 export default TrainingPartner;
+
+
+
