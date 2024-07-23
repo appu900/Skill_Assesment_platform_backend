@@ -25,7 +25,7 @@
 //     },
 //     paymentAmo
 //     paymentDate:{
-//         type:Date
+//         type:String,
 //     },
 //     paymentStatus:{
 //         type:String

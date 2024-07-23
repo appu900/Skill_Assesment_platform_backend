@@ -70,11 +70,11 @@ class ExamRepository extends CrudRepository {
     try {
       const [day, month, year] = date.split("/");
       const monthName = getMonthName(month);
-      console.log("output",day, monthName, year);
+      const assignDate = `${day}-${monthName}-${year}`;
       const response = await Exam.findByIdAndUpdate(
         examId,
         {
-          assesmentdate: day,
+          assesmentdate: assignDate,
           month: monthName,
           year: year,
         },

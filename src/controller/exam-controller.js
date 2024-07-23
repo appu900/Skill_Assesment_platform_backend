@@ -14,7 +14,6 @@ const assignAnExam = async (req, res) => {
   try {
     const exam = await examService.createExam(
       req.body.courseName,
-      req.body.date,
       req.body.batchId,
       req.body.assesmentAgencyId,
       req.body.trainingPartnerId
