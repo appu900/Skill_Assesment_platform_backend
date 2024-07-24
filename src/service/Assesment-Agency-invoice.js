@@ -2,7 +2,7 @@ import AssesmentAgencyRepository from "../repository/AssesmentAgency-repository.
 import AssesmentMonthlyRepository from "../repository/AssesmentMonthlyRepo.js";
 import ExamRepository from "../repository/Exam-repository.js";
 
-class AssesmentAgencyInvoice {
+class AssesmentAgencyInvoiceService {
   constructor() {
     this.assesmentInvoiceRepo = new AssesmentMonthlyRepository();
     this.assesmentAgencyRepo = new AssesmentAgencyRepository();
@@ -56,13 +56,15 @@ class AssesmentAgencyInvoice {
         year
       );
 
+
+
       let totalStudents = 0;
       let totalAssessedStudents = 0;
 
       const examDetails = exams.map((exam) => {
         totalStudents += exam.totalStudents;
         totalAssessedStudents += exam.presentStudents;
-
+        
         return {
           batchAbn: exam.batchABN,
           tpname: exam.TrainingOrganization,
@@ -70,21 +72,23 @@ class AssesmentAgencyInvoice {
           totalNoOfCandidates: exam.totalStudents,
           noOfAssessedCandidates: exam.presentStudents,
           costPerCandidate: exam.perStudentCost,
-          amountToPaid: (batchPaymentAmount * percentage) / 100,
+          amountToPaid: (exam.batchPaymentAmount * percentage) / 100,
         };
       });
 
       let totalAmountToBePaid = 0;
+      console.log(examDetails);
       examDetails.forEach((exam) => {
         totalAmountToBePaid += exam.amountToPaid;
       });
 
+      console.log("check",totalAssessedStudents)
       const payload = {
         AssesmentAgencyId: assesmentAgencyId,
         invoiceGenerateDate: today,
         examDetails: examDetails,
         totalNoOfcandidates: totalStudents,
-        totalNoOfAssessedCandidate: totalAssessedStudents,
+        totalNoOfAssessedCandidates: totalAssessedStudents,
         AssesmentAgencyDetails: {
           name: assesmentAgency.agencyName,
           PAN: assesmentAgency.COMPANY_PAN_NO,
@@ -111,4 +115,4 @@ class AssesmentAgencyInvoice {
   }
 }
 
-export default AssesmentAgencyInvoice;
+export default AssesmentAgencyInvoiceService;

@@ -93,6 +93,7 @@ import verifyAssesmentAgency from "../../middleware/verifyAssesmentAgency.js";
 import uploadImage from "../../middleware/imageUpload.js";
 import { createPrice } from "../../controller/PriceController.js";
 import { createCenter, getAllCentersOfTrainingPartner } from "../../controller/CenterController.js";
+import { generateMonthlyInvoice } from "../../controller/Assesment-agency-invoice-controller.js";
 
 const router = express.Router();
 
@@ -210,6 +211,10 @@ router.put("/batch/paymentstatus/:id",updateBatchPaymentStatus)
 
 
 
+
+// ** Generate monthly Invoice
+
+router.post("/invoice/:id",generateMonthlyInvoice)
 
 
 

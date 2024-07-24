@@ -157,7 +157,8 @@ class ExamService {
 
   async updateAssesmentDate(examId, date) {
     try {
-      const response = await this.examRepository.updateExamDate(examId, date);
+      const dateString = date.toString();
+      const response = await this.examRepository.updateExamDate(examId, dateString);
       return response;
     } catch (error) {
       throw error;
