@@ -73,8 +73,8 @@ const monthlyInvoiceSchema = new mongoose.Schema(
       type: String,
     },
     paymentStatus: {
-      type: String,
-      default: "Pending",
+      type: Boolean,
+      default: false,
     },
     month: {
       type: String,

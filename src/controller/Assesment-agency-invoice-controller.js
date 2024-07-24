@@ -79,34 +79,60 @@ const getInvoicesOfAssesmentAgency = async (req, res) => {
 
 const updateAssesmentAgencyPdf = async (req, res) => {
   try {
-      
     singleuploader(req, res, async function (err) {
-        if (err) {
-            return res.status(StatusCodes.BAD_REQUEST).json({
-            success: false,
-            message: "file upload failed",
-            error: err.message,
-            });
-        }
-        const pdfUrl = req.file?.location;
-        console.log(req.file.location)
-        if(!pdfUrl){
-            return res.status(StatusCodes.BAD_REQUEST).json({
-                success: false,
-                message: "pdf is required",
-              });
-        }
-        const invoiceId = req.params.id;
-
-        const response = await assesmentAgencyInvoiceService.updateInvoicePdf(invoiceId, pdfUrl);
-
-        return res.status(StatusCodes.OK).json({
-            success: true,
-            data: response,
-            message: "pdf uploaded successfully",
+      if (err) {
+        return res.status(StatusCodes.BAD_REQUEST).json({
+          success: false,
+          message: "file upload failed",
+          error: err.message,
         });
-    })
-   
+      }
+      const pdfUrl = req.file?.location;
+      console.log(req.file.location);
+      if (!pdfUrl) {
+        return res.status(StatusCodes.BAD_REQUEST).json({
+          success: false,
+          message: "pdf is required",
+        });
+      }
+      const invoiceId = req.params.id;
+
+      const response = await assesmentAgencyInvoiceService.updateInvoicePdf(
+        invoiceId,
+        pdfUrl
+      );
+
+      return res.status(StatusCodes.OK).json({
+        success: true,
+        data: response,
+        message: "pdf uploaded successfully",
+      });
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: "something went wrong",
+      error: error.message,
+    });
+  }
+};
+
+const updatePaymentStatusOfInvoice = async (req, res) => {
+  try {
+    const invoiceId = req.params.id;
+    const transactionId = req.body.transactionId;
+    const amount = req.body.amount;
+    const response =
+      await assesmentAgencyInvoiceService.updateInvoicePaymentStatusOfAA(
+        invoiceId,
+        transactionId,
+        amount
+      );
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      data: response,
+      message: "payment status updated",
+    });
   } catch (error) {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
@@ -120,5 +146,6 @@ export {
   generateMonthlyInvoice,
   getMonthlyInvoice,
   getInvoicesOfAssesmentAgency,
-  updateAssesmentAgencyPdf
+  updateAssesmentAgencyPdf,
+  updatePaymentStatusOfInvoice
 };

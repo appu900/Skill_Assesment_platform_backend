@@ -148,7 +148,7 @@ class AssesmentAgencyInvoiceService {
     }
   }
 
-  async updateInvoicePdf(invoiceId, pdfUrl){
+  async updateInvoicePdf(invoiceId, pdfUrl) {
     try {
       const response = await this.assesmentInvoiceRepo.updateInvoicePdf(
         invoiceId,
@@ -159,7 +159,32 @@ class AssesmentAgencyInvoiceService {
       throw error;
     }
   }
+
+  async updateInvoicePaymentStatusOfAA(invoiceId, transactionId, amount) {
+    try {
+      const response =
+        await this.assesmentInvoiceRepo.updateInvoicePaymentStatus(
+          invoiceId,
+          transactionId,
+          amount
+        );
+
+      if (!response) {
+        throw new Error("invoice not found");
+      }
+
+      // ** update the payment status of the exam
+
+      const exams = response.examDetails;
+
+      exams.forEach(async (exam) => {
+        await this.examRepository.updatePaymentStatus(exam.examId);
+      });
+      return true;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default AssesmentAgencyInvoiceService;
- 

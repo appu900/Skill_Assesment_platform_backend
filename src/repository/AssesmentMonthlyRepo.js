@@ -58,6 +58,21 @@ class AssesmentMonthlyRepository extends CrudRepository {
       throw error;
     }
   } 
+
+  async updateInvoicePaymentStatus(invoiceId,transactionId,amount){
+    try {
+      const response = await AssesmentAgencyPaymentInvoice.findByIdAndUpdate(invoiceId,{
+        $set:{
+          paymentStatus:true,
+          transactionId:transactionId,
+          paidAmount:amount
+        }
+      },{new:true})
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default AssesmentMonthlyRepository;
