@@ -147,6 +147,18 @@ class AssesmentAgencyInvoiceService {
       throw error;
     }
   }
+
+  async updateInvoicePdf(invoiceId, pdfUrl){
+    try {
+      const response = await this.assesmentInvoiceRepo.updateInvoicePdf(
+        invoiceId,
+        pdfUrl
+      );
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default AssesmentAgencyInvoiceService;

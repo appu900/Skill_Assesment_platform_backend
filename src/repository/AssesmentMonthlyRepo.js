@@ -41,6 +41,23 @@ class AssesmentMonthlyRepository extends CrudRepository {
       throw error;
     }
   }
+
+  async updateInvoicePdf(invoiceId,pdfUrl){
+    try {
+      const response = await AssesmentAgencyPaymentInvoice.findByIdAndUpdate(
+        invoiceId,
+        {
+          $set: {
+            invoicePdf:pdfUrl ,
+          },
+        },
+        { new: true }
+      );
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  } 
 }
 
 export default AssesmentMonthlyRepository;
