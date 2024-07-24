@@ -30,6 +30,17 @@ class AssesmentMonthlyRepository extends CrudRepository {
       throw error;
     }
   }
+
+  async getInvoiceOFAAssesmentAgency(assesmentAgencyId) {
+    try {
+      const response = await AssesmentAgencyPaymentInvoice.find({
+        AssesmentAgencyId: assesmentAgencyId,
+      });
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default AssesmentMonthlyRepository;

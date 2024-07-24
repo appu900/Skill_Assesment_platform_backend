@@ -124,7 +124,7 @@ class AssesmentAgencyInvoiceService {
         throw new Error("Invalid input");
       }
       console.log(typeof month);
-      console.log(typeof year); 
+      console.log(typeof year);
       const response = await this.assesmentInvoiceRepo.getInvoiceFilter(
         assesmentAgencyId,
         month,
@@ -135,8 +135,19 @@ class AssesmentAgencyInvoiceService {
       throw error;
     }
   }
+
+  async getALlInvoiceOfAAssesmentAgency(assesmentAgencyId) {
+    try {
+      const response =
+        await this.assesmentInvoiceRepo.getInvoiceOFAAssesmentAgency(
+          assesmentAgencyId
+        );
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
-
-
 export default AssesmentAgencyInvoiceService;
+ 

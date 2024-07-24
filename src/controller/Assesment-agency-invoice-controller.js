@@ -54,4 +54,23 @@ const getMonthlyInvoice = async (req, res) => {
   }
 };
 
-export { generateMonthlyInvoice,getMonthlyInvoice };
+const getInvoicesOfAssesmentAgency = async (req, res) => {
+  try {
+    const assesmentAgencyId = req.params.id;
+    const response =
+      await assesmentAgencyInvoiceService.getALlInvoiceOfAAssesmentAgency(assesmentAgencyId);
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      data: response,
+      message: "data fetched",
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: "something went wrong",
+      error: error.message,
+    });
+  }
+};
+
+export { generateMonthlyInvoice, getMonthlyInvoice,getInvoicesOfAssesmentAgency };
