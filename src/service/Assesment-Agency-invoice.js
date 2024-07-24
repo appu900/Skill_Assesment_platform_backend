@@ -9,6 +9,7 @@ class AssesmentAgencyInvoiceService {
     this.examRepository = new ExamRepository();
   }
 
+  // ** generate monthly invoice
   async generateMonthlyInvoice(assesmentAgencyId) {
     try {
       const date = new Date();
@@ -44,6 +45,7 @@ class AssesmentAgencyInvoiceService {
         month,
         year
       );
+
       if (invoice) {
         return invoice;
       }
@@ -56,15 +58,13 @@ class AssesmentAgencyInvoiceService {
         year
       );
 
-
-
       let totalStudents = 0;
       let totalAssessedStudents = 0;
 
       const examDetails = exams.map((exam) => {
         totalStudents += exam.totalStudents;
         totalAssessedStudents += exam.presentStudents;
-        
+
         return {
           batchAbn: exam.batchABN,
           tpname: exam.TrainingOrganization,
@@ -82,7 +82,7 @@ class AssesmentAgencyInvoiceService {
         totalAmountToBePaid += exam.amountToPaid;
       });
 
-      console.log("check",totalAssessedStudents)
+      console.log("check", totalAssessedStudents);
       const payload = {
         AssesmentAgencyId: assesmentAgencyId,
         invoiceGenerateDate: today,
@@ -102,7 +102,7 @@ class AssesmentAgencyInvoiceService {
           branchName: assesmentAgency.BranchName,
           IFSCCode: assesmentAgency.IFSC_Code,
         },
-        totalAmountToBePaid:totalAmountToBePaid,
+        totalAmountToBePaid: totalAmountToBePaid,
         month: month,
         year: year,
       };
@@ -113,6 +113,29 @@ class AssesmentAgencyInvoiceService {
       throw error;
     }
   }
+
+  // ** upload invoice pdf
+  // ** query invoice by month and year and assesmentAgencyId
+
+  async getInvoiecByMonthAndYearAndAgencyId(assesmentAgencyId, month, year) {
+    try {
+      if (!assesmentAgencyId || !month || !year) {
+        throw new Error("Invalid input");
+      }
+      console.log(typeof month);
+      console.log(typeof year); 
+      const response = await this.assesmentInvoiceRepo.getInvoiceFilter(
+        assesmentAgencyId,
+        month,
+        year
+      );
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
+
+
 
 export default AssesmentAgencyInvoiceService;
