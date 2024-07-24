@@ -11,6 +11,7 @@ const monthlyInvoiceSchema = new mongoose.Schema(
     },
     examDetails: [
       {
+        examId:String,
         batchAbn: String,
         tpname: String,
         assesmentDate: String,

@@ -66,6 +66,7 @@ class AssesmentAgencyInvoiceService {
         totalAssessedStudents += exam.presentStudents;
 
         return {
+          examId: exam._id,
           batchAbn: exam.batchABN,
           tpname: exam.TrainingOrganization,
           assessmentDate: exam.assesmentdate,
