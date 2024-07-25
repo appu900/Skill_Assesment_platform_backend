@@ -7,9 +7,13 @@ class TrainerService {
 
   async createTrainer(data) {
     try {
-      const trainer = await this.trainerRepository.create(data);
+      const trainer = await this.trainerRepository.createTrainner(data);
       return trainer;
     } catch (error) {
+      console.log("service layer error",error.message)
+      if (error.message === "Trainer already exists") {
+        throw new Error("Trainer already exists");
+      }
       throw error;
     }
   }

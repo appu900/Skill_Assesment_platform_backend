@@ -6,33 +6,77 @@ const trainerService = new TrainerService();
 const singleUploader = upload.single("image");
 const singleUploaderTwo = upload.single("resultSheet");
 
+// const createTrainer = async (req, res) => {
+//   singleUploader(req, res, async function (err, data) {
+//     if (err) {
+//       return res
+//         .status(StatusCodes.INTERNAL_SERVER_ERROR)
+//         .json({ "message:": "something went wrong" });
+//     }
+  
+//   try {
+//     const imageUrl = req.file?.location;
+//     const payload = req.body;
+//     payload.trainingPartner = req.trainingPartnerId;
+//     payload.profilePic = imageUrl;
+//     const trainer = await trainerService.createTrainer(payload);
+//     return res.status(StatusCodes.CREATED).json({
+//       data: trainer,
+//       success: true,
+//       message: "Training Parter created",
+//     });
+//   }
+//   catch (error) {
+//     if (error.message === "Trainer already exists") {
+//       return res.status(StatusCodes.CONFLICT).json({
+//         success: false,
+//         message: error.message,
+//       });
+//     }
+//     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+//       success: false,
+//       error: error.message,
+//       message: "Something went wrong",
+//     });
+//   }
+// };
 const createTrainer = async (req, res) => {
-  try {
-    singleUploader(req, res, async function (err, data) {
-      if (err) {
-        return res
-          .status(StatusCodes.INTERNAL_SERVER_ERROR)
-          .json({ "message:": "something went wrong" });
-      }
+  singleUploader(req, res, async function (err) {
+    if (err) {
+      return res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: "Something went wrong" });
+    }
+
+    try {
       const imageUrl = req.file?.location;
       const payload = req.body;
       payload.trainingPartner = req.trainingPartnerId;
       payload.profilePic = imageUrl;
+
       const trainer = await trainerService.createTrainer(payload);
+
       return res.status(StatusCodes.CREATED).json({
         data: trainer,
         success: true,
-        message: "Training Parter created",
+        message: "Training Partner created",
       });
-    });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: error.message,
-      message: "Something went wrong",
-    });
-  }
+    } catch (error) {
+      if (error.message === "Trainer already exists") {
+        return res.status(StatusCodes.CONFLICT).json({
+          success: false,
+          message: error.message,
+        });
+      }
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        error: error.message,
+        message: "Something went wrong",
+      });
+    }
+  });
 };
+
 
 const getAllTrainers = async (req, res) => {
   try {
