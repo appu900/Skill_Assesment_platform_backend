@@ -25,6 +25,7 @@ class MarkService {
       const mark = await this.markRepository.create(data);
       student.marks = mark._id;
       student.markUploadStatus = true;
+      student.Grade = mark.Grade;
       await student.save();
       return mark;
     } catch (error) {

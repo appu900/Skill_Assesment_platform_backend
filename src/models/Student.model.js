@@ -124,11 +124,18 @@ const StudentSchema = new mongoose.Schema(
     },
     marks: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Marks",
+      ref: "Mark",
     },
     absent: {
       type: Boolean,
       default: false,
+    },
+    certificate:{
+      type:String
+    },
+   
+    Grade:{
+      type:String,
     },
     redg_No: {
       type: String,

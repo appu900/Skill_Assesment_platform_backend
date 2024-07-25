@@ -24,10 +24,16 @@ const batchSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Center",
     },
-    tpcode:{
-      type:String,
+    tpcode: {
+      type: String,
     },
-    
+
+
+    certificateIssued: {
+      type: Boolean,
+      default: false,
+    },
+
     centerName: {
       type: String,
       required: [true, "Center name is required"],
@@ -38,8 +44,13 @@ const batchSchema = new mongoose.Schema(
     //   default: false,
     // },
 
-    perStudentCost:{
-      type:Number,
+    perStudentCost: {
+      type: Number,
+    },
+
+    resultPublished: {
+      type: Boolean,
+      default: false,
     },
 
     schemeType: {
@@ -55,6 +66,11 @@ const batchSchema = new mongoose.Schema(
     CenterCode: {
       type: String,
       required: [true, "Center code is required"],
+    },
+
+    courseDuration:{
+      type:Number,
+      required:true
     },
 
     courseName: {
@@ -149,6 +165,9 @@ const batchSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+
+    courseCredit: { type: String },
+    courseLevel: { type: String },
     modeOfPayment: {
       type: String,
       enum: ["Online", "Offline"],
@@ -162,11 +181,9 @@ const batchSchema = new mongoose.Schema(
 
 batchSchema.pre("save", async function (next) {
   if (this.isNew) {
-    
-     const stateInitial = getStateCode(this.state);
-     const courseInitial = this.courseCode.slice(-4).toUpperCase();
-     const tpcode = this.tpcode;
-
+    const stateInitial = getStateCode(this.state);
+    const courseInitial = this.courseCode.slice(-4).toUpperCase();
+    const tpcode = this.tpcode;
 
     try {
       const sequence = await Sequence.findByIdAndUpdate(

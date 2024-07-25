@@ -1,3 +1,4 @@
+import { createChannel, publishMessage } from "../config/messageQueue.js";
 import AssesmentAgencyRepository from "../repository/AssesmentAgency-repository.js";
 import BatchRepository from "../repository/Batch-repository.js";
 import ExamRepository from "../repository/Exam-repository.js";
@@ -56,6 +57,8 @@ class ExamService {
         batchPaymentAmount: batch.amountToPaid,
         totalStudents: batch.students.length,
         perStudentCost: batch.perStudentCost,
+        courseCredit: batch.courseCredit,
+        courseLevel: batch.courseLevel,
       };
 
       batch.isAssigned = true;
@@ -158,7 +161,10 @@ class ExamService {
   async updateAssesmentDate(examId, date) {
     try {
       const dateString = date.toString();
-      const response = await this.examRepository.updateExamDate(examId, dateString);
+      const response = await this.examRepository.updateExamDate(
+        examId,
+        dateString
+      );
       return response;
     } catch (error) {
       throw error;
@@ -167,12 +173,54 @@ class ExamService {
 
   async updateCandidateAttendanceNumber(examId, attendanceNumber) {
     try {
-      const response =
-        await this.examRepository.updateStudentAttendance(
-          examId,
-          attendanceNumber
-        );
+      const response = await this.examRepository.updateStudentAttendance(
+        examId,
+        attendanceNumber
+      );
       return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async publishCeritificates(examId) {
+    try {
+      const exam = await this.examRepository.get(examId);
+      
+      if (!exam) {
+        throw new Error("exam not found");
+      }
+      const channel = await createChannel();
+
+      const batch = await this.batchRepository.get(exam.batchId);
+      console.log(batch)
+      if(!batch){
+        throw new Error("batch not found contact your bacekd developer something went wrong");
+      }
+      const studentsData = batch.students;
+      studentsData.map(async (student) => {
+        const payload = {
+          data: {
+            studentId: student,
+            batchId: exam.batchId,
+            examId: examId,
+            courseName:exam.course,
+            courseCredit:batch.courseCredit,
+            courseLevel:batch.courseLevel,
+            TrainingCenter: batch.centerName,
+            duration:batch.courseDuration
+          },
+          service: "CREATE_CERTIFICATE",
+        };
+        await publishMessage(
+          channel,
+          "CREATE_CERTIFICATE",
+          JSON.stringify(payload)
+        );
+      });
+
+      return true;
+
     } catch (error) {
       throw error;
     }

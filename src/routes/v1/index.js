@@ -63,6 +63,7 @@ import {
   getALlExams,
   getALLExamsBelongsToAnAssesmentAgency,
   getAttendanceSheetForExam,
+  publishResult,
   updateExamPaymentStatus,
   updateStudentAttendanceNumber,
   uploadPhotos,
@@ -94,6 +95,7 @@ import uploadImage from "../../middleware/imageUpload.js";
 import { createPrice } from "../../controller/PriceController.js";
 import { createCenter, getAllCentersOfTrainingPartner } from "../../controller/CenterController.js";
 import { generateMonthlyInvoice, getInvoicesOfAssesmentAgency, getMonthlyInvoice, updateAssesmentAgencyPdf, updatePaymentStatusOfInvoice } from "../../controller/Assesment-agency-invoice-controller.js";
+import sendMessages from "../../controller/queue.js";
 
 const router = express.Router();
 
@@ -309,5 +311,13 @@ router.get("/scheme/query",fetchAllSchemeOfSchemeType)
 // ** Price
 
 router.post("/price",createPrice)
+
+// ** queue
+
+router.post("/qt",sendMessages)
+
+// ** publish result 
+
+router.post("/publish/certificate/exam/:id",publishResult)
 
 export default router;

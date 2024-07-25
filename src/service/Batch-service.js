@@ -6,6 +6,7 @@ import TrainingPartnerRepository from "../repository/TrainingPartner-Repository.
 import PriceService from "./Price-service.js";
 import InvoiceService from "./InvoiceService.js";
 import SchemeRepository from "../repository/SchemeRepository.js";
+import mongoose from "mongoose";
 
 class BatchService {
   constructor() {
@@ -150,6 +151,7 @@ class BatchService {
       const response = await batch.save();
       return response;
     } catch (error) {
+      console.log(error)
       throw error;
     }
   }

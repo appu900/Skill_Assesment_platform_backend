@@ -16,7 +16,7 @@ class StudentService {
 
   async getStudentByid(id) {
     try {
-      const student = await this.studentRepository.get(id);
+      const student = await this.studentRepository.getStudentDetails(id);
       return student;
     } catch (error) {
       throw error;

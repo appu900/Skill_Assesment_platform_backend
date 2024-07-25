@@ -16,7 +16,7 @@ const assignAnExam = async (req, res) => {
       req.body.courseName,
       req.body.batchId,
       req.body.assesmentAgencyId,
-      req.body.trainingPartnerId
+      req.body.trainingPartnerId,
     );
     return res.status(StatusCodes.CREATED).json({
       success: true,
@@ -243,6 +243,25 @@ const updateStudentAttendanceNumber = async (req, res) => {
   }
 };
 
+const publishResult = async (req, res) => {
+  try {
+    const examId = req.params.id;
+    const response = await examService.publishCeritificates(examId);
+    return res.status(StatusCodes.OK).json({
+      message: "Certificate Issued sucessfully",
+    });
+  } catch (error) {
+    return (
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR),
+      json({
+        success: false,
+        error: error.message,
+        message: "please try again after some time",
+      })
+    );
+  }
+};
+
 export {
   assignAnExam,
   getALlExams,
@@ -254,5 +273,6 @@ export {
   uploadPhotos,
   updateExamPaymentStatus,
   addAssesmentDate,
-  updateStudentAttendanceNumber
+  updateStudentAttendanceNumber,
+  publishResult
 };

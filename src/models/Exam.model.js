@@ -11,6 +11,11 @@ const examSchema = new mongoose.Schema(
       required: true,
     },
 
+    certificateIssued:{
+      type: Boolean,
+      default: false,
+    },
+
     batchPaymentAmount: {
       type: Number,
     },
@@ -20,6 +25,8 @@ const examSchema = new mongoose.Schema(
     },
     course: { type: String, required: true },
     courseCode: { type: String },
+    courseCredit: { type: String },
+    courseLevel: { type: String },
     CenterName: {
       type: String,
     },

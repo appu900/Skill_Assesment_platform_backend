@@ -105,6 +105,10 @@ const markSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+
+  Grade:{
+    type: String,
+  },
   
   Result: {
     type: String,

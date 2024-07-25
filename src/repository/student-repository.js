@@ -6,6 +6,15 @@ class StudentRepository extends CrudRepository {
     super(Student);
   }
 
+  async getStudentDetails(studentId){
+    try {
+      const student = await Student.findById(studentId).populate("marks");
+      return student;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async updateProfilePic(id, imageUrl) {
     try {
       const response = await Student.findByIdAndUpdate(
