@@ -13,6 +13,9 @@ class TrainingPartnerService {
       const responsePayload = await this.trainingPartnerRepository.create(data);
       return responsePayload;
     } catch (error) {
+      if(error.code === 11000){
+        throw new Error("Training Partner already exists with is email");
+      }
       throw error;
     }
   }

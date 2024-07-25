@@ -58,7 +58,6 @@ const trainingPartnerSchema = new Schema(
       },
     ],
 
-   
     centers: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -78,7 +77,7 @@ const trainingPartnerSchema = new Schema(
     registeredOfficeTelephone: { type: String },
     registeredOfficeMobile: { type: String },
     registeredOfficeFax: { type: String },
-    registeredOfficeEmail: { type: String, required: true },
+    registeredOfficeEmail: { type: String, required: true, unique: true },
     registeredOfficeGst: { type: String },
     regionalStateOfficeAddress: { type: String },
     regionalStateOfficeDist: { type: String },
@@ -177,6 +176,3 @@ const TrainingPartner = mongoose.model(
   trainingPartnerSchema
 );
 export default TrainingPartner;
-
-
-
