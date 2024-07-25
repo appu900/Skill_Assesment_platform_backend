@@ -1,23 +1,38 @@
-import { INTERNAL_SERVER_ERROR, StatusCodes } from "http-status-codes";
+import { StatusCodes } from "http-status-codes";
 import AssesmentAgencyService from "../service/Assesment-Agency.js";
 import upload from "../config/s3-imageUpload-config.js";
 
 const assesmentAgencyService = new AssesmentAgencyService();
 const fileUploader = upload.fields([
-  { name: "registrationCertificate", maxCount: 1 },
-  { name: "panCard", maxCount: 1 },
+  { name: "LETTER_OF_NCVET", maxCount: 1 },
   { name: "logo", maxCount: 1 },
 ]);
 
 const createAssesmentAgency = async (req, res) => {
   try {
-    const payload = req.body;
-    const response = await assesmentAgencyService.createAgency(payload);
-    return res.status(StatusCodes.CREATED).json({
-      success: true,
-      data: response,
-      message: "Agency created sucessfully",
+    fileUploader(req, res, async (err) => {
+      if (err) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+          success: false,
+          message: "something went wrong in fileUpload",
+          error: err.message,
+        });
+      }
+      const payload = req.body;
+      
+      payload.LETTER_OF_NCVET = req.files["LETTER_OF_NCVET"][0].location;
+      payload.logo = req.files["logo"][0].location;
+      console.log(payload);
+      const assesmentAgency = await assesmentAgencyService.createAgency(
+        payload
+      );
+      return res.status(StatusCodes.CREATED).json({
+        success: true,
+        data: assesmentAgency,
+        message: "Assesment Agency created sucessfully",
+      });
     });
+  
   } catch (error) {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       message: "something went wrong",

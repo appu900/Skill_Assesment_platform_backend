@@ -56,7 +56,7 @@ const assesmentAgencySchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      unique: true,
+      unique: [true,"email is already registered"],
       required: [true, "email is missing"],
     },
     websiteLink: {

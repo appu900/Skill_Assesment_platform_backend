@@ -108,6 +108,7 @@ const markSchema = new mongoose.Schema({
 
   Grade:{
     type: String,
+    required: [true,"Grade is required"]
   },
   
   Result: {
