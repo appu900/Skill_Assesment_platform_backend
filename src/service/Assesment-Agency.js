@@ -11,6 +11,9 @@ class AssesmentAgencyService {
       const response = await this.assesmentAgencyRepo.create(data);
       return response;
     } catch (error) {
+      if (error.code === 11000) {
+        throw new Error("email already exists");
+      }
       throw error;
     }
   }
@@ -143,19 +146,18 @@ class AssesmentAgencyService {
     accountNumber,
     IFSC_Code,
     bankName,
-    branchName,
-   
-  ){
+    branchName
+  ) {
     try {
-       const response = await this.assesmentAgencyRepo.updateBankDetails(
-          assesmentAgencyId,
-          accountNumber,
-          IFSC_Code,
-          bankName,
-          branchName, 
-        );
-       
-       return response;     
+      const response = await this.assesmentAgencyRepo.updateBankDetails(
+        assesmentAgencyId,
+        accountNumber,
+        IFSC_Code,
+        bankName,
+        branchName
+      );
+
+      return response;
     } catch (error) {
       throw error;
     }

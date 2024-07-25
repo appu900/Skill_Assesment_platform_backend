@@ -9,17 +9,16 @@ const fileUploader = upload.fields([
 ]);
 
 const createAssesmentAgency = async (req, res) => {
-  try {
-    fileUploader(req, res, async (err) => {
-      if (err) {
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-          success: false,
-          message: "something went wrong in fileUpload",
-          error: err.message,
-        });
-      }
+  fileUploader(req, res, async (err) => {
+    if (err) {
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: "something went wrong in fileUpload",
+        error: err.message,
+      });
+    }
+    try {
       const payload = req.body;
-      
       payload.LETTER_OF_NCVET = req.files["LETTER_OF_NCVET"][0].location;
       payload.logo = req.files["logo"][0].location;
       console.log(payload);
@@ -31,15 +30,14 @@ const createAssesmentAgency = async (req, res) => {
         data: assesmentAgency,
         message: "Assesment Agency created sucessfully",
       });
-    });
-  
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      message: "something went wrong",
-      success: false,
-      error: error.message,
-    });
-  }
+    } catch (error) {
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: "something went wrong",
+        success: false,
+        error: error.message,
+      });
+    }
+  });
 };
 
 const assesmentAgencylogin = async (req, res) => {
@@ -202,7 +200,7 @@ const updateBankDetails = async (req, res) => {
       req.body.IFSC_Code,
       req.body.bankName,
       req.body.branchName
-    )
+    );
     return res.status(200).json({
       success: true,
       data: response,
@@ -227,5 +225,5 @@ export {
   getAllPendingAssesmentAgency,
   getAllApprovedAssesmentAgency,
   filterAssesmentgency,
-  updateBankDetails
+  updateBankDetails,
 };
