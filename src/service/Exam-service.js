@@ -219,6 +219,12 @@ class ExamService {
         );
       });
 
+      // ** update exam status to completed
+      exam.certificateIssued = true;
+      batch.batchCompletedStatus = true;
+      batch.certificateIssued = true;
+      await exam.save();
+      await batch.save();
       return true;
 
     } catch (error) {

@@ -166,6 +166,11 @@ const batchSchema = new mongoose.Schema(
       default: 0,
     },
 
+    batchCompletedStatus:{
+      type:Boolean,
+      default:false
+    },
+
     courseCredit: { type: String },
     courseLevel: { type: String },
     modeOfPayment: {

@@ -34,6 +34,7 @@ import {
   getAllBatchData,
   getAllBatchPaymentNotification,
   getAllCorporatePaymentBatch,
+  getAllStudentCertificate,
   getBatchDetails,
   getFilteredBatchData,
   getIndividualTrainingPartnerBatchDetails,
@@ -319,5 +320,10 @@ router.post("/qt",sendMessages)
 // ** publish result 
 
 router.post("/publish/certificate/exam/:id",publishResult)
+
+// ** certificate 
+
+
+router.post("/certificate/batch/:id",getAllStudentCertificate)
 
 export default router;

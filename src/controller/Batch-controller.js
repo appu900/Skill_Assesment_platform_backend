@@ -1,8 +1,10 @@
 import upload from "../config/s3-imageUpload-config.js";
 import BatchService from "../service/Batch-service.js";
 import { StatusCodes } from "http-status-codes";
+import CertificateService from "../service/CertificateService.js";
 
 const batchService = new BatchService();
+const certificateService = new CertificateService();
 
 const uploadFiles = upload.fields([
   { name: "preInvoice", maxCount: 1 },
@@ -294,6 +296,24 @@ const updateBatchPaymentStatus = async (req, res) => {
   }
 };
 
+const getAllStudentCertificate = async (req, res) => {
+  try {
+    const batchId = req.params.id;
+    const response = await certificateService.getAllCertificates(batchId);
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      data: response,
+      message: "all certificates fetched successfully",
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: error.message,
+      message: "something went wrong",
+    });
+  }
+};
+
 export {
   createBatch,
   addStudentToBatch,
@@ -308,5 +328,6 @@ export {
   uploadBatchPaymentDetails,
   getAllBatchPaymentNotification,
   getAllCorporatePaymentBatch,
-  updateBatchPaymentStatus
+  updateBatchPaymentStatus,
+  getAllStudentCertificate
 };
