@@ -10,7 +10,7 @@ class SnaService {
       const response = await this.snaRepository.create(data);
       return response;
     } catch (error) {
-      throw error;
+      throw error;   
     }
   }
 

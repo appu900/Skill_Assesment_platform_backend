@@ -34,6 +34,7 @@ import {
   getAllBatchData,
   getAllBatchPaymentNotification,
   getAllCorporatePaymentBatch,
+  getAllGovernmentBatchesStateAndScehmeWise,
   getAllStudentCertificate,
   getBatchDetails,
   getFilteredBatchData,
@@ -98,7 +99,7 @@ import { createPrice } from "../../controller/PriceController.js";
 import { createCenter, getAllCentersOfTrainingPartner } from "../../controller/CenterController.js";
 import { generateMonthlyInvoice, getInvoicesOfAssesmentAgency, getMonthlyInvoice, updateAssesmentAgencyPdf, updatePaymentStatusOfInvoice } from "../../controller/Assesment-agency-invoice-controller.js";
 import sendMessages from "../../controller/queue.js";
-import { createSNA, snaLogin } from "../../controller/SnaController.js";
+import { approveGovernmentSchemeBatches, createSNA, snaLogin } from "../../controller/SnaController.js";
 
 const router = express.Router();
 
@@ -334,5 +335,7 @@ router.post("/certificate/batch/:id",getAllStudentCertificate)
 
 router.post("/sna",createSNA)
 router.post("/sna/login",snaLogin)
+router.get("/sna/batch/query",getAllGovernmentBatchesStateAndScehmeWise)
+router.put("/sna/batch/approve/:id",approveGovernmentSchemeBatches)
 
 export default router;

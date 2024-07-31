@@ -343,6 +343,47 @@ class BatchService {
       throw error;
     }
   }
+
+  async filterStateWiseAndScehemWiseData(query) {
+    try {
+      const queryObject = {};
+      const { state, scheme } = query;
+      if (state) {
+        queryObject.state = state;
+      }
+      if (scheme) {
+        queryObject.scheme = scheme;
+      }
+      const response = await this.batchRepository.filterData(queryObject);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+
+  // ** this will approve the batch by SNA
+
+  async approveGovernmentBatch(batchId){
+    try {
+      const batch = await this.batchRepository.get(batchId);
+      if(!batch){
+        throw new Error("batch not found");
+      }
+      batch.approvedByGovernmentBody = true;
+      const response = await batch.save();
+      const resonseobj = {
+        batchId:response._id,
+        sucess:true
+      }
+      return resonseobj;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
+
+
+
 
 export default BatchService;

@@ -28,7 +28,7 @@ const batchSchema = new mongoose.Schema(
       type: String,
     },
 
-    approvedByGovernMentBody: {
+    approvedByGovernmentBody: {
       type: Boolean,
       default: false,
     },
@@ -59,6 +59,7 @@ const batchSchema = new mongoose.Schema(
 
     schemeType: {
       type: String,
+      enum: ["Corporate", "State Government", "Central Government"],
       required: [true, "Scheme type is required"],
     },
 

@@ -146,7 +146,7 @@ class BatchRepository extends CrudRepository {
   async getAllGovernmentBatchesPendingPaymentData(){
     try {
       const response = await Batch.find({
-        approvedByGovernMentBody: true,
+        approvedByGovernmentBody: true,
         paymentStatus: false,
         clientPaymentStatus: true,
         batchActivePermission: true,
@@ -157,7 +157,7 @@ class BatchRepository extends CrudRepository {
       throw error;
     }
   }
-
+ 
   /**
    *
    * first create batch
