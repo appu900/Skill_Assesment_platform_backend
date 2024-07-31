@@ -38,6 +38,11 @@ const centerSchema = new mongoose.Schema({
     required: true,
   },
 
+  approvedStatus: {
+    type: Boolean,
+    default: false,
+  },
+
   courseCode: {
     type: String,
     required: true,

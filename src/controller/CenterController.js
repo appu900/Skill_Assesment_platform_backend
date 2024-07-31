@@ -41,7 +41,7 @@ const getAllCentersOfTrainingPartner = async (req, res) => {
       success: true,
       message: "Centers fetched",
       data: response,
-    })
+    });
   } catch (error) {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
@@ -51,5 +51,45 @@ const getAllCentersOfTrainingPartner = async (req, res) => {
   }
 };
 
-export { createCenter, getAllCentersOfTrainingPartner };
-                              
+const filterCenterBySchemeAndState = async (req, res) => {
+  try {
+    const query = req.query;
+    const response = await centerService.filterCentersData(query);
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      message: "Centers fetched",
+      data: response,
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: error.message,
+      message: "Cannot approve centers",
+    });
+  }
+};
+
+const approveCenter = async (req, res) => {
+  try {
+    const centerId = req.params.id;
+    const response = await centerService.approveCenter(centerId);
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      message: "Center approved successfully",
+      data: response,
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: error.message,
+      message: "Cannot approve centers",
+    });
+  }
+};
+
+export {
+  createCenter,
+  getAllCentersOfTrainingPartner,
+  filterCenterBySchemeAndState,
+  approveCenter
+};

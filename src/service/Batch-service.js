@@ -346,7 +346,7 @@ class BatchService {
 
   async filterStateWiseAndScehemWiseData(query) {
     try {
-      const queryObject = {};
+      let queryObject = {};
       const { state, scheme } = query;
       if (state) {
         queryObject.state = state;

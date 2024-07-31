@@ -192,7 +192,7 @@ const batchSchema = new mongoose.Schema(
 batchSchema.pre("save", async function (next) {
   if (this.isNew) {
     const stateInitial = getStateCode(this.state);
-    const courseInitial = this.courseCode.slice(-4).toUpperCase();
+    const courseInitial = this.courseCode
     const tpcode = this.tpcode;
 
     try {
@@ -201,7 +201,7 @@ batchSchema.pre("save", async function (next) {
         { $inc: { seq: 1 } },
         { new: true, upsert: true }
       );
-      this.ABN_Number = `${stateInitial}-${tpcode}-${courseInitial}-${sequence.seq}`;
+      this.ABN_Number = `${stateInitial}${tpcode}${courseInitial}${sequence.seq}`;
       next();
     } catch (error) {
       console.log(error.message);

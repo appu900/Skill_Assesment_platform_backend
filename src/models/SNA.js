@@ -8,6 +8,11 @@ const SNASchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    schemetype: {
+      type: String,
+      required: true,
+      enum: ["State Government", "Central Government"],
+    },
     email: {
       type: String,
       required: true,
@@ -47,7 +52,7 @@ SNASchema.methods.generateJwt = function generate() {
   return jwt.sign(
     {
       id: this._id,
-      scheme:this.scheme,
+      scheme: this.scheme,
     },
     "this is a secrete a key",
     { expiresIn: "30d" }

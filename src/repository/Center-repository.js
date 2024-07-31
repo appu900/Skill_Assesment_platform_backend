@@ -16,6 +16,17 @@ class CenterRepository extends CrudRepository {
       throw error;
     }
   }
+
+  async filterCenters(queryObject){
+    try {
+      const response = await Center.find(queryObject);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  
 }
 
 export default CenterRepository;

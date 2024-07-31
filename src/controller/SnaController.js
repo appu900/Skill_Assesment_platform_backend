@@ -5,6 +5,7 @@ import BatchService from "../service/Batch-service.js";
 const snaService = new SnaService();
 const batchService = new BatchService();
 
+
 const createSNA = async (req, res) => {
   try {
     const payload = req.body;
