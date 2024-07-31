@@ -354,6 +354,8 @@ class BatchService {
       if (scheme) {
         queryObject.scheme = scheme;
       }
+      queryObject.batchActivePermission = true;
+      queryObject.approvedByGovernmentBody = false;
       const response = await this.batchRepository.filterData(queryObject);
       return response;
     } catch (error) {
@@ -361,29 +363,25 @@ class BatchService {
     }
   }
 
-
   // ** this will approve the batch by SNA
 
-  async approveGovernmentBatch(batchId){
+  async approveGovernmentBatch(batchId) {
     try {
       const batch = await this.batchRepository.get(batchId);
-      if(!batch){
+      if (!batch) {
         throw new Error("batch not found");
       }
       batch.approvedByGovernmentBody = true;
       const response = await batch.save();
       const resonseobj = {
-        batchId:response._id,
-        sucess:true
-      }
+        batchId: response._id,
+        sucess: true,
+      };
       return resonseobj;
     } catch (error) {
       throw error;
     }
   }
 }
-
-
-
 
 export default BatchService;
