@@ -6,7 +6,16 @@ const StudentSchema = new mongoose.Schema(
       type: String,
       required: [true, "Name is required"],
     },
-    markUploadStatus:{
+    MPR_Id: {
+      type: String,
+      required: [true, "MPR Id is required"],
+    },
+    SNA_Id: {
+      type: String,
+      required: [true, "SNA Id is required"],
+    },
+
+    markUploadStatus: {
       type: Boolean,
       default: false,
     },
@@ -130,12 +139,12 @@ const StudentSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    certificate:{
-      type:String
+    certificate: {
+      type: String,
     },
-   
-    Grade:{
-      type:String,
+
+    Grade: {
+      type: String,
     },
     redg_No: {
       type: String,
@@ -149,3 +158,8 @@ const StudentSchema = new mongoose.Schema(
 
 const Student = mongoose.model("Student", StudentSchema);
 export default Student;
+
+
+
+
+

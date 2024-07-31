@@ -28,7 +28,6 @@ const batchSchema = new mongoose.Schema(
       type: String,
     },
 
-
     certificateIssued: {
       type: Boolean,
       default: false,
@@ -68,9 +67,9 @@ const batchSchema = new mongoose.Schema(
       required: [true, "Center code is required"],
     },
 
-    courseDuration:{
-      type:Number,
-      required:true
+    courseDuration: {
+      type: Number,
+      required: true,
     },
 
     courseName: {
@@ -166,9 +165,9 @@ const batchSchema = new mongoose.Schema(
       default: 0,
     },
 
-    batchCompletedStatus:{
-      type:Boolean,
-      default:false
+    batchCompletedStatus: {
+      type: Boolean,
+      default: false,
     },
 
     courseCredit: { type: String },
@@ -210,3 +209,9 @@ batchSchema.pre("save", async function (next) {
 const Batch = mongoose.model("Batch", batchSchema);
 
 export default Batch;
+
+
+
+
+
+

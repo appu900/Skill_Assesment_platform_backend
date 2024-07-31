@@ -18,6 +18,10 @@ const schemeSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  state:{
+    type:String,
+    required:true
+  },
   pricePerStudent: {
     type: Number,
     default: 0,
