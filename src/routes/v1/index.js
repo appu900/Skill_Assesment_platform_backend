@@ -38,6 +38,7 @@ import {
   getBatchDetails,
   getFilteredBatchData,
   getIndividualTrainingPartnerBatchDetails,
+  getPaymentApprovalForGovernemtBatches,
   updateBatchPaymentStatus,
   uploadBatchPaymentDetails,
 } from "../../controller/Batch-controller.js";
@@ -97,6 +98,7 @@ import { createPrice } from "../../controller/PriceController.js";
 import { createCenter, getAllCentersOfTrainingPartner } from "../../controller/CenterController.js";
 import { generateMonthlyInvoice, getInvoicesOfAssesmentAgency, getMonthlyInvoice, updateAssesmentAgencyPdf, updatePaymentStatusOfInvoice } from "../../controller/Assesment-agency-invoice-controller.js";
 import sendMessages from "../../controller/queue.js";
+import { createSNA, snaLogin } from "../../controller/SnaController.js";
 
 const router = express.Router();
 
@@ -206,6 +208,7 @@ router.get("/batch", getAllBatchData);
 router.get("/batch/all/query", getFilteredBatchData);
 router.get("/batch/all/paymentnotification",getAllBatchPaymentNotification)
 router.get("/batch/all/corporate",getAllCorporatePaymentBatch)
+router.get("/batch/all/payment/gov",getPaymentApprovalForGovernemtBatches)
 
 router.put("/batch/active/:id",activeBatch);
 router.put("/batch/addpayment/:id",addBatchPaymentAmount);
@@ -325,5 +328,11 @@ router.post("/publish/certificate/exam/:id",publishResult)
 
 
 router.post("/certificate/batch/:id",getAllStudentCertificate)
+
+
+// ** sna routes 
+
+router.post("/sna",createSNA)
+router.post("/sna/login",snaLogin)
 
 export default router;

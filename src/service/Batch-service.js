@@ -151,7 +151,7 @@ class BatchService {
       const response = await batch.save();
       return response;
     } catch (error) {
-      console.log(error)
+      console.log(error);
       throw error;
     }
   }
@@ -327,6 +327,18 @@ class BatchService {
       invoice.paymentDate = new Date();
       await invoice.save();
       return true;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // ** this will fetch the all batches for payment approval after approved by SNAs
+
+  async getAllGovernmentBatchesForPaymentApproval() {
+    try {
+      const response =
+        await this.batchRepository.getAllGovernmentBatchesPendingPaymentData();
+      return response;
     } catch (error) {
       throw error;
     }

@@ -12,4 +12,12 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/api/v1", v1Routes);
 
+
+// ** for testing puprose 
+app.get("/pingme",(req,res)=>{
+    return res.status(200).json({
+        message:"pinged successfully"
+    })
+})
+
 export default app;

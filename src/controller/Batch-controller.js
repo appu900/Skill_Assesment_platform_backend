@@ -314,6 +314,24 @@ const getAllStudentCertificate = async (req, res) => {
   }
 };
 
+const getPaymentApprovalForGovernemtBatches = async (req, res) => {
+  try {
+    const response =
+      await batchService.getAllGovernmentBatchesForPaymentApproval();
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      data: response,
+      message: "all government batches fetched successfully",
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: error.message,
+      message: "something went wrong",
+    });
+  }
+};
+
 export {
   createBatch,
   addStudentToBatch,
@@ -329,5 +347,6 @@ export {
   getAllBatchPaymentNotification,
   getAllCorporatePaymentBatch,
   updateBatchPaymentStatus,
-  getAllStudentCertificate
+  getAllStudentCertificate,
+  getPaymentApprovalForGovernemtBatches
 };

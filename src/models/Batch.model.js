@@ -28,6 +28,11 @@ const batchSchema = new mongoose.Schema(
       type: String,
     },
 
+    approvedByGovernMentBody: {
+      type: Boolean,
+      default: false,
+    },
+
     certificateIssued: {
       type: Boolean,
       default: false,
@@ -209,9 +214,3 @@ batchSchema.pre("save", async function (next) {
 const Batch = mongoose.model("Batch", batchSchema);
 
 export default Batch;
-
-
-
-
-
-

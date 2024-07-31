@@ -40,6 +40,9 @@ class BatchRepository extends CrudRepository {
     }
   }
 
+
+  
+
   async filterData(queryObject) {
     try {
       const response = await Batch.find(queryObject);
@@ -132,7 +135,22 @@ class BatchRepository extends CrudRepository {
         paymentStatus: false,
         clientPaymentStatus: true,
         batchActivePermission: true,
-        amountToPaid: { $ne: 0 },
+        amountToPaid: { $ne: 0 },     
+      });
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getAllGovernmentBatchesPendingPaymentData(){
+    try {
+      const response = await Batch.find({
+        approvedByGovernMentBody: true,
+        paymentStatus: false,
+        clientPaymentStatus: true,
+        batchActivePermission: true,
+        amountToPaid: { $ne: 0 },  
       });
       return response;
     } catch (error) {
