@@ -17,7 +17,7 @@ const createCenter = async (req, res) => {
       }
       const payload = req.body;
       payload.trainingOrganizationId = req.trainingPartnerId;
-      payload.sanction_order_letter = req.file.location;
+      payload.sanction_order_letter = req.file?.location;
       const response = await centerService.create(payload);
       return res.status(StatusCodes.CREATED).json({
         success: true,
@@ -71,11 +71,16 @@ const filterCenterBySchemeAndState = async (req, res) => {
 
 const approveCenter = async (req, res) => {
   try {
+    const { schemeName, state } = req.body;
     const centerId = req.params.id;
-    const response = await centerService.approveCenter(centerId);
+    const response = await centerService.approveCenter(
+      centerId,
+      schemeName,
+      state
+    );
     return res.status(StatusCodes.OK).json({
       success: true,
-      message: "Center approved successfully",
+      message: "Center approved",
       data: response,
     });
   } catch (error) {
@@ -87,9 +92,32 @@ const approveCenter = async (req, res) => {
   }
 };
 
+const getAllApprovedCentersByScheme = async (req, res) => {
+  try {
+    const { trainingPartnerId, schemeName, state } = req.query;
+    const response = await centerService.getAllCentersByApproveSchems(
+      trainingPartnerId,
+      schemeName,
+      state
+    );
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      message: "data fetched sucessfully",
+      data: response,
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: error.message,
+      message: "Cannot fetch centers",
+    });
+  }
+};
+
 export {
   createCenter,
   getAllCentersOfTrainingPartner,
   filterCenterBySchemeAndState,
-  approveCenter
+  approveCenter,
+  getAllApprovedCentersByScheme
 };

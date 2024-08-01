@@ -7,6 +7,9 @@ import 'dotenv/config'
 import sendEmail from "./service/email-service.js";
 import TrainingPartnerRepository from "./repository/TrainingPartner-Repository.js";
 import SectorService from "./service/Sector-Service.js";
+import CenterService from "./service/centerService.js";
+
+const centerService = new CenterService();
 
 
 
@@ -16,7 +19,7 @@ const startServer = async () => {
     await makeDatabaseConnection();
     app.listen(8000, async () => {
       console.log("Server is running on port 8000");
-    
+     
      
       
       

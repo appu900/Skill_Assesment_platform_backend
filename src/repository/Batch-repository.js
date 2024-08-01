@@ -114,6 +114,7 @@ class BatchRepository extends CrudRepository {
     }
   }
 
+  // ** get payemnt for a batch by admin
   async getAllBatchByCorporatePayment() {
     try {
       const response = await Batch.find({
@@ -121,7 +122,7 @@ class BatchRepository extends CrudRepository {
         paymentStatus: false,
         clientPaymentStatus: false,
         batchActivePermission: true,
-        amountToPaid: 0,
+        amountToPaid: { $ne: 0 }
       });
       return response;
     } catch (error) {
@@ -143,6 +144,7 @@ class BatchRepository extends CrudRepository {
     }
   }
 
+  // ** new endpoint for getting all the batches that are approved by the government body
   async getAllGovernmentBatchesPendingPaymentData(){
     try {
       const response = await Batch.find({

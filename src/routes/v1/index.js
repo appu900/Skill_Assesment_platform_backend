@@ -96,7 +96,7 @@ import {
 import verifyAssesmentAgency from "../../middleware/verifyAssesmentAgency.js";
 import uploadImage from "../../middleware/imageUpload.js";
 import { createPrice } from "../../controller/PriceController.js";
-import { approveCenter, createCenter, filterCenterBySchemeAndState, getAllCentersOfTrainingPartner } from "../../controller/CenterController.js";
+import { approveCenter, createCenter, filterCenterBySchemeAndState, getAllApprovedCentersByScheme, getAllCentersOfTrainingPartner } from "../../controller/CenterController.js";
 import { generateMonthlyInvoice, getInvoicesOfAssesmentAgency, getMonthlyInvoice, updateAssesmentAgencyPdf, updatePaymentStatusOfInvoice } from "../../controller/Assesment-agency-invoice-controller.js";
 import sendMessages from "../../controller/queue.js";
 import { approveGovernmentSchemeBatches, createSNA, snaLogin } from "../../controller/SnaController.js";
@@ -338,6 +338,8 @@ router.post("/sna/login",snaLogin)
 router.get("/sna/batch/query",getAllGovernmentBatchesStateAndScehmeWise)
 router.put("/sna/batch/approve/:id",approveGovernmentSchemeBatches)
 router.get("/sna/centers/query",filterCenterBySchemeAndState)
-router.put("/sna/centers/approve/:id",approveCenter)
+router.put("/sna/center/approve/:id",approveCenter)
+router.get("/tp/centers/query",getAllApprovedCentersByScheme)
+
 
 export default router;

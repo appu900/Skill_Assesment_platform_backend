@@ -5,10 +5,6 @@ const centerSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  course: {
-    type: String,
-    required: true,
-  },
   state: {
     type: String,
     required: true,
@@ -17,13 +13,23 @@ const centerSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  scheme: {
-    type: String,
-    required: true,
-  },
+  
+  schemes: [
+    {
+      schemeName:{
+        type: String,
+        required: true,
+      },
+      approveStatus: {
+        type: Boolean,
+        default: false,
+      },
+    },
+  ],
+
   sanction_order_letter: {
     type: String,
-    required: true,
+    // required: true,
   },
   centerId: {
     type: String,
@@ -33,25 +39,21 @@ const centerSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  sector: {
-    type: String,
-    required: true,
-  },
+  
+  sectors:[
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Sector",
+    }
+  ],
 
-  approvedStatus: {
-    type: Boolean,
-    default: false,
-  },
-
-  courseCode: {
-    type: String,
-    required: true,
-  },
   trainingOrganizationId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "TrainingOrganization",
+    ref: "TrainingPartner",
   },
 });
 
 const Center = mongoose.model("Center", centerSchema);
 export default Center;
+
+

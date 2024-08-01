@@ -9,6 +9,7 @@ class CenterService {
 
   async create(data) {
     try {
+      console.log("payload",data)
       const tp = await this.trainingPartnerRepository.get(
         data.trainingOrganizationId
       );
@@ -38,17 +39,22 @@ class CenterService {
   async filterCentersData(query) {
     try {
       const queryObject = {};
-      const { state, scheme } = query;
-      if (!state || !scheme) {
+      const { state, schemeName } = query;
+      if (!state || !schemeName) {
         throw new Error("Please provide state or scheme");
       }
       if (state) {
         queryObject.state = state;
       }
-      if (scheme) {
-        queryObject.scheme = scheme;
+
+      if (schemeName) {
+        queryObject['schemes'] = { 
+          $elemMatch: { 
+            schemeName: schemeName, 
+            approveStatus: false 
+          } 
+        };
       }
-      queryObject.approvedStatus = false;
       const response = await this.centerRepository.filterCenters(queryObject);
       return response;
     } catch (error) {
@@ -56,15 +62,47 @@ class CenterService {
     }
   }
 
-  async approveCenter(centerId) {
+  async approveCenter(centerId,schemeName,state) {
+    try {
+      const response = await this.centerRepository.approveSchemesOfCenter(centerId,schemeName,state);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateSectorsInCenters(centerId, sectorId) {
     try {
       const center = await this.centerRepository.get(centerId);
       if (!center) {
         throw new Error("Center not found");
       }
-      center.approvedStatus = true;
+      center.sectors.push(centerId);
       await center.save();
       return true;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateSchemeInCenter(centerId, data) {
+    try {
+      const center = await this.centerRepository.get(centerId);
+      if (!center) {
+        throw new Error("Center not found");
+      }
+      center.schemes.push(data);
+      await center.save();
+      return true;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getAllCentersByApproveSchems(trainingPartnerId, schemeName,state){
+    try {
+      const centers = await this.centerRepository.getCentersByApprovedSchems(trainingPartnerId, schemeName,state);
+      return centers;
     } catch (error) {
       throw error;
     }
