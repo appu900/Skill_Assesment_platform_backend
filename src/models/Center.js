@@ -5,7 +5,7 @@ const centerSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  state: {
+  state  : {
     type: String,
     required: true,
   },
@@ -29,7 +29,7 @@ const centerSchema = new mongoose.Schema({
 
   sanction_order_letter: {
     type: String,
-    // required: true,
+    required: true,
   },
   centerId: {
     type: String,
