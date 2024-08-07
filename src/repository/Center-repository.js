@@ -19,7 +19,7 @@ class CenterRepository extends CrudRepository {
 
   async filterCenters(queryObject) {
     try {
-      const response = await Center.find(queryObject).populate("sectors");
+      const response = await Center.find(queryObject).populate("sectors").populate("trainingOrganizationId");
       return response;
     } catch (error) {
       throw error;
