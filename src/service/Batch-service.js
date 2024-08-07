@@ -384,10 +384,12 @@ class BatchService {
     }
   }
 
-  async getAllBatchesBySchemeName(schemeName) {
+  async getAllBatchesBySchemeName(schemeName,state) {
     try {
+      console.log(state)
       const response = await this.batchRepository.getBatchesBySchemeName(
-        schemeName
+        schemeName,
+        state
       );
       return response;
     } catch (error) {

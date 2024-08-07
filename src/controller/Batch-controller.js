@@ -354,7 +354,14 @@ const getAllGovernmentBatchesStateAndScehmeWise = async (req, res) => {
 const getAllBatchesBySchemeName = async (req, res) => {
   try {
     const payload = req.query.scheme;
-    const response = await batchService.getAllBatchesBySchemeName(payload);
+    const state = req.query.state;
+    if(!state || !payload){
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        success: false,
+        message: "state and scheme are required",
+      });
+    }
+    const response = await batchService.getAllBatchesBySchemeName(payload,state);
     return res.status(StatusCodes.OK).json({
       success: true,
       data: response,
