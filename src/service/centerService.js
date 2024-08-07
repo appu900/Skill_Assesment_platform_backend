@@ -9,7 +9,7 @@ class CenterService {
 
   async create(data) {
     try {
-      console.log("payload",data)
+      console.log("payload", data);
       const tp = await this.trainingPartnerRepository.get(
         data.trainingOrganizationId
       );
@@ -48,11 +48,11 @@ class CenterService {
       }
 
       if (schemeName) {
-        queryObject['schemes'] = { 
-          $elemMatch: { 
-            schemeName: schemeName, 
-            approveStatus: false 
-          } 
+        queryObject["schemes"] = {
+          $elemMatch: {
+            schemeName: schemeName,
+            approveStatus: false,
+          },
         };
       }
       const response = await this.centerRepository.filterCenters(queryObject);
@@ -62,9 +62,13 @@ class CenterService {
     }
   }
 
-  async approveCenter(centerId,schemeName,state) {
+  async approveCenter(centerId, schemeName, state) {
     try {
-      const response = await this.centerRepository.approveSchemesOfCenter(centerId,schemeName,state);
+      const response = await this.centerRepository.approveSchemesOfCenter(
+        centerId,
+        schemeName,
+        state
+      );
       return response;
     } catch (error) {
       throw error;
@@ -99,10 +103,30 @@ class CenterService {
     }
   }
 
-  async getAllCentersByApproveSchems(trainingPartnerId, schemeName,state){
+  async getAllCentersByApproveSchems(trainingPartnerId, schemeName, state) {
     try {
-      const centers = await this.centerRepository.getCentersByApprovedSchems(trainingPartnerId, schemeName,state);
+      const centers = await this.centerRepository.getCentersByApprovedSchems(
+        trainingPartnerId,
+        schemeName,
+        state
+      );
       return centers;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateCenterData(centerId, data, trainingPartnerId) {
+    try {
+      if (!centerId || !data || !trainingPartnerId) {
+        throw new Error("Please provide centerId,data and trainingPartnerId");
+      }
+      const center = await this.centerRepository.updateCenterData(
+        centerId,
+        data,
+        trainingPartnerId
+      );
+      return center;
     } catch (error) {
       throw error;
     }

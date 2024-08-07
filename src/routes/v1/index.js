@@ -97,7 +97,7 @@ import {
 import verifyAssesmentAgency from "../../middleware/verifyAssesmentAgency.js";
 import uploadImage from "../../middleware/imageUpload.js";
 import { createPrice } from "../../controller/PriceController.js";
-import { approveCenter, createCenter, filterCenterBySchemeAndState, getAllApprovedCentersByScheme, getAllCentersOfTrainingPartner } from "../../controller/CenterController.js";
+import { approveCenter, createCenter, filterCenterBySchemeAndState, getAllApprovedCentersByScheme, getAllCentersOfTrainingPartner, updateCenterData } from "../../controller/CenterController.js";
 import { generateMonthlyInvoice, getInvoicesOfAssesmentAgency, getMonthlyInvoice, updateAssesmentAgencyPdf, updatePaymentStatusOfInvoice } from "../../controller/Assesment-agency-invoice-controller.js";
 import sendMessages from "../../controller/queue.js";
 import { approveGovernmentSchemeBatches, createSNA, snaLogin } from "../../controller/SnaController.js";
@@ -120,6 +120,7 @@ router.post("/admin/login", AdminController.login);
 
 router.post("/center",verifyIsTrainingPartner,createCenter);
 router.get("/center/tp/:id",getAllCentersOfTrainingPartner)
+router.put("/center/update/:id",verifyIsTrainingPartner,updateCenterData)
 
 
 

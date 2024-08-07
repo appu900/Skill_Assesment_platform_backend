@@ -114,10 +114,35 @@ const getAllApprovedCentersByScheme = async (req, res) => {
   }
 };
 
+const updateCenterData = async (req, res) => {
+  try {
+    const trainingPartnerId = req.trainingPartnerId;
+    const centerId = req.params.id;
+    const data = req.body;
+    const response = await centerService.updateCenterData(
+      centerId,
+      data,
+      trainingPartnerId
+    );
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      message: "Center updated",
+      data: response,
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: error.message,
+      message: "Cannot update center",
+    });
+  }
+};
+
 export {
   createCenter,
   getAllCentersOfTrainingPartner,
   filterCenterBySchemeAndState,
   approveCenter,
-  getAllApprovedCentersByScheme
+  getAllApprovedCentersByScheme,
+  updateCenterData
 };
