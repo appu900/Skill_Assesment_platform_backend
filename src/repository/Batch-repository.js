@@ -40,9 +40,6 @@ class BatchRepository extends CrudRepository {
     }
   }
 
-
-  
-
   async filterData(queryObject) {
     try {
       const response = await Batch.find(queryObject);
@@ -79,7 +76,7 @@ class BatchRepository extends CrudRepository {
     }
   }
 
-  async activateBatchByClient(batchId,paymentAmount,perStudentCost) {
+  async activateBatchByClient(batchId, paymentAmount, perStudentCost) {
     try {
       const response = await Batch.findByIdAndUpdate(batchId, {
         batchActivePermission: true,
@@ -122,7 +119,7 @@ class BatchRepository extends CrudRepository {
         paymentStatus: false,
         clientPaymentStatus: false,
         batchActivePermission: true,
-        amountToPaid: { $ne: 0 }
+        amountToPaid: { $ne: 0 },
       });
       return response;
     } catch (error) {
@@ -136,7 +133,7 @@ class BatchRepository extends CrudRepository {
         paymentStatus: false,
         clientPaymentStatus: true,
         batchActivePermission: true,
-        amountToPaid: { $ne: 0 },     
+        amountToPaid: { $ne: 0 },
       });
       return response;
     } catch (error) {
@@ -145,21 +142,32 @@ class BatchRepository extends CrudRepository {
   }
 
   // ** new endpoint for getting all the batches that are approved by the government body
-  async getAllGovernmentBatchesPendingPaymentData(){
+  async getAllGovernmentBatchesPendingPaymentData() {
     try {
       const response = await Batch.find({
         approvedByGovernmentBody: true,
         paymentStatus: false,
         clientPaymentStatus: true,
         batchActivePermission: true,
-        amountToPaid: { $ne: 0 },  
+        amountToPaid: { $ne: 0 },
       });
       return response;
     } catch (error) {
       throw error;
     }
   }
- 
+
+  // ** get all the batches by a spcific scheme name
+  
+  async getBatchesBySchemeName(schemeName) {
+    try {
+      const response = await Batch.find({ scheme: schemeName });
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   /**
    *
    * first create batch

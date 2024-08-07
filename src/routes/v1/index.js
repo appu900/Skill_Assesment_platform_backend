@@ -32,6 +32,7 @@ import {
   bulkTrainersInsertInBatch,
   createBatch,
   getAllBatchData,
+  getAllBatchesBySchemeName,
   getAllBatchPaymentNotification,
   getAllCorporatePaymentBatch,
   getAllGovernmentBatchesStateAndScehmeWise,
@@ -340,6 +341,7 @@ router.put("/sna/batch/approve/:id",approveGovernmentSchemeBatches)
 router.get("/sna/centers/query",filterCenterBySchemeAndState)
 router.put("/sna/center/approve/:id",approveCenter)
 router.get("/tp/centers/query",getAllApprovedCentersByScheme)
+router.get("/tp/batches/all/query",getAllBatchesBySchemeName)
 
 
 export default router;

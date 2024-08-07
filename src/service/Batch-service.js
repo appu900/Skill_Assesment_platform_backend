@@ -356,6 +356,7 @@ class BatchService {
       }
       queryObject.batchActivePermission = true;
       queryObject.approvedByGovernmentBody = false;
+      console.log(queryObject);
       const response = await this.batchRepository.filterData(queryObject);
       return response;
     } catch (error) {
@@ -378,6 +379,17 @@ class BatchService {
         sucess: true,
       };
       return resonseobj;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getAllBatchesBySchemeName(schemeName) {
+    try {
+      const response = await this.batchRepository.getBatchesBySchemeName(
+        schemeName
+      );
+      return response;
     } catch (error) {
       throw error;
     }

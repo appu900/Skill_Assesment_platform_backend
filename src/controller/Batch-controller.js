@@ -351,6 +351,24 @@ const getAllGovernmentBatchesStateAndScehmeWise = async (req, res) => {
   }
 };
 
+const getAllBatchesBySchemeName = async (req, res) => {
+  try {
+    const payload = req.query.scheme;
+    const response = await batchService.getAllBatchesBySchemeName(payload);
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      data: response,
+      message: "all batches fetched successfully",
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: error.message,
+      message: "something went wrong",
+    });
+  }
+};
+
 export {
   createBatch,
   addStudentToBatch,
@@ -369,4 +387,5 @@ export {
   getAllStudentCertificate,
   getPaymentApprovalForGovernemtBatches,
   getAllGovernmentBatchesStateAndScehmeWise,
+  getAllBatchesBySchemeName
 };
