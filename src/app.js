@@ -1,6 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 
+
 // ** Routes imports **
 
 import v1Routes from "./routes/v1/index.js";
