@@ -127,9 +127,11 @@ const trainingPartnerSchema = new Schema(
 // ** hasing the password before saving the document
 trainingPartnerSchema.pre("save", function (next) {
   const trainingPartner = this;
-  const SALT = bcrypt.genSaltSync(10);
-  const encryptedPassword = bcrypt.hashSync(trainingPartner.password, SALT);
-  trainingPartner.password = encryptedPassword;
+  if (trainingPartner.isModified("password")) {
+    const SALT = bcrypt.genSaltSync(10);
+    const encryptedPassword = bcrypt.hashSync(trainingPartner.password, SALT);
+    trainingPartner.password = encryptedPassword;
+  }
   next();
 });
 

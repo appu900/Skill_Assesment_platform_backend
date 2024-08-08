@@ -56,7 +56,7 @@ const assesmentAgencySchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      unique: [true,"email is already registered"],
+      unique: [true, "email is already registered"],
       required: [true, "email is missing"],
     },
     websiteLink: {
@@ -142,9 +142,11 @@ const assesmentAgencySchema = new mongoose.Schema(
 
 assesmentAgencySchema.pre("save", function (next) {
   const assesmentAgency = this;
-  const SALT = bcrypt.genSaltSync(10);
-  const encryptedPassword = bcrypt.hashSync(assesmentAgency.password, SALT);
-  assesmentAgency.password = encryptedPassword;
+  if (assesmentAgency.isModified("password")) {
+    const SALT = bcrypt.genSaltSync(10);
+    const encryptedPassword = bcrypt.hashSync(assesmentAgency.password, SALT);
+    assesmentAgency.password = encryptedPassword;
+  }
   next();
 });
 
