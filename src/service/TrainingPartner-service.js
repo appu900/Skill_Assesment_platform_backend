@@ -13,7 +13,7 @@ class TrainingPartnerService {
       const responsePayload = await this.trainingPartnerRepository.create(data);
       return responsePayload;
     } catch (error) {
-      if(error.code === 11000){
+      if (error.code === 11000) {
         throw new Error("Training Partner already exists with is email");
       }
       throw error;
@@ -35,7 +35,7 @@ class TrainingPartnerService {
       }
       const token = trainingPartner.generateJwt();
       const response = {
-        data:trainingPartner,
+        data: trainingPartner,
         token: token,
       };
       console.log(response);
@@ -82,10 +82,13 @@ class TrainingPartnerService {
     }
   }
 
-  async ApproveApplication(id,paymentAmount) {
+  async ApproveApplication(id, paymentAmount) {
     try {
       const response =
-      await this.trainingPartnerRepository.updateStatusApproved(id,paymentAmount);
+        await this.trainingPartnerRepository.updateStatusApproved(
+          id,
+          paymentAmount
+        );
       console.log("Approved Response Data", response.registeredOfficeEmail);
       sendEmail(
         "pabitrasundardakua@gmail.com",
