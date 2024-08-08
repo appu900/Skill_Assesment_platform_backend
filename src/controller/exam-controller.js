@@ -243,7 +243,7 @@ const updateStudentAttendanceNumber = async (req, res) => {
   }
 };
 
-const publishResult = async (req, res) => {
+const publishCertificate = async (req, res) => {
   try {
     const examId = req.params.id;
     const response = await examService.publishCeritificates(examId);
@@ -274,5 +274,5 @@ export {
   updateExamPaymentStatus,
   addAssesmentDate,
   updateStudentAttendanceNumber,
-  publishResult
+  publishCertificate
 };
