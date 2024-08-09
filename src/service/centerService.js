@@ -131,6 +131,18 @@ class CenterService {
       throw error;
     }
   }
+
+  async getAllCentersBySchemeName(scheme, state) {
+    try {
+      const response = await this.centerRepository.getAllCentersByASchemeName(
+        scheme,
+        state
+      );
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default CenterService;

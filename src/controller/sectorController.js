@@ -55,4 +55,28 @@ const getAllCoursesOfASector = async (req, res) => {
   }
 };
 
-export { createSector, getAllSector,getAllCoursesOfASector };
+const getAllSectorByAScheme = async (req,res) =>{
+  try {
+    const state = req.query.state;
+    const scheme = req.query.scheme;
+    if(!state || !scheme){
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message:"please provide state and scheme"
+      })
+    }
+    const response = await sectorService.getAllSectorsByASchemeNameAndState(scheme,state);
+    return res.status(StatusCodes.OK).json({
+      success:true,
+      message:"sectors fetched sucessfully",
+      data:response
+    })
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      sucess:false,
+      message:"data fetched sucessfully",
+      error:error.message
+    })
+  }
+}
+
+export { createSector, getAllSector,getAllCoursesOfASector,getAllSectorByAScheme };

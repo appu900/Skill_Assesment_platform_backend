@@ -138,11 +138,36 @@ const updateCenterData = async (req, res) => {
   }
 };
 
+const getAllCenterBySchemeNameAndState = async(req,res) =>{
+  try {
+     const state = req.query.state;
+     const scheme = req.query.scheme;
+     if(!state || !scheme){
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message:"please provide state and scheme"
+      })
+     }
+
+     const response = await centerService.getAllCentersBySchemeName(scheme,state);
+     return res.status(StatusCodes.OK).json({
+      success:true,
+      data:response
+     })
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: error.message,
+      message: "Cannot fetch centers",
+    });
+  }
+}
+
 export {
   createCenter,
   getAllCentersOfTrainingPartner,
   filterCenterBySchemeAndState,
   approveCenter,
   getAllApprovedCentersByScheme,
-  updateCenterData
+  updateCenterData,
+  getAllCenterBySchemeNameAndState
 };

@@ -5,7 +5,7 @@ const centerSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  state  : {
+  state: {
     type: String,
     required: true,
   },
@@ -13,10 +13,10 @@ const centerSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  
+
   schemes: [
     {
-      schemeName:{
+      schemeName: {
         type: String,
         required: true,
       },
@@ -39,12 +39,12 @@ const centerSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  
-  sectors:[
+
+  sectors: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Sector",
-    }
+    },
   ],
 
   trainingOrganizationId: {
@@ -55,5 +55,3 @@ const centerSchema = new mongoose.Schema({
 
 const Center = mongoose.model("Center", centerSchema);
 export default Center;
-
-

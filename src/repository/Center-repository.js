@@ -101,11 +101,22 @@ class CenterRepository extends CrudRepository {
       const updatedCenter = await Center.findOneAndUpdate(
         { _id: centerId },
         { $set: updateData },
-        { new: true,runValidators: true }
+        { new: true, runValidators: true }
       );
 
       return updatedCenter;
-      
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getAllCentersByASchemeName(schemeName, stateName) {
+    try {
+      const centers = await Center.find({
+        "schemes.schemeName": schemeName,
+        state: stateName,
+      });
+      return centers;
     } catch (error) {
       throw error;
     }

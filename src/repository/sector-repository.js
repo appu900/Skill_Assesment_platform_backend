@@ -23,6 +23,18 @@ class SectorRepository extends CrudRepository {
       throw error;
     }
   }
+
+  async getAllSectorsByScehemeAndStateName(schemeName,stateName){
+    try {
+      const response = await Sector.find({
+        state:stateName,
+        scheme:schemeName
+      })
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default SectorRepository;
