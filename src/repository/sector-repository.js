@@ -17,7 +17,7 @@ class SectorRepository extends CrudRepository {
 
   async getCourseBySector(sectorName){
     try {
-      const response = await Sector.findOne({ name: sectorName }).populate("courses");
+      const response = await Sector.find({ name: sectorName }).populate("courses");
       return response;
     } catch (error) {
       throw error;
