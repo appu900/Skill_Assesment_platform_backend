@@ -1,8 +1,10 @@
+import CourseRepository from "../repository/course-repository.js";
 import SectorRepository from "../repository/sector-repository.js";
 
 class SectorService {
   constructor() {
     this.sectorRepository = new SectorRepository();
+    this.courseRepository = new CourseRepository();
   }
 
   async create(data) {
@@ -27,10 +29,8 @@ class SectorService {
 
   async getCoursesOfSector(sectorName) {
     try {
-      const response = await this.sectorRepository.getCourseBySector(
-        sectorName
-      );
-      return response.courses;
+      const response = await this.courseRepository.getAllCoursesBySectorName(sectorName);
+      return response
     } catch (error) {
       throw error;
     }
