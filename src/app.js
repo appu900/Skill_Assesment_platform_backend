@@ -3,16 +3,22 @@ import bodyParser from "body-parser";
 import cors from "cors"
 
 
+const corsConfig = {
+   credentials:true,
+   origin:true
+}
+
 // ** Routes imports **
 
 import v1Routes from "./routes/v1/index.js";
+import { credentials } from "amqplib";
 
 // ** Express instance
 const app = express();
 
 // ** Middleware for parsing application/x-www-form-urlencoded
 app.use(express.json());
-app.use(cors())
+app.use(cors(corsConfig))
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // ** Routes
