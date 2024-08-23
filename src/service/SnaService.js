@@ -10,7 +10,7 @@ class SnaService {
       const response = await this.snaRepository.create(data);
       return response;
     } catch (error) {
-      throw error;   
+      throw error;
     }
   }
 
@@ -23,7 +23,7 @@ class SnaService {
       if (!sna.checkPassword(password)) {
         throw new Error("Incorrect password");
       }
-      if(sna.scheme !== scheme){
+      if (sna.scheme !== scheme) {
         throw new Error("unAuthorized login");
       }
       const token = sna.generateJwt();
@@ -37,7 +37,15 @@ class SnaService {
       throw error;
     }
   }
-}
 
+  async getAllSna() {
+    try {
+      const response = await this.snaRepository.getAll();
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+}
 
 export default SnaService;

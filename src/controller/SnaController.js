@@ -60,4 +60,21 @@ const approveGovernmentSchemeBatches = async (req, res) => {
   }
 };
 
-export { createSNA, snaLogin,approveGovernmentSchemeBatches };
+const getAllSnaDetails = async (req, res) => {
+  try {
+    const response = await snaService.getAllSna();
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      message: "fetched All Snas",
+      data: response,
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: "something went wrong",
+      error: error.message,
+    });
+  }
+};
+
+export { createSNA, snaLogin,approveGovernmentSchemeBatches,getAllSnaDetails };

@@ -6,5 +6,6 @@ const router = express.Router();
 
 router.post("/", AdminController.createNewAdmin);
 router.post("/login", AdminController.login);
+router.post("/notification",AdminController.createNewNotification)
 
 export default router;

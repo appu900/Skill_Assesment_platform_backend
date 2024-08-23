@@ -1,7 +1,13 @@
+import { StatusCodes } from "http-status-codes";
 import AdminService from "../service/Admin-service.js";
+import NotificationService from "../service/NotificationService.js";
 import { adminAuthSchema } from "../validator/AdminAuthValidator.js";
-import vine,{errors} from "@vinejs/vine";
+import vine, { errors } from "@vinejs/vine";
 const adminService = new AdminService();
+const notificationService = new NotificationService();
+import upload from "../config/s3-imageUpload-config.js";
+
+const singleFileUploader = upload.single("pdf");
 
 class AdminController {
   static async createNewAdmin(req, res) {
@@ -44,7 +50,34 @@ class AdminController {
     }
   }
 
-  
+  static async createNewNotification(req, res) {
+    singleFileUploader(req, res, async function (err) {
+      if (err) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+          success: false,
+          error: error.message,
+          message: "Something went Wrong",
+        });
+      }
+    });
+    try {
+      let payload = req.body;
+      const imageUrl = req.file?.location;
+      payload.pdf = imageUrl;
+      const result = await notificationService.createNotification(payload);
+      return res.status(StatusCodes.CREATED).json({
+        ok: true,
+        message: "Notification created Sucessfully",
+        data: result,
+      });
+    } catch (error) {
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: "SomethinG Went Wrong in Creating Notification",
+        error: error.message,
+      });
+    }
+  }
 }
 
 export default AdminController;

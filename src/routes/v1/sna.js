@@ -11,6 +11,7 @@ import {
 import {
   approveGovernmentSchemeBatches,
   createSNA,
+  getAllSnaDetails,
   snaLogin,
 } from "../../controller/SnaController.js";
 
@@ -24,5 +25,6 @@ router.get("/centers/query", filterCenterBySchemeAndState);
 router.put("/center/approve/:id", approveCenter);
 router.get("/centers/query", getAllApprovedCentersByScheme);
 router.get("/batches/all/query", getAllBatchesBySchemeName);
+router.get("/all",getAllSnaDetails)
 
 export default router;
