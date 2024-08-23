@@ -23,7 +23,7 @@ router.get("/batch/query", getAllGovernmentBatchesStateAndScehmeWise);
 router.put("/batch/approve/:id", approveGovernmentSchemeBatches);
 router.get("/centers/query", filterCenterBySchemeAndState);
 router.put("/center/approve/:id", approveCenter);
-router.get("/centers/query", getAllApprovedCentersByScheme);
+router.get("/centers/tp/query", getAllApprovedCentersByScheme);
 router.get("/batches/all/query", getAllBatchesBySchemeName);
 router.get("/all",getAllSnaDetails)
 
