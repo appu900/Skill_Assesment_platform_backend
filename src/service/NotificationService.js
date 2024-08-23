@@ -13,6 +13,15 @@ class NotificationService {
       throw error;
     }
   }
+
+  async getAllNotifications(){
+    try {
+      const response = await this.notificationRepository.getAll();
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default NotificationService;

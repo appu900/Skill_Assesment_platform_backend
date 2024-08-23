@@ -78,6 +78,21 @@ class AdminController {
       });
     }
   }
+
+  static async getAllNotifications(req, res) {
+    try {
+      const response = await notificationService.getAllNotifications();
+      return res.status(StatusCodes.OK).json({
+        ok: true,
+        data: response,
+      });
+    } catch (error) {
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        ok: false,
+        error: error.message,
+      });
+    }
+  }
 }
 
 export default AdminController;
