@@ -66,8 +66,9 @@ class CenterRepository extends CrudRepository {
           },
         },
       };
+      // ** logging ..
       console.log(filter);
-      const response = await Center.find(filter);
+      const response = await Center.find(filter).populate("sectors");
       return response;
     } catch (error) {
       throw error;
