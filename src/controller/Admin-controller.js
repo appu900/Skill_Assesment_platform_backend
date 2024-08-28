@@ -51,15 +51,15 @@ class AdminController {
   }
 
   static async createNewNotification(req, res) {
-    singleFileUploader(req, res, async function (err) {
+    singleFileUploader(req, res, async (err) => {
       if (err) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
           success: false,
-          error: error.message,
+          error: err.message,
           message: "Something went Wrong",
         });
       }
-    });
+    
     try {
       let payload = req.body;
       const imageUrl = req.file?.location;
@@ -77,6 +77,7 @@ class AdminController {
         error: error.message,
       });
     }
+    })
   }
 
   static async getAllNotifications(req, res) {
@@ -96,3 +97,4 @@ class AdminController {
 }
 
 export default AdminController;
+

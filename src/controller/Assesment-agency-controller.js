@@ -9,6 +9,7 @@ const fileUploader = upload.fields([
 ]);
 
 const createAssesmentAgency = async (req, res) => {
+
   fileUploader(req, res, async (err) => {
     if (err) {
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -21,7 +22,7 @@ const createAssesmentAgency = async (req, res) => {
       const payload = req.body;
       payload.LETTER_OF_NCVET = req.files["LETTER_OF_NCVET"][0].location;
       payload.logo = req.files["logo"][0].location;
-      console.log(payload);
+      
       const assesmentAgency = await assesmentAgencyService.createAgency(
         payload
       );
