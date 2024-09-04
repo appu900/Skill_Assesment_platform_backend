@@ -94,7 +94,7 @@ class TrainingPartnerService {
         "pabitrasundardakua@gmail.com",
         response.registeredOfficeEmail,
         "Application Approved",
-        "Your Application has been Approved by the Admin. You can now login to the portal and start your training services. Thank You"
+        `Your Application has been Approved by the Admin. You can now login to the portal and start your training services. Thank You and your login credentials are email`
       );
       return response;
     } catch (error) {

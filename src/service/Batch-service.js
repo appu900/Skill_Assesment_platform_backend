@@ -19,6 +19,30 @@ class BatchService {
     this.schemeRepository = new SchemeRepository();
   }
 
+  // ** A function to check before submittion of batch data every student in a batch has profile pic or not if not then return false
+
+  async checkImageForStudents(batchId){
+    try {
+      const batch = await this.batchRepository.get(batchId);
+      if (!batch) {
+        throw new Error("batch not found");
+      }
+      let studentsWithOutImage = [];
+      const students = batch.students;
+      let flag = true;
+      for (let i = 0; i < students.length; i++) {
+        const student = await this.studentRepository.get(students[i]);
+        if (!student.profilePic) {
+          flag = false;
+          studentsWithOutImage.push(student.name);
+        }
+      }
+      return { flag,studentsWithOutImage };
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async createBatch(data) {
     try {
       const trainingPartnerId = data.trainingOrganizationId;
@@ -191,7 +215,12 @@ class BatchService {
       }
 
       if (batch.students.length === 0) {
-        throw new Error("batch complete the batch with students first");
+        throw new Error("complete the batch with students first");
+      }
+
+      const { flag , studentsWithOutImage } = await this.checkImageForStudents(batchId);
+      if(!flag){
+        throw new Error(`add profile pic for these students [${studentsWithOutImage}]`,);
       }
 
       const tp = await this.trainingPartnerRepository.get(
