@@ -161,7 +161,8 @@ class BatchRepository extends CrudRepository {
 
   async getBatchesBySchemeName(schemeName,state) {
     try {
-      const response = await Batch.find({ scheme: schemeName,state:state });
+      const response = await Batch.find({ scheme: schemeName,state:state,
+        batchActivePermission:true, });
       return response;
     } catch (error) {
       throw error;
