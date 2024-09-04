@@ -10,7 +10,14 @@ class TrainingPartnerService {
   //   ** create trainingPartner
   async createTrainingPartner(data) {
     try {
+      const userPassword = data.password;
       const responsePayload = await this.trainingPartnerRepository.create(data);
+      sendEmail(
+        "pabitrasundardakua@gmail.com",
+        response.registeredOfficeEmail,
+        "TrainingOrganization Created",
+        `Your Training Organization has been created successfully. Your login credentials are registerdOfficeEmail and password is ${userPassword}`
+      );
       return responsePayload;
     } catch (error) {
       if (error.code === 11000) {
