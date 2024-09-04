@@ -222,10 +222,7 @@ class BatchService {
         throw new Error("complete the batch with students first");
       }
 
-      const { flag , studentsWithOutImage } = await this.checkImageForStudents(batchId);
-      if(!flag){
-        throw new Error(`add profile pic for these students [${studentsWithOutImage}]`,);
-      }
+     
 
       const tp = await this.trainingPartnerRepository.get(
         batch.trainingOrganizationId
@@ -301,6 +298,7 @@ class BatchService {
         TrainingPartnerId: batch.trainingOrganizationId,
         BatchId: batch._id,
       };
+
       this.invoiceService.createInvoice(invoiceData).catch((error) => {
         console.log("error in invoice generation", error);
       });
