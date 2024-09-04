@@ -214,6 +214,10 @@ class BatchService {
         throw new Error("batch not found");
       }
 
+      if(batch.batchActivePermission === true){
+        throw new Error("batch is already Submitted");
+      }
+
       if (batch.students.length === 0) {
         throw new Error("complete the batch with students first");
       }
