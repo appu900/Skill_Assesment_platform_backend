@@ -57,7 +57,7 @@ class AssesmentAgencyService {
         percentage
       );
       sendEmail(
-        "pabitrasundardakua@gmail.com",
+        "awardingbody@cutm.ac.in",
         response.email,
         "Application Approved",
         "Your Application has been Approved by the Admin. You can now login to the portal and start your Assesment service services. Thank You"

@@ -12,12 +12,16 @@ class TrainingPartnerService {
     try {
       const userPassword = data.password;
       const responsePayload = await this.trainingPartnerRepository.create(data);
+
+      console.log("responsePayload", responsePayload);
+
       sendEmail(
-        "pabitrasundardakua@gmail.com",
-        response.registeredOfficeEmail,
+        "awardingbody@cutm.ac.in",
+        responsePayload.registeredOfficeEmail,
         "TrainingOrganization Created",
         `Your Training Organization has been created successfully. Your login credentials are registerdOfficeEmail and password is ${userPassword}`
       );
+      
       return responsePayload;
     } catch (error) {
       if (error.code === 11000) {
@@ -91,6 +95,19 @@ class TrainingPartnerService {
 
   async ApproveApplication(id, paymentAmount) {
     try {
+      const tp = await this.trainingPartnerRepository.get(id);
+      if (!tp) {
+        throw new Error("Training Partner not found");
+      }
+
+
+      // ** check if the tp -> scheme is not corporate then paymentAmount should be 0
+
+      const trainingPartnerScheme = tp.scheme;
+      if (trainingPartnerScheme !== "Corporate") {
+        paymentAmount = 0;
+      }
+
       const response =
         await this.trainingPartnerRepository.updateStatusApproved(
           id,
@@ -98,7 +115,7 @@ class TrainingPartnerService {
         );
       console.log("Approved Response Data", response.registeredOfficeEmail);
       sendEmail(
-        "pabitrasundardakua@gmail.com",
+        "awardingbody@cutm.ac.in",
         response.registeredOfficeEmail,
         "Application Approved",
         `Your Application has been Approved by the Admin. You can now login to the portal and start your training services. Thank You and your login credentials are email`
