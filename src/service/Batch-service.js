@@ -32,7 +32,7 @@ class BatchService {
       let flag = true;
       for (let i = 0; i < students.length; i++) {
         const student = await this.studentRepository.get(students[i]);
-        if (!student.profilePic) {
+        if (!student.profilepic) {  
           flag = false;
           studentsWithOutImage.push(student.name);
         }
@@ -222,7 +222,12 @@ class BatchService {
         throw new Error("complete the batch with students first");
       }
 
-     
+      // ** check for image ..of students before activating the batch
+
+      const {flag,studentsWithOutImage} = await this.checkImageForStudents(batchId);
+      if(flag === false){
+        throw new Error(`students ${studentsWithOutImage} has no profile pic`);
+      }
 
       const tp = await this.trainingPartnerRepository.get(
         batch.trainingOrganizationId
