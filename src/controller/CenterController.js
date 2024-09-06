@@ -138,21 +138,24 @@ const updateCenterData = async (req, res) => {
   }
 };
 
-const getAllCenterBySchemeNameAndState = async(req,res) =>{
+const getAllCenterBySchemeNameAndState = async (req, res) => {
   try {
-     const state = req.query.state;
-     const scheme = req.query.scheme;
-     if(!state || !scheme){
+    const state = req.query.state;
+    const scheme = req.query.scheme;
+    if (!state || !scheme) {
       return res.status(StatusCodes.BAD_REQUEST).json({
-        message:"please provide state and scheme"
-      })
-     }
+        message: "please provide state and scheme",
+      });
+    }
 
-     const response = await centerService.getAllCentersBySchemeName(scheme,state);
-     return res.status(StatusCodes.OK).json({
-      success:true,
-      data:response
-     })
+    const response = await centerService.getAllCentersBySchemeName(
+      scheme,
+      state
+    );
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      data: response,
+    });
   } catch (error) {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
@@ -160,7 +163,30 @@ const getAllCenterBySchemeNameAndState = async(req,res) =>{
       message: "Cannot fetch centers",
     });
   }
-}
+};
+
+const getCenterDetails = async (req, res) => {
+  try {
+    const centerId = req.params.centerId;
+    if(!centerId){
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        success:false,
+        message: "Please provide centerId",
+      });
+    }
+    const response = await centerService.getACenterDetails(centerId);
+    return res.status(StatusCodes.OK).json({
+      message: "Center details fetched",
+      data: response,
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success:false,
+      message: "Something went wrong",
+      error: error.message,
+    });
+  }
+};
 
 export {
   createCenter,
@@ -169,10 +195,6 @@ export {
   approveCenter,
   getAllApprovedCentersByScheme,
   updateCenterData,
-  getAllCenterBySchemeNameAndState
+  getAllCenterBySchemeNameAndState,
+  getCenterDetails
 };
-
-
-
-
-

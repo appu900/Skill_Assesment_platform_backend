@@ -36,6 +36,15 @@ class CenterService {
     }
   }
 
+  async getACenterDetails(centerId) {
+    try {
+      const response = await this.centerRepository.fetchCenterDetails(centerId);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async filterCentersData(query) {
     try {
       const queryObject = {};

@@ -6,6 +6,17 @@ class CenterRepository extends CrudRepository {
     super(Center);
   }
 
+  async fetchCenterDetails(centerId) {
+    try {
+      const center = await Center.findById(centerId)
+        .populate("trainingOrganizationId")
+        .populate("sectors");
+      return center;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async getCenterByTrainingPartnerId(trainingPartnerId) {
     try {
       const response = await Center.find({
