@@ -3,6 +3,8 @@ import AssesmentAgencyRepository from "../repository/AssesmentAgency-repository.
 import BatchRepository from "../repository/Batch-repository.js";
 import ExamRepository from "../repository/Exam-repository.js";
 import TrainingPartnerRepository from "../repository/TrainingPartner-Repository.js";
+import StudentRepository from "../repository/student-repository.js";
+import CerificateRepository from "../repository/CertificateRepo.js";
 
 class ExamService {
   constructor() {
@@ -10,6 +12,8 @@ class ExamService {
     this.batchRepository = new BatchRepository();
     this.assesmentAgencyRepository = new AssesmentAgencyRepository();
     this.trainingPartnerRepository = new TrainingPartnerRepository();
+    this.studentRepository = new StudentRepository();
+    this.certificateRepository = new CerificateRepository();
   }
 
   async createExam(courseName, batchId, assesmentAgencyId, trainingPartnerId) {
@@ -186,37 +190,86 @@ class ExamService {
   async publishCeritificates(examId) {
     try {
       const exam = await this.examRepository.get(examId);
-      
+
       if (!exam) {
         throw new Error("exam not found");
       }
       const channel = await createChannel();
 
       const batch = await this.batchRepository.get(exam.batchId);
-      console.log(batch)
-      if(!batch){
-        throw new Error("batch not found contact your bacekd developer something went wrong");
+      console.log(batch);
+      if (!batch) {
+        throw new Error(
+          "batch not found contact your bacekd developer something went wrong"
+        );
       }
       const studentsData = batch.students;
-      studentsData.map(async (student) => {
-        const payload = {
-          data: {
-            studentId: student,
-            batchId: exam.batchId,
-            examId: examId,
-            courseName:exam.course,
-            courseCredit:batch.courseCredit,
-            courseLevel:batch.courseLevel,
-            TrainingCenter: batch.centerName,
-            duration:batch.courseDuration
-          },
-          service: "CREATE_CERTIFICATE",
+      studentsData.map(async (std) => {
+        // ** to be implemented in message queue infuture DATA.
+
+        // const payload = {
+        //   data: {
+        //     studentId: student,
+        //     batchId: exam.batchId,
+        //     examId: examId,
+        //     courseName:exam.course,
+        //     courseCredit:batch.courseCredit,
+        //     courseLevel:batch.courseLevel,
+        //     TrainingCenter: batch.centerName,
+        //     duration:batch.courseDuration
+        //   },
+        //   service: "CREATE_CERTIFICATE",
+        // };
+
+        // ** SEND MESSAGES TO QUEUE.
+        // await publishMessage(
+        //   channel,
+        //   "CREATE_CERTIFICATE",
+        //   JSON.stringify(payload)
+        // );
+
+        // ** LOGIC FOR IF SAME SERVER WILL BE USED FOR GENERATING CERTIFICATE.
+
+        const data = {
+          studentId: std,
+          batchId: exam.batchId,
+          examId: examId,
+          courseName: exam.course,
+          courseCredit: batch.courseCredit,
+          courseLevel: batch.courseLevel,
+          TrainingCenter: batch.centerName,
+          duration: batch.courseDuration,
         };
-        await publishMessage(
-          channel,
-          "CREATE_CERTIFICATE",
-          JSON.stringify(payload)
-        );
+
+        // ** fetch students Data
+
+        const student = await this.studentRepository.get(data.studentId);
+        console.log("StuddentData",student)
+        const certificatePayload = {
+          studentName: student.name,
+          stutentProfilePic: student.profilepic,
+          studentId: student._id,
+          batchId: data.batchId,
+          fatherName: student.fathername,
+          DOB: student.dob,
+          Enrolment_number: student.redg_No,
+          qualification: data.courseName,
+          duration: data.duration,
+          credit: data.courseCredit,
+          level: data.courseLevel,
+          TrainingCenter: data.TrainingCenter,
+          District: student.district,
+          state: student.state,
+          grade: student.Grade,
+          placeOfIssue: "Bhubaneswar",
+          DateOfIssue: new Date(),
+        };
+        if (student.absent === false) {
+          const certificate = await this.certificateRepository.create(
+            certificatePayload
+          );
+          console.log(certificate);
+        }
       });
 
       // ** update exam status to completed
@@ -226,7 +279,6 @@ class ExamService {
       await exam.save();
       await batch.save();
       return true;
-
     } catch (error) {
       throw error;
     }

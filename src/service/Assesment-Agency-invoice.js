@@ -24,7 +24,10 @@ class AssesmentAgencyInvoiceService {
       const localeDateString = date.toLocaleString("en-US", options);
 
       const [month, day, year] = localeDateString.split(" ");
+      console.log(day)
       const today = `${day}-${month}-${year}`;
+
+      console.log(today)
 
       //   ** fetch assesmentAgency to know percentage
 
@@ -188,3 +191,9 @@ class AssesmentAgencyInvoiceService {
 }
 
 export default AssesmentAgencyInvoiceService;
+
+
+
+
+
+
