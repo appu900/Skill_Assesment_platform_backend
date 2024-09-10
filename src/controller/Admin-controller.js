@@ -39,7 +39,7 @@ class AdminController {
       const response = await adminService.login(req.body);
       return res.status(200).json({
         success: true,
-        data: response.token,
+        data: response,
       });
     } catch (error) {
       return res.status(500).json({

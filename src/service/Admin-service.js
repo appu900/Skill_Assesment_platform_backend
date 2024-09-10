@@ -32,8 +32,10 @@ class AdminService {
       const token = admin.generateJwt();
       const response = {
         token: token,
-        data: admin,
+        email:admin.email,
+        name:admin.name
       };
+       console.log("This is response",response)
       return response;
     } catch (error) {
       throw error;
