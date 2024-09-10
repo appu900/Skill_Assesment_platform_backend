@@ -276,6 +276,7 @@ class ExamService {
       exam.certificateIssued = true;
       batch.batchCompletedStatus = true;
       batch.certificateIssued = true;
+      batch.status = "Completed";
       await exam.save();
       await batch.save();
       return true;

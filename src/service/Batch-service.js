@@ -19,9 +19,6 @@ class BatchService {
     this.schemeRepository = new SchemeRepository();
   }
 
-
-  
-
   // ** A function to check before submittion of batch data every student in a batch has profile pic or not if not then return false
 
   async checkImageForStudents(batchId){
