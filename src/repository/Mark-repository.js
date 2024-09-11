@@ -9,6 +9,7 @@ class MarkRepository extends CrudRepository {
   async getMarkByStudentId(studentId) {
     try {
       const response = await Mark.findOne({ studentId: studentId });
+      console.log(response);
       return response;
     } catch (error) {
       throw error;
@@ -35,3 +36,6 @@ class MarkRepository extends CrudRepository {
 }
 
 export default MarkRepository;
+
+
+

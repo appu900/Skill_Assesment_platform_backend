@@ -38,6 +38,7 @@ const markSchema = new mongoose.Schema({
   },
   examDate: {
     type: Date,
+    required:true
   },
 
   centerCode: {
@@ -78,6 +79,7 @@ const markSchema = new mongoose.Schema({
   Nos: [
     {
       name: String,
+      code:String,
       Theory: Number,
       Practical: Number,
       Total: Number,

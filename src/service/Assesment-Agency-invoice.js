@@ -22,6 +22,7 @@ class AssesmentAgencyInvoiceService {
         day: "2-digit",
       };
       const localeDateString = date.toLocaleString("en-US", options);
+      console.log(localeDateString)
 
       const [month, day, year] = localeDateString.split(" ");
       console.log(day)
