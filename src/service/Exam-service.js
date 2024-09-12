@@ -194,7 +194,7 @@ class ExamService {
       if (!exam) {
         throw new Error("exam not found");
       }
-      const channel = await createChannel();
+      // const channel = await createChannel();
 
       const batch = await this.batchRepository.get(exam.batchId);
       console.log(batch);
