@@ -222,6 +222,12 @@ class BatchService {
         throw new Error("complete the batch with students first");
       }
 
+      // ** if there is no trainers assigned then return error
+
+      if(batch.trainers.length === 0){
+        throw new Error("Please add atleast One Trainer")
+      }
+
       // ** check for image ..of students before activating the batch
 
       const {flag,studentsWithOutImage} = await this.checkImageForStudents(batchId);

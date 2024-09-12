@@ -22,6 +22,7 @@ class MarkService {
       if (student.markUploadStatus == true) {
         throw new Error("Mark already uploaded for this student");
       }
+      data.MPR_ID = student.MPR_Id
       const mark = await this.markRepository.create(data);
       student.marks = mark._id;
       student.markUploadStatus = true;

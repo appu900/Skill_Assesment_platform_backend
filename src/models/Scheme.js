@@ -1,9 +1,14 @@
 import mongoose from "mongoose";
 
+
 const schemeSchema = new mongoose.Schema({
   schemeType: {
     type: String,
     required: true,
+  },
+  logo:{
+    type:String,
+    required:[true,"logo is required !"]
   },
   name: {
     type: String,

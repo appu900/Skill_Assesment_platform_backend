@@ -36,6 +36,10 @@ class AssesmentAgencyInvoiceService {
         assesmentAgencyId
       );
 
+      if(!assesmentAgency.AccountNumber){
+        throw new Error("please provide Bank Account Details")
+      }
+
       if (!assesmentAgency) {
         throw new Error("Assesment Agency not found");
       }

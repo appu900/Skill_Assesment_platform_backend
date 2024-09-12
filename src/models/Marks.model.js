@@ -12,6 +12,11 @@ const markSchema = new mongoose.Schema({
     required: true,
   },
 
+  MPR_ID:{
+    type:String,
+    required:true
+  },
+
   TrainingPartner: {
     type: String,
     required: true,
