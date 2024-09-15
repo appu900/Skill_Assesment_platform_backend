@@ -112,3 +112,9 @@ class AssesmentAgencyRepository extends CrudRepository {
 }
 
 export default AssesmentAgencyRepository;
+
+
+
+
+
+

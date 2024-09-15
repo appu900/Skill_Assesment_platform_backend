@@ -2,6 +2,7 @@
 import Exam from "../models/Exam.model.js";
 import ExamRepository from "../repository/Exam-repository.js";
 import MarkRepository from "../repository/Mark-repository.js";
+import SchemeRepository from "../repository/SchemeRepository.js";
 import StudentRepository from "../repository/student-repository.js";
 
 class MarkService {
@@ -9,10 +10,13 @@ class MarkService {
     this.markRepository = new MarkRepository();
     this.studentRepository = new StudentRepository();
     this.examRepository = new ExamRepository();
+    this.schemeRepository = new SchemeRepository();
   }
 
   // batchid,
   // sector
+
+  
   async create(data) {
     try {
       const student = await this.studentRepository.get(data.studentId);

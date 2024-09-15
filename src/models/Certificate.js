@@ -59,6 +59,9 @@ const certificateSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  schemeLogo:{
+    type:String
+  },
   placeOfIssue: {
     type: String,
     default: "Bhubaneswar",

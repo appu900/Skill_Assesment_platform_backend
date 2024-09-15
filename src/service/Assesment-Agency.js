@@ -26,6 +26,8 @@ class AssesmentAgencyService {
       if (!user) {
         throw new Error("user not found with this email");
       }
+     
+      console.log(user.checkPassword(password))
 
       if (!user.checkPassword(password)) {
         throw new Error("incorrect password");

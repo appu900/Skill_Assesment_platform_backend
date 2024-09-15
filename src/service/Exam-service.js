@@ -5,6 +5,7 @@ import ExamRepository from "../repository/Exam-repository.js";
 import TrainingPartnerRepository from "../repository/TrainingPartner-Repository.js";
 import StudentRepository from "../repository/student-repository.js";
 import CerificateRepository from "../repository/CertificateRepo.js";
+import SchemeRepository from "../repository/SchemeRepository.js";
 
 class ExamService {
   constructor() {
@@ -14,6 +15,7 @@ class ExamService {
     this.trainingPartnerRepository = new TrainingPartnerRepository();
     this.studentRepository = new StudentRepository();
     this.certificateRepository = new CerificateRepository();
+    this.schemeRepository = new SchemeRepository();
   }
 
   async createExam(courseName, batchId, assesmentAgencyId, trainingPartnerId) {
@@ -203,6 +205,7 @@ class ExamService {
           "batch not found contact your bacekd developer something went wrong"
         );
       }
+      const scheme = await this.schemeRepository.findBySchemeName(batch.scheme);
       const studentsData = batch.students;
       studentsData.map(async (std) => {
         // ** to be implemented in message queue infuture DATA.
@@ -263,6 +266,7 @@ class ExamService {
           grade: student.Grade,
           placeOfIssue: "Bhubaneswar",
           DateOfIssue: new Date(),
+          schemeLogo: scheme.logo
         };
         if (student.absent === false) {
           const certificate = await this.certificateRepository.create(
