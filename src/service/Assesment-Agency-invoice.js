@@ -72,18 +72,20 @@ class AssesmentAgencyInvoiceService {
       const examDetails = exams.map((exam) => {
         totalStudents += exam.totalStudents;
         totalAssessedStudents += exam.presentStudents;
-
+         console.log("AssesmentDate",exam.assesmentdate)
         return {
           examId: exam._id,
           batchAbn: exam.batchABN,
           tpname: exam.TrainingOrganization,
-          assessmentDate: exam.assesmentdate,
+          assesmentDate: exam.assesmentdate,
           totalNoOfCandidates: exam.totalStudents,
           noOfAssessedCandidates: exam.presentStudents,
           costPerCandidate: exam.perStudentCost,
           amountToPaid: (exam.batchPaymentAmount * percentage) / 100,
         };
       });
+
+
 
       let totalAmountToBePaid = 0;
       console.log(examDetails);
@@ -115,7 +117,6 @@ class AssesmentAgencyInvoiceService {
         month: month,
         year: year,
       };
-
       const response = await this.assesmentInvoiceRepo.create(payload);
       return response;
     } catch (error) {
