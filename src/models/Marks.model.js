@@ -84,6 +84,7 @@ const markSchema = new mongoose.Schema({
   Nos: [
     {
       name: String,
+      nosType:String,
       code:String,
       Theory: Number,
       Practical: Number,
@@ -91,7 +92,7 @@ const markSchema = new mongoose.Schema({
       passMark: Number,
       MarksObtained: Number,
     },
-  ],
+  ],   
 
   total: {
     type: Number,

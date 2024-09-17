@@ -46,6 +46,10 @@ const courseSchema = new mongoose.Schema(
           type: String,
           required: [true, "description is required"],
         },
+        nosType: {
+          type: String,
+          required: true,
+        },
         code: {
           type: String,
           required: [true, "code is required"],
