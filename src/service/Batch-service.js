@@ -243,6 +243,10 @@ class BatchService {
       let totalAmount = 0;
       let perStudentCost = 0;
 
+      if(!batch.organizationCorporatePaymentFee){
+        throw new Error("Corporate fee is not assigned by Admin")
+      }
+
       if (batch.schemeType === "Corporate") {
         totalAmount =
           tp.organizationCorporatePaymentFee * batch.students.length;
