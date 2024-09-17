@@ -21,7 +21,14 @@ class CenterRepository extends CrudRepository {
     try {
       const response = await Center.find({
         trainingOrganizationId: trainingPartnerId,
-      });
+      }).populate({
+        path: 'sectors',
+        populate: {
+          path: 'courses', 
+          model: 'Course', 
+          select: 'courseName _id'
+        },
+      })
       return response;
     } catch (error) {
       throw error;

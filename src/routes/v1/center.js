@@ -11,3 +11,7 @@ router.get("/sna/query",getAllCenterBySchemeNameAndState)
 router.get("/:centerId",getCenterDetails)
 
 export default router;
+
+
+
+
