@@ -194,9 +194,13 @@ class ExamService {
       const exam = await this.examRepository.get(examId);
 
       if (!exam) {
-        throw new Error("exam not found");
+        throw new Error("exam does not exits");
       }
       // const channel = await createChannel();
+
+      if (exam.certificateIssued) {
+        throw new Error("Certificate for this exam Already published");
+      }
 
       const batch = await this.batchRepository.get(exam.batchId);
       console.log(batch);
@@ -247,7 +251,7 @@ class ExamService {
         // ** fetch students Data
 
         const student = await this.studentRepository.get(data.studentId);
-        console.log("StuddentData",student)
+        console.log("StuddentData", student);
         const certificatePayload = {
           studentName: student.name,
           stutentProfilePic: student.profilepic,
@@ -266,8 +270,9 @@ class ExamService {
           grade: student.Grade,
           placeOfIssue: "Bhubaneswar",
           DateOfIssue: new Date(),
-          schemeLogo: scheme.logo
+          schemeLogo: scheme.logo,
         };
+
         if (student.absent === false) {
           const certificate = await this.certificateRepository.create(
             certificatePayload

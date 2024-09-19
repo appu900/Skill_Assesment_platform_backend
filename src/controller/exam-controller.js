@@ -252,11 +252,10 @@ const publishCertificate = async (req, res) => {
     });
   } catch (error) {
     return (
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR),
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).
       json({
         success: false,
-        error: error.message,
-        message: "please try again after some time",
+        message:error.message
       })
     );
   }

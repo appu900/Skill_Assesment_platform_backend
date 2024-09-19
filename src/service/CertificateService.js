@@ -14,6 +14,15 @@ class CertificateService {
     }
   }
 
+  async getAStudentCertificateByCertificateID(certificateId) {
+    try {
+      const response = await this.certificaterepo.get(certificateId);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async getASpecificStudnetCertificate(studentId) {
     try {
       const res = await this.certificaterepo.get(studentId);
