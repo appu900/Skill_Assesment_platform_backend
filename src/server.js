@@ -6,6 +6,9 @@ import "dotenv/config";
 
 const port = process.env.PORT || 5000;
 
+import MarkService from "./service/Mark-Service.js";
+const service = new MarkService();
+
 // ** clusteting for multi-core cpu
 
 // const totalCpus = os.cpus().length;
@@ -53,6 +56,8 @@ const startServer = async () => {
     await makeDatabaseConnection();
     app.listen(port, async () => {
       console.log(`Server is running on port ${port}`);
+      const response = await service.getGroupMarksData('66e351731cfbca162acee2bc');
+      
     });
   } catch (error) {
     console.log(error);

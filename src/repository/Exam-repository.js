@@ -117,6 +117,18 @@ class ExamRepository extends CrudRepository {
     }
   }
 
+  async findExamByBatchId(batchId) {
+    try {
+      const response = await Exam.findOne({ batchId })
+        .populate("batchId")
+        .populate("AssessorId")
+        .populate({ path: "assesmentAgencyId", select: "logo" });
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async updateStudentAttendance(examId, data) {
     try {
       const response = await Exam.findByIdAndUpdate(

@@ -88,6 +88,7 @@ const markSchema = new mongoose.Schema({
       code:String,
       Theory: Number,
       Practical: Number,
+      Viva:Number,
       Total: Number,
       passMark: Number,
       MarksObtained: Number,
