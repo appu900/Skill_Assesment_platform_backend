@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import StudentCounter from "./StudentCounter.js";
 
 const StudentSchema = new mongoose.Schema(
   {
@@ -155,6 +156,16 @@ const StudentSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+
+StudentSchema.pre("save", async function(next){
+  if(this.isNew){
+    const counter = await StudentCounter.findByIdAndUpdate("s1", {$inc: {counter: 1}}, {new: true, upsert: true});
+    this.redg_No = `321${counter.counter}`;
+    next();
+  }
+   
+})
 
 const Student = mongoose.model("Student", StudentSchema);
 export default Student;

@@ -56,8 +56,6 @@ const startServer = async () => {
     await makeDatabaseConnection();
     app.listen(port, async () => {
       console.log(`Server is running on port ${port}`);
-      const response = await service.getGroupMarksData('66e351731cfbca162acee2bc');
-      
     });
   } catch (error) {
     console.log(error);

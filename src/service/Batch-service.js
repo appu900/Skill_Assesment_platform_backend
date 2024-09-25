@@ -271,9 +271,9 @@ class BatchService {
         BatchId: batch._id,
       };
 
-      this.invoiceService.createInvoice(invoiceData).catch((error) => {
-        console.log("error in invoice generation", error);
-      });
+      // this.invoiceService.createInvoice(invoiceData).catch((error) => {
+      //   console.log("error in invoice generation", error);
+      // });
 
       const response = await this.batchRepository.activateBatchByClient(
         batchId,

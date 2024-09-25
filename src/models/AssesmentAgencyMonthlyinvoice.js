@@ -9,6 +9,9 @@ const monthlyInvoiceSchema = new mongoose.Schema(
     invoiceGenerateDate: {
       type: String,
     },
+    Paymentpercentage:{
+      type:Number,
+    },
     examDetails: [
       {
         examId:String,

@@ -138,7 +138,7 @@ class ExamRepository extends CrudRepository {
         },
         { new: true }
       );
-      return response;
+      return true;
     } catch (error) {
       throw error;
     }

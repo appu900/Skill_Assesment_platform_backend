@@ -9,6 +9,12 @@ class AssesmentAgencyInvoiceService {
     this.examRepository = new ExamRepository();
   }
 
+
+  // ** this will calculate the total amount of the exam by multiplying the per student cost with total students and then multiply with percentage
+  calculateTotalAmount(perstudentCost,totalStudents,percentage){
+    return (perstudentCost * totalStudents * percentage) / 100
+  }
+
   // ** generate monthly invoice
   async generateMonthlyInvoice(assesmentAgencyId) {
     try {
@@ -81,7 +87,7 @@ class AssesmentAgencyInvoiceService {
           totalNoOfCandidates: exam.totalStudents,
           noOfAssessedCandidates: exam.presentStudents,
           costPerCandidate: exam.perStudentCost,
-          amountToPaid: (exam.batchPaymentAmount * percentage) / 100,
+          amountToPaid: this.calculateTotalAmount(exam.perStudentCost,exam.presentStudents,percentage),
         };
       });
 
@@ -96,6 +102,7 @@ class AssesmentAgencyInvoiceService {
       console.log("check", totalAssessedStudents);
       const payload = {
         AssesmentAgencyId: assesmentAgencyId,
+        Paymentpercentage: percentage,
         invoiceGenerateDate: today,
         examDetails: examDetails,
         totalNoOfcandidates: totalStudents,
