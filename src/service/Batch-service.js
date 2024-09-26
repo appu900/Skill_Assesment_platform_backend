@@ -328,7 +328,8 @@ class BatchService {
     batchId,
     preinVoiceUrl,
     postInvoiceUrl,
-    transactionId
+    transactionId,
+    paymentPublishedBy
   ) {
     try {
       const batch = await this.batchRepository.get(batchId);
@@ -338,6 +339,7 @@ class BatchService {
       batch.clientPaymentStatus = true;
       batch.prePaymentInvoice = preinVoiceUrl;
       batch.postPaymentInvoice = postInvoiceUrl;
+      batch.paymentPublishedBy = paymentPublishedBy;
       batch.transactionId = transactionId;
       const response = await batch.save();
       return response;

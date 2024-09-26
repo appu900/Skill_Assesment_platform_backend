@@ -259,7 +259,7 @@ class ExamService {
           batchId: data.batchId,
           fatherName: student.fathername,
           DOB: student.dob,
-          Enrolment_number: student.redg_No,
+          Enrolment_number: student.MPR_Id,
           qualification: data.courseName,
           duration: data.duration,
           credit: data.courseCredit,
@@ -271,6 +271,7 @@ class ExamService {
           placeOfIssue: "Bhubaneswar",
           DateOfIssue: new Date(),
           schemeLogo: scheme.logo,
+          studentRedgNo:student.redg_No
         };
 
         if (student.absent === false) {

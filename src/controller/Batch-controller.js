@@ -222,12 +222,14 @@ const uploadBatchPaymentDetails = async (req, res) => {
       console.log(preInvoiceUrl, postInvoiceUrl);
       const batchId = req.params.id;
       const transactionId = req.body.transactionId;
+      const paymentPublishedBy = req.body.paymentPublishedBy
 
       const response = await batchService.updateClientPaymentDetails(
         batchId,
         preInvoiceUrl,
         postInvoiceUrl,
-        transactionId
+        transactionId,
+        paymentPublishedBy
       );
 
       return res.status(StatusCodes.OK).json({

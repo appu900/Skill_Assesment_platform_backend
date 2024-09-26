@@ -78,6 +78,10 @@ const batchSchema = new mongoose.Schema(
       required: true,
     },
 
+    paymentPublishedBy:{
+      type:String
+    },
+
     courseName: {
       type: String,
       required: [true, "Course name is required"],

@@ -73,6 +73,9 @@ const certificateSchema = new mongoose.Schema({
   certificateCode: {
     type: String,
   },
+  studentRedgNo:{
+    type:String
+  }
 });
 
 certificateSchema.pre("save", async function (next) {
