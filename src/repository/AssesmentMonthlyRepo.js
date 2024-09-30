@@ -42,13 +42,13 @@ class AssesmentMonthlyRepository extends CrudRepository {
     }
   }
 
-  async updateInvoicePdf(invoiceId,pdfUrl){
+  async updateInvoicePdf(invoiceId, pdfUrl) {
     try {
       const response = await AssesmentAgencyPaymentInvoice.findByIdAndUpdate(
         invoiceId,
         {
           $set: {
-            invoicePdf:pdfUrl ,
+            invoicePdf: pdfUrl,
           },
         },
         { new: true }
@@ -57,19 +57,42 @@ class AssesmentMonthlyRepository extends CrudRepository {
     } catch (error) {
       throw error;
     }
-  } 
+  }
 
-  async updateInvoicePaymentStatus(invoiceId,transactionId,amount){
+  async updateInvoicePaymentStatus(invoiceId, transactionId, amount) {
     try {
-      const response = await AssesmentAgencyPaymentInvoice.findByIdAndUpdate(invoiceId,{
-        $set:{
-          paymentStatus:true,
-          transactionId:transactionId,
-          paidAmount:amount
-        }
-      },{new:true})
+      const response = await AssesmentAgencyPaymentInvoice.findByIdAndUpdate(
+        invoiceId,
+        {
+          $set: {
+            paymentStatus: true,
+            transactionId: transactionId,
+            paidAmount: amount,
+          },
+        },
+        { new: true }
+      );
       return response;
     } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateInvoiceById(invoiceId, data) {
+    try {
+      console.log("Repository called")
+      const updatedInvoice =
+        await AssesmentAgencyPaymentInvoice.findByIdAndUpdate(
+          invoiceId,
+          { $set: data },
+          { new: true }
+        );
+      if (!updatedInvoice) {
+        throw new Error("Invoice not found");
+      }
+      return updatedInvoice;
+    } catch (error) {
+      console.log("Error in updating Data", error.message);
       throw error;
     }
   }

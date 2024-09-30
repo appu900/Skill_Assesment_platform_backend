@@ -60,9 +60,9 @@ class AssesmentAgencyInvoiceService {
         year
       );
 
-      if (invoice) {
-        return invoice;
-      }
+      console.log("invoice before generation",invoice)
+
+     
 
       //   ** get all the exam of the assesmentAgency by month and year which are completed
 
@@ -124,7 +124,15 @@ class AssesmentAgencyInvoiceService {
         month: month,
         year: year,
       };
-      const response = await this.assesmentInvoiceRepo.create(payload);
+      let response;
+      if(invoice){
+        response = await this.assesmentInvoiceRepo.updateInvoiceById(
+          invoice.id,payload
+        )
+        console.log("updated invoice Data",invoice)
+      }else{
+         response = this.assesmentAgencyRepo.create(payload)
+      }
       return response;
     } catch (error) {
       throw error;
@@ -204,9 +212,5 @@ class AssesmentAgencyInvoiceService {
 }
 
 export default AssesmentAgencyInvoiceService;
-
-
-
-
 
 
