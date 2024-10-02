@@ -44,8 +44,8 @@ const addStudentToBatch = async (req, res) => {
   } catch (error) {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       sucess: false,
-      error: error.messaage,
-      message: "something went wrong",
+      error:"something went wrong",
+      message:error.message,
     });
   }
 };

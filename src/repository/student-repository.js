@@ -29,6 +29,16 @@ class StudentRepository extends CrudRepository {
       throw error;
     }
   }
+
+  async getStudentWithMprId(mprId){
+    try {
+      const student = await Student.findOne({MPR_Id:mprId});
+      return student;
+      return student;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default StudentRepository;

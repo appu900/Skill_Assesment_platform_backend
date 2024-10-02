@@ -70,6 +70,10 @@ class BatchService {
 
   async addStudent(batchId, data) {
     try {
+      const studentWithSameMprId = await this.studentRepository.getStudentWithMprId(data.MPR_Id);
+      if(studentWithSameMprId){
+        throw new Error("Student with same MPR ID already exists");
+      }
       const batch = await this.batchRepository.get(batchId);
       console.log(batch);
       if (!batch) {
@@ -444,6 +448,9 @@ class BatchService {
       throw error;
     }
   }
+
+
+ 
 }
 
 export default BatchService;
