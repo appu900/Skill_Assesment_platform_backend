@@ -271,7 +271,8 @@ class ExamService {
           placeOfIssue: "Bhubaneswar",
           DateOfIssue: new Date(),
           schemeLogo: scheme.logo,
-          studentRedgNo:student.redg_No
+          studentRedgNo:student.redg_No,
+          schemeType:batch.schemeType
         };
 
         if (student.absent === false) {
