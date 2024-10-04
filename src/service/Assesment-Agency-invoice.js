@@ -131,7 +131,7 @@ class AssesmentAgencyInvoiceService {
         )
         console.log("updated invoice Data",invoice)
       }else{
-         response = this.assesmentAgencyRepo.create(payload)
+         response = this.assesmentInvoiceRepo.create(payload)
       }
       return response;
     } catch (error) {
