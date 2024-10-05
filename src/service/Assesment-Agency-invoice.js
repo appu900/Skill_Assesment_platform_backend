@@ -12,7 +12,9 @@ class AssesmentAgencyInvoiceService {
 
   // ** this will calculate the total amount of the exam by multiplying the per student cost with total students and then multiply with percentage
   calculateTotalAmount(perstudentCost,totalStudents,percentage){
-    return (perstudentCost * totalStudents * percentage) / 100
+    const baseAmount = (perstudentCost * totalStudents * percentage) / 100;
+    const finalAmount = baseAmount * 1.18;
+    return finalAmount;
   }
 
   // ** generate monthly invoice
