@@ -144,6 +144,10 @@ const StudentSchema = new mongoose.Schema(
       type: String,
     },
 
+    DateOfIssueMarksheet:{
+      type: Date,
+    },
+
     Grade: {
       type: String,
     },

@@ -252,8 +252,9 @@ class BatchService {
       // }
 
       if (batch.schemeType === "Corporate") {
-        totalAmount =
-          tp.organizationCorporatePaymentFee * batch.students.length;
+        const baseAmount = tp.organizationCorporatePaymentFee * batch.students.length;
+        const amountWithTax = baseAmount * 1.18;
+        totalAmount = amountWithTax; 
         batch.amountToPaid = totalAmount;
         perStudentCost = tp.organizationCorporatePaymentFee;
       } else {

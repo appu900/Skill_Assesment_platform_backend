@@ -6,7 +6,7 @@ class StudentRepository extends CrudRepository {
     super(Student);
   }
 
-  async getStudentDetails(studentId){
+  async getStudentDetails(studentId) {
     try {
       const student = await Student.findById(studentId).populate("marks");
       return student;
@@ -30,11 +30,27 @@ class StudentRepository extends CrudRepository {
     }
   }
 
-  async getStudentWithMprId(mprId){
+  async getStudentWithMprId(mprId) {
     try {
-      const student = await Student.findOne({MPR_Id:mprId});
+      const student = await Student.findOne({ MPR_Id: mprId });
       return student;
       return student;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async addDateOfIssueMarksheet(studentId) {
+    try {
+      const today = new Date();
+      const response = await Student.findByIdAndUpdate(
+        studentId,
+        {
+          DateOfIssueMarksheet:today,
+        },
+        { new: true }
+      );
+      return true;
     } catch (error) {
       throw error;
     }

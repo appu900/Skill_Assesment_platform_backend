@@ -276,9 +276,14 @@ class ExamService {
         };
 
         if (student.absent === false) {
+
+          // ** publish certificate 
           const certificate = await this.certificateRepository.create(
             certificatePayload
           );
+
+          // ** add dateOfIssue to student
+          const dateOfIssueResponse = await this.studentRepository.addDateOfIssueMarksheet(student._id);
           console.log(certificate);
         }
       });
