@@ -1,7 +1,9 @@
 import { StatusCodes } from "http-status-codes";
 import StudentService from "../service/student-service.js";
 import upload from "../config/s3-imageUpload-config.js";
+import CertificateService from "../service/CertificateService.js";
 const studentService = new StudentService();
+const certificateService = new CertificateService();
 
 const singleUploader = upload.single("image");
 
@@ -100,4 +102,30 @@ const markStudentAbsent = async (req, res) => {
   }
 };
 
-export { createStudent, getStudentDetails, updateProfilePic,markStudentAbsent };
+const getStudentCertificateByStudentenrollementId = async(req,res) =>{
+  try {
+    console.log("controller called")
+    const enrollmentNumber = req.body.enrollmentNumber
+    console.log(typeof enrollmentNumber);
+    if(!enrollmentNumber){
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        success: false,
+        message: "enrollment number is required",
+      });
+    }
+    const response = await certificateService.getStudentCertificateByStudentEnrollementId(enrollmentNumber);
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      data: response,
+      message: "data fetched sucessfully",
+    });
+  } catch (error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: "something went wrong with the server",
+      message: error.message,
+    })
+  }
+}
+
+export { createStudent, getStudentDetails, updateProfilePic,markStudentAbsent,getStudentCertificateByStudentenrollementId };

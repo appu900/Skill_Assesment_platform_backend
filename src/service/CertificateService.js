@@ -31,6 +31,21 @@ class CertificateService {
       throw error;
     }
   }
+
+  async getStudentCertificateByStudentEnrollementId(enrollmentNumber) {
+    try {
+      const response =
+        await this.certificaterepo.getCertificateByStudentEnrollmentNumber(
+          enrollmentNumber
+        );
+      if (response) {
+        return response;
+      }
+      throw new Error("No certificate found");
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default CertificateService;
