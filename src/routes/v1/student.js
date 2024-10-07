@@ -8,6 +8,6 @@ router.post("/", verifyIsTrainingPartner, createStudent);
 router.get("/:id", getStudentDetails);
 router.put("/profile/:id", updateProfilePic);
 router.put("/absent/:id", markStudentAbsent);
-router.get("/c/a", getStudentCertificateByStudentenrollementId);
+router.post("/c/a", getStudentCertificateByStudentenrollementId);
 
 export default router;
