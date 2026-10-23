@@ -6,95 +6,45 @@ class AssesmentMonthlyRepository extends CrudRepository {
     super(AssesmentAgencyPaymentInvoice);
   }
 
-  async getInvoiceByMonthAndYear(month, year) {
-    try {
-      const invoice = await AssesmentAgencyPaymentInvoice.findOne({
-        month: month,
-        year: year,
-      });
-      return invoice;
-    } catch (error) {
-      throw error;
-    }
-  }
-
   async getInvoiceFilter(assesmentAgencyId, month, year) {
-    try {
-      const response = await AssesmentAgencyPaymentInvoice.findOne({
-        AssesmentAgencyId: assesmentAgencyId,
-        month: month,
-        year: year,
-      });
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return AssesmentAgencyPaymentInvoice.findOne({
+      AssesmentAgencyId: assesmentAgencyId,
+      month: String(month),
+      year: String(year),
+    });
   }
 
   async getInvoiceOFAAssesmentAgency(assesmentAgencyId) {
-    try {
-      const response = await AssesmentAgencyPaymentInvoice.find({
-        AssesmentAgencyId: assesmentAgencyId,
-      });
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return AssesmentAgencyPaymentInvoice.find({ AssesmentAgencyId: assesmentAgencyId }).sort({
+      _id: -1,
+    });
   }
 
   async updateInvoicePdf(invoiceId, pdfUrl) {
-    try {
-      const response = await AssesmentAgencyPaymentInvoice.findByIdAndUpdate(
-        invoiceId,
-        {
-          $set: {
-            invoicePdf: pdfUrl,
-          },
-        },
-        { new: true }
-      );
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return AssesmentAgencyPaymentInvoice.findByIdAndUpdate(
+      invoiceId,
+      { $set: { invoicePdf: pdfUrl } },
+      { new: true }
+    );
   }
 
   async updateInvoicePaymentStatus(invoiceId, transactionId, amount) {
-    try {
-      const response = await AssesmentAgencyPaymentInvoice.findByIdAndUpdate(
-        invoiceId,
-        {
-          $set: {
-            paymentStatus: true,
-            transactionId: transactionId,
-            paidAmount: amount,
-          },
+    return AssesmentAgencyPaymentInvoice.findByIdAndUpdate(
+      invoiceId,
+      {
+        $set: {
+          paymentStatus: true,
+          transactionId: transactionId,
+          paidAmount: amount,
+          paymentDate: new Date().toISOString(),
         },
-        { new: true }
-      );
-      return response;
-    } catch (error) {
-      throw error;
-    }
+      },
+      { new: true }
+    );
   }
 
   async updateInvoiceById(invoiceId, data) {
-    try {
-      console.log("Repository called")
-      const updatedInvoice =
-        await AssesmentAgencyPaymentInvoice.findByIdAndUpdate(
-          invoiceId,
-          { $set: data },
-          { new: true }
-        );
-      if (!updatedInvoice) {
-        throw new Error("Invoice not found");
-      }
-      return updatedInvoice;
-    } catch (error) {
-      console.log("Error in updating Data", error.message);
-      throw error;
-    }
+    return AssesmentAgencyPaymentInvoice.findByIdAndUpdate(invoiceId, { $set: data }, { new: true });
   }
 }
 

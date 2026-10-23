@@ -1,22 +1,22 @@
 const monthNames = [
-  { id: 1, name: "January" },
-  { id: 2, name: "February" },
-  { id: 3, name: "March" },
-  { id: 4, name: "April" },
-  { id: 5, name: "May" },
-  { id: 6, name: "June" },
-  { id: 7, name: "July" },
-  { id: 8, name: "August" },
-  { id: 9, name: "September" },
-  { id: 10, name: "October" },
-  { id: 11, name: "November" },
-  { id: 12, name: "December" },
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ];
 
+// ** month number (1-12) -> month name, undefined for invalid input
 function getMonthName(id) {
-  return monthNames.find((month) => month.id == id).name;
+  return monthNames[Number(id) - 1];
 }
 
+export { monthNames };
 export default getMonthName;
-
-

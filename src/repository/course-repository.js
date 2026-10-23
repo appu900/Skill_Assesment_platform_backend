@@ -6,13 +6,8 @@ class CourseRepository extends CrudRepository {
     super(Course);
   }
 
-  async getAllCoursesBySectorName(sectorName){
-    try {
-      const response = await Course.find({sectorName: sectorName});
-      return response;
-    } catch (error) {
-       throw error;
-    }
+  async getAllCoursesBySectorName(sectorName) {
+    return Course.find({ sectorName: String(sectorName) });
   }
 }
 

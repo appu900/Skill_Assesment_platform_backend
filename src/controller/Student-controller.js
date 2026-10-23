@@ -2,130 +2,74 @@ import { StatusCodes } from "http-status-codes";
 import StudentService from "../service/student-service.js";
 import upload from "../config/s3-imageUpload-config.js";
 import CertificateService from "../service/CertificateService.js";
+import asyncHandler from "../utils/asyncHandler.js";
+import runUpload from "../utils/runUpload.js";
+import AppError from "../utils/AppError.js";
+
 const studentService = new StudentService();
 const certificateService = new CertificateService();
-
 const singleUploader = upload.single("image");
 
-const createStudent = async (req, res) => {
-  try {
-    const payload = req.body;
-    payload.trainingPartner = req.trainingPartnerId;
-    const response = await studentService.createStudent(payload);
-    return res.status(StatusCodes.CREATED).json({
-      success: true,
-      data: response,
-      message: "student added sucessfully",
-    });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: error.message,
-      message: "something went wrong",
-    });
+const createStudent = asyncHandler(async (req, res) => {
+  const response = await studentService.createStudent(req.body, req.user.id);
+  return res.status(StatusCodes.CREATED).json({
+    success: true,
+    data: response,
+    message: "student added sucessfully",
+  });
+});
+
+const getStudentDetails = asyncHandler(async (req, res) => {
+  const response = await studentService.getStudentByid(req.params.id);
+  return res.status(StatusCodes.OK).json({
+    success: true,
+    data: response,
+    message: "data fetched sucessfully",
+  });
+});
+
+const updateProfilePic = asyncHandler(async (req, res) => {
+  await runUpload(singleUploader, req, res);
+  const imageUrl = req.file?.location;
+  if (!imageUrl) {
+    throw new AppError("image not uploaded");
   }
+  await studentService.uploadProfilePic(req.params.id, imageUrl, req.user);
+  return res.status(StatusCodes.OK).json({
+    success: true,
+    message: "profile pic uploaded sucessfully",
+  });
+});
+
+const markStudentAbsent = asyncHandler(async (req, res) => {
+  const response = await studentService.updateStudentAsAbsent(req.params.id, req.user);
+  return res.status(StatusCodes.OK).json({
+    success: true,
+    data: response,
+    message: "student marked as absent",
+  });
+});
+
+// ** public certificate verification by enrollment number
+const getStudentCertificateByStudentenrollementId = asyncHandler(async (req, res) => {
+  const { enrollmentNumber } = req.body;
+  if (!enrollmentNumber) {
+    throw new AppError("enrollment number is required");
+  }
+  const response = await certificateService.getStudentCertificateByStudentEnrollementId(
+    enrollmentNumber
+  );
+  return res.status(StatusCodes.OK).json({
+    success: true,
+    data: response,
+    message: "data fetched sucessfully",
+  });
+});
+
+export {
+  createStudent,
+  getStudentDetails,
+  updateProfilePic,
+  markStudentAbsent,
+  getStudentCertificateByStudentenrollementId,
 };
-
-const getStudentDetails = async (req, res) => {
-  try {
-    const studentId = req.params.id;
-    const response = await studentService.getStudentByid(studentId);
-    return res.status(StatusCodes.OK).json({
-      success: true,
-      data: response,
-      message: "data fetched sucessfully",
-    });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: error.message,
-      message: "something went wrong",
-    });
-  }
-};
-
-const updateProfilePic = async (req, res) => {
-  try {
-    singleUploader(req, res, async function (err, data) {
-      if (err) {
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-          success: false,
-          error: err.message,
-          message: "something went wrong",
-        });
-      }
-
-      const imageUrl = req.file?.location;
-      if (!imageUrl) {
-        return res.status(StatusCodes.BAD_REQUEST).json({
-          success: false,
-          message: "image not uploaded",
-        });
-      }
-
-      const studentId = req.params.id;
-
-      const response = await studentService.uploadProfilePic(
-        studentId,
-        imageUrl
-      );
-
-      return res.status(StatusCodes.OK).json({
-        success: true,
-        message: "profile pic uploaded sucessfully",
-      });
-    });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: error.message,
-      message: "something went wrong",
-    });
-  }
-};
-
-const markStudentAbsent = async (req, res) => {
-  try {
-    const studentId = req.params.id;
-    const response = await studentService.updateStudentAsAbsent(studentId);
-    return res.status(StatusCodes.OK).json({
-      success: true,
-      data: response,
-      message: "student marked as absent",
-    });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: error.message,
-      message: "something went wrong",
-    });
-  }
-};
-
-const getStudentCertificateByStudentenrollementId = async(req,res) =>{
-  try {
-    console.log("controller called")
-    const enrollmentNumber = req.body.enrollmentNumber
-    console.log(typeof enrollmentNumber);
-    if(!enrollmentNumber){
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        success: false,
-        message: "enrollment number is required",
-      });
-    }
-    const response = await certificateService.getStudentCertificateByStudentEnrollementId(enrollmentNumber);
-    return res.status(StatusCodes.OK).json({
-      success: true,
-      data: response,
-      message: "data fetched sucessfully",
-    });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: "something went wrong with the server",
-      message: error.message,
-    })
-  }
-}
-
-export { createStudent, getStudentDetails, updateProfilePic,markStudentAbsent,getStudentCertificateByStudentenrollementId };

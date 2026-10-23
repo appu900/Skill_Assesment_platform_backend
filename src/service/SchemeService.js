@@ -6,29 +6,15 @@ class SchemeService {
   }
 
   async create(data) {
-    try {
-      const res = await this.schemeRepo.create(data);
-      return res;
-    } catch (error) {
-      throw error;
-    }
+    return this.schemeRepo.create(data);
   }
+
   async getAllSchems() {
-    try {
-      const response = await this.schemeRepo.getAll();
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return this.schemeRepo.getAll();
   }
 
   async getSchemeBySchemeType(schemeType) {
-    try {
-      const response = await this.schemeRepo.findBySchemeType(schemeType);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return this.schemeRepo.findBySchemeType(schemeType);
   }
 }
 

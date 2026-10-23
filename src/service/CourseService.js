@@ -1,5 +1,6 @@
 import CourseRepository from "../repository/course-repository.js";
 import SectorRepository from "../repository/sector-repository.js";
+import AppError from "../utils/AppError.js";
 
 class CourseService {
   constructor() {
@@ -7,30 +8,20 @@ class CourseService {
     this.sectorRepository = new SectorRepository();
   }
 
-  //   ** sectorId from reques.body
+  // ** a course always belongs to an existing sector (by sectorName)
   async create(data) {
-    try {
-      const sectorName = data.sectorName;
-      const sector = await this.sectorRepository.getByName(sectorName);
-      if (!sector) {
-        throw new Error("Sector not found");
-      }
-      const course = await this.courseRepository.create(data);
-      sector.courses.push(course);
-      await sector.save();
-      return course;
-    } catch (error) {
-      throw error;
+    const sector = await this.sectorRepository.getByName(data.sectorName);
+    if (!sector) {
+      throw AppError.notFound("Sector not found");
     }
+    const course = await this.courseRepository.create(data);
+    sector.courses.push(course._id);
+    await sector.save();
+    return course;
   }
 
   async getAllCourses() {
-    try {
-      const response = await this.courseRepository.getAll();
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return this.courseRepository.getAll();
   }
 }
 

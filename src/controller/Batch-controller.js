@@ -1,7 +1,11 @@
+import { StatusCodes } from "http-status-codes";
 import upload from "../config/s3-imageUpload-config.js";
 import BatchService from "../service/Batch-service.js";
-import { StatusCodes } from "http-status-codes";
 import CertificateService from "../service/CertificateService.js";
+import asyncHandler from "../utils/asyncHandler.js";
+import runUpload from "../utils/runUpload.js";
+import AppError from "../utils/AppError.js";
+import { getPagination } from "../utils/pagination.js";
 
 const batchService = new BatchService();
 const certificateService = new CertificateService();
@@ -11,392 +15,202 @@ const uploadFiles = upload.fields([
   { name: "postInvoice", maxCount: 1 },
 ]);
 
-const createBatch = async (req, res) => {
-  try {
-    const payload = req.body;
-    payload.trainingOrganizationId = req.trainingPartnerId;
-    const batch = await batchService.createBatch(payload);
-    return res.status(StatusCodes.CREATED).json({
-      success: true,
-      data: batch,
-      message: "batch created sucessfully",
-    });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: error.message,
-      message: "something went wrong",
-    });
+const createBatch = asyncHandler(async (req, res) => {
+  const batch = await batchService.createBatch(req.body, req.user.id);
+  return res.status(StatusCodes.CREATED).json({
+    success: true,
+    data: batch,
+    message: "batch created sucessfully",
+  });
+});
+
+const addStudentToBatch = asyncHandler(async (req, res) => {
+  const student = await batchService.addStudent(req.params.id, req.body, req.user);
+  return res.status(StatusCodes.CREATED).json({
+    success: true,
+    data: student,
+    message: "added new student to batch",
+  });
+});
+
+const addToTrainerToBatch = asyncHandler(async (req, res) => {
+  const trainer = await batchService.addTrainerTobatch(req.params.id, req.body, req.user);
+  return res.status(StatusCodes.CREATED).json({
+    success: true,
+    data: trainer,
+    message: "trainer added sucessfully",
+  });
+});
+
+const getBatchDetails = asyncHandler(async (req, res) => {
+  const response = await batchService.getBatchData(req.params.id);
+  return res.status(StatusCodes.OK).json({
+    success: true,
+    data: response,
+    message: "data fetched sucessfully",
+  });
+});
+
+const getIndividualTrainingPartnerBatchDetails = asyncHandler(async (req, res) => {
+  const response = await batchService.getBatchesOfTrainingPartner(req.params.trainingPartnerId);
+  return res.status(StatusCodes.OK).json({
+    message: "data fethed sucessfully",
+    success: true,
+    data: response,
+  });
+});
+
+const getAllBatchData = asyncHandler(async (req, res) => {
+  const response = await batchService.getAllBatces(getPagination(req.query));
+  return res.status(StatusCodes.OK).json({
+    success: true,
+    data: response,
+    message: "all batches data fetched sucessfully",
+  });
+});
+
+const getFilteredBatchData = asyncHandler(async (req, res) => {
+  const response = await batchService.filterQueryData(req.query);
+  return res.status(StatusCodes.OK).json({
+    success: true,
+    data: response,
+    message: "filtered data fetched sucessfully",
+  });
+});
+
+const bulkTrainersInsertInBatch = asyncHandler(async (req, res) => {
+  const response = await batchService.bulkTeacherInsert(
+    req.params.id,
+    req.body.trainerIds,
+    req.user
+  );
+  return res.status(StatusCodes.OK).json({
+    success: true,
+    message: "trainers inserted sucessfully",
+    data: response,
+  });
+});
+
+const activeBatch = asyncHandler(async (req, res) => {
+  const response = await batchService.activeBatch(req.params.id, req.user);
+  return res.status(StatusCodes.OK).json({
+    success: true,
+    data: response,
+    message: "batch submission done sucessfully",
+  });
+});
+
+const addBatchPaymentAmount = asyncHandler(async (req, res) => {
+  const response = await batchService.addPaymentCorporatePayment(req.params.id, req.body.amount);
+  return res.status(StatusCodes.OK).json({
+    success: true,
+    data: response,
+    message: "payment added successfully",
+  });
+});
+
+const uploadBatchPaymentDetails = asyncHandler(async (req, res) => {
+  await runUpload(uploadFiles, req, res);
+  const preInvoiceUrl = req.files?.preInvoice?.[0]?.location;
+  const postInvoiceUrl = req.files?.postInvoice?.[0]?.location;
+  if (!preInvoiceUrl || !postInvoiceUrl) {
+    throw new AppError("preInvoice and postInvoice files are required");
   }
-};
-
-const addStudentToBatch = async (req, res) => {
-  try {
-    const studentPayload = req.body;
-    const batchId = req.params.id;
-    studentPayload.trainingPartner = req.trainingPartnerId;
-    const student = await batchService.addStudent(batchId, studentPayload);
-    return res.status(StatusCodes.CREATED).json({
-      success: true,
-      data: student,
-      message: "added new student to batch",
-    });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      sucess: false,
-      error:"something went wrong",
-      message:error.message,
-    });
+  if (!req.body.transactionId) {
+    throw new AppError("transactionId is required");
   }
-};
+  const response = await batchService.updateClientPaymentDetails(
+    req.params.id,
+    preInvoiceUrl,
+    postInvoiceUrl,
+    req.body.transactionId,
+    req.body.paymentPublishedBy,
+    req.user
+  );
+  return res.status(StatusCodes.OK).json({
+    success: true,
+    data: response,
+    message: "payment details uploaded successfully",
+  });
+});
 
-const addToTrainerToBatch = async (req, res) => {
-  try {
-    const batchId = req.params.id;
-    const trainerPayload = req.body;
-    trainerPayload.trainingPartner = req.trainingPartnerId;
-    const trainer = await batchService.addTrainerTobatch(
-      batchId,
-      trainerPayload
-    );
-    return res.status(StatusCodes.CREATED).json({
-      success: true,
-      data: trainer,
-      message: "trainer added sucessfully",
-    });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      sucess: false,
-      error: error.message,
-      message: "something went wrong",
-    });
+const getAllBatchPaymentNotification = asyncHandler(async (req, res) => {
+  const response = await batchService.getAllPaymentNotifications();
+  return res.status(StatusCodes.OK).json({
+    success: true,
+    data: response,
+    message: "all payment notification fetched successfully",
+  });
+});
+
+const getAllCorporatePaymentBatch = asyncHandler(async (req, res) => {
+  const response = await batchService.getBatchByCorporatePayment();
+  return res.status(StatusCodes.OK).json({
+    success: true,
+    data: response,
+    message: "all corporate payment batch fetched successfully",
+  });
+});
+
+const updateBatchPaymentStatus = asyncHandler(async (req, res) => {
+  const response = await batchService.updateFinalPaymentStatus(req.params.id);
+  return res.status(StatusCodes.OK).json({
+    success: true,
+    data: response,
+    message: "payment status updated successfully",
+  });
+});
+
+const getAllStudentCertificate = asyncHandler(async (req, res) => {
+  const response = await certificateService.getAllCertificates(req.params.id);
+  return res.status(StatusCodes.OK).json({
+    success: true,
+    data: response,
+    message: "all certificates fetched successfully",
+  });
+});
+
+const getAStudentCertificate = asyncHandler(async (req, res) => {
+  const studentCertificate = await certificateService.getASpecificStudnetCertificate(
+    req.params.studentId
+  );
+  return res.status(StatusCodes.OK).json({
+    success: true,
+    data: studentCertificate,
+    message: "certificate data fethed sucessfully",
+  });
+});
+
+const getPaymentApprovalForGovernemtBatches = asyncHandler(async (req, res) => {
+  const response = await batchService.getAllGovernmentBatchesForPaymentApproval();
+  return res.status(StatusCodes.OK).json({
+    success: true,
+    data: response,
+    message: "all government batches fetched successfully",
+  });
+});
+
+const getAllGovernmentBatchesStateAndScehmeWise = asyncHandler(async (req, res) => {
+  const response = await batchService.filterStateWiseAndScehemWiseData(req.query, req.user);
+  return res.status(StatusCodes.OK).json({
+    success: true,
+    data: response,
+    message: "all government batches fetched successfully",
+  });
+});
+
+const getAllBatchesBySchemeName = asyncHandler(async (req, res) => {
+  const { scheme, state } = req.query;
+  if ((!state || !scheme) && req.user.role !== "SNA") {
+    throw new AppError("state and scheme are required");
   }
-};
-
-const getBatchDetails = async (req, res) => {
-  try {
-    const response = await batchService.getBatchData(req.params.id);
-    return res.status(StatusCodes.OK).json({
-      sucess: true,
-      data: response,
-      message: "data fetched sucessfully",
-    });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      sucess: false,
-      error: error.message,
-      message: "something went wrong",
-    });
-  }
-};
-
-const getIndividualTrainingPartnerBatchDetails = async (req, res) => {
-  try {
-    const trainingPartnerId = req.params.trainingPartnerId;
-    const response = await batchService.getBatchesOfTrainingPartner(
-      trainingPartnerId
-    );
-    return res.status(StatusCodes.OK).json({
-      message: "data fethed sucessfully",
-      success: true,
-      data: response,
-    });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      message: "something went wrong",
-      error: error.message,
-    });
-  }
-};
-
-const getAllBatchData = async (req, res) => {
-  try {
-    const response = await batchService.getAllBatces();
-    return res.status(StatusCodes.OK).json({
-      success: true,
-      data: response,
-      message: "all batches data fetched sucessfully",
-    });
-  } catch (error) {
-    return res.status(StatusCodes.OK).json({
-      success: false,
-      error: error.message,
-      message: "something went wrong",
-    });
-  }
-};
-
-const getFilteredBatchData = async (req, res) => {
-  try {
-    const response = await batchService.filterQueryData(req.query);
-    return res.status(StatusCodes.OK).json({
-      success: true,
-      data: response,
-      message: "filtered data fetched sucessfully",
-    });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: error.message,
-      message: "something went wrong",
-    });
-  }
-};
-
-const bulkTrainersInsertInBatch = async (req, res) => {
-  try {
-    const batchId = req.params.id;
-    const trainersData = req.body.trainerIds;
-    const response = await batchService.bulkTeacherInsert(
-      batchId,
-      trainersData
-    );
-
-    return res.status(StatusCodes.ACCEPTED).json({
-      success: true,
-      message: "trainers inserted sucessfully",
-      data: response,
-    });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: error.message,
-      message: "something went wrong",
-    });
-  }
-};
-
-const activeBatch = async (req, res) => {
-  try {
-    const batchId = req.params.id;
-    const response = await batchService.activeBatch(batchId);
-    return res.status(StatusCodes.OK).json({
-      success: true,
-      data: response,
-      message: "batch submission done sucessfully",
-    });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: error.message,
-      message: "something went wrong",
-    });
-  }
-};
-
-const addBatchPaymentAmount = async (req, res) => {
-  try {
-    const batchId = req.params.id;
-    const amount = req.body.amount;
-    const response = await batchService.addPaymentCorporatePayment(
-      batchId,
-      amount
-    );
-    return res.status(StatusCodes.OK).json({
-      success: true,
-      data: response,
-      message: "payment added successfully",
-    });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: error.message,
-      message: "something went wrong",
-    });
-  }
-};
-
-const uploadBatchPaymentDetails = async (req, res) => {
-  try {
-    uploadFiles(req, res, async function (err) {
-      if (err) {
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-          success: false,
-          error: err.message,
-          message: "something went wrong",
-        });
-      }
-      const preInvoiceUrl = req.files.preInvoice[0].location;
-      const postInvoiceUrl = req.files.postInvoice[0].location;
-      console.log(preInvoiceUrl, postInvoiceUrl);
-      const batchId = req.params.id;
-      const transactionId = req.body.transactionId;
-      const paymentPublishedBy = req.body.paymentPublishedBy
-
-      const response = await batchService.updateClientPaymentDetails(
-        batchId,
-        preInvoiceUrl,
-        postInvoiceUrl,
-        transactionId,
-        paymentPublishedBy
-      );
-
-      return res.status(StatusCodes.OK).json({
-        success: true,
-        data: response,
-        message: "payment details uploaded successfully",
-      });
-    });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: error.message,
-      message: "something went wrong",
-    });
-  }
-};
-
-const getAllBatchPaymentNotification = async (req, res) => {
-  try {
-    const response = await batchService.getAllPaymentNotifications();
-    return res.status(StatusCodes.OK).json({
-      success: true,
-      data: response,
-      message: "all payment notification fetched successfully",
-    });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: error.message,
-      message: "something went wrong",
-    });
-  }
-};
-
-const getAllCorporatePaymentBatch = async (req, res) => {
-  try {
-    const response = await batchService.getBatchByCorporatePayment();
-    return res.status(StatusCodes.OK).json({
-      success: true,
-      data: response,
-      message: "all corporate payment batch fetched successfully",
-    });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: error.message,
-      message: "something went wrong",
-    });
-  }
-};
-
-const updateBatchPaymentStatus = async (req, res) => {
-  try {
-    const response = await batchService.updateFinalPaymentStatus(req.params.id);
-    return res.status(StatusCodes.OK).json({
-      success: true,
-      data: response,
-      message: "payment status updated successfully",
-    });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: error.message,
-      message: "something went wrong",
-    });
-  }
-};
-
-const getAllStudentCertificate = async (req, res) => {
-  try {
-    const batchId = req.params.id;
-    const response = await certificateService.getAllCertificates(batchId);
-    return res.status(StatusCodes.OK).json({
-      success: true,
-      data: response,
-      message: "all certificates fetched successfully",
-    });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: error.message,
-      message: "something went wrong",
-    });
-  }
-};
-
-const getAStudentCertificate = async (req, res) => {
-  try {
-    const studentId = req.params.studentId;
-    const studentCertificate = await certificateService.getASpecificStudnetCertificate(studentId);
-    return res.status(StatusCodes.OK).json({
-      ok: true,
-      data: studentCertificate,
-      message: "certificate data fethed sucessfully",
-    });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      ok: false,
-      error: error.message,
-    });
-  }
-};
-
-const getPaymentApprovalForGovernemtBatches = async (req, res) => {
-  try {
-    const response =
-      await batchService.getAllGovernmentBatchesForPaymentApproval();
-    return res.status(StatusCodes.OK).json({
-      success: true,
-      data: response,
-      message: "all government batches fetched successfully",
-    });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: error.message,
-      message: "something went wrong",
-    });
-  }
-};
-
-const getAllGovernmentBatchesStateAndScehmeWise = async (req, res) => {
-  try {
-    const response = await batchService.filterStateWiseAndScehemWiseData(
-      req.query
-    );
-    return res.status(StatusCodes.OK).json({
-      success: true,
-      data: response,
-      message: "all government batches fetched successfully",
-    });
-  } catch (error) {
-    return req.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: error.message,
-      message: "something went wrong",
-    });
-  }
-};
-
-const getAllBatchesBySchemeName = async (req, res) => {
-  try {
-    const payload = req.query.scheme;
-    const state = req.query.state;
-    if (!state || !payload) {
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        success: false,
-        message: "state and scheme are required",
-      });
-    }
-    const response = await batchService.getAllBatchesBySchemeName(
-      payload,
-      state
-    );
-    return res.status(StatusCodes.OK).json({
-      success: true,
-      data: response,
-      message: "all batches fetched successfully",
-    });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: error.message,
-      message: "something went wrong",
-    });
-  }
-};
+  const response = await batchService.getAllBatchesBySchemeName(scheme, state, req.user);
+  return res.status(StatusCodes.OK).json({
+    success: true,
+    data: response,
+    message: "all batches fetched successfully",
+  });
+});
 
 export {
   createBatch,
@@ -417,5 +231,5 @@ export {
   getPaymentApprovalForGovernemtBatches,
   getAllGovernmentBatchesStateAndScehmeWise,
   getAllBatchesBySchemeName,
-  getAStudentCertificate
+  getAStudentCertificate,
 };

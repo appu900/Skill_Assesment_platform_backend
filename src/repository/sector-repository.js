@@ -7,35 +7,11 @@ class SectorRepository extends CrudRepository {
   }
 
   async getByName(sectorName) {
-    try {
-      const response = await Sector.findOne({ name: sectorName });
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return Sector.findOne({ name: String(sectorName) });
   }
 
   async getCourseBySector(sectorName) {
-    try {
-      const response = await Sector.find({
-        name: sectorName,
-      }).populate("courses");
-      return response;
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  async getAllSectorsByScehemeAndStateName(schemeName, stateName) {
-    try {
-      const response = await Sector.find({
-        state: stateName,
-        scheme: schemeName,
-      });
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return Sector.find({ name: String(sectorName) }).populate("courses");
   }
 }
 

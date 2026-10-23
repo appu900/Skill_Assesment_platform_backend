@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import serverConfig from "../config/serverConfig.js";
+import hidePassword from "./plugins/hidePassword.js";
 
 const SNASchema = new mongoose.Schema(
   {
@@ -16,6 +18,7 @@ const SNASchema = new mongoose.Schema(
     email: {
       type: String,
       required: true,
+      unique: true,
     },
     password: {
       type: String,
@@ -25,40 +28,47 @@ const SNASchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    role: {
+      type: String,
+      default: "SNA",
+      enum: ["SNA"],
+    },
   },
   {
-    timeseries: true,
+    timestamps: true,
   }
 );
 
-// ** hashing password before saving this
+SNASchema.plugin(hidePassword);
 
-SNASchema.pre("save", async function (next) {
-  const sna = this;
-  const salt = bcrypt.genSaltSync(10);
-  const encryptedPassword = bcrypt.hashSync(sna.password, salt);
-  sna.password = encryptedPassword;
+// ** hashing password only when it is set or changed
+SNASchema.pre("save", function (next) {
+  if (this.isModified("password")) {
+    const salt = bcrypt.genSaltSync(10);
+    this.password = bcrypt.hashSync(this.password, salt);
+  }
   next();
 });
 
 // ** password comparasion for login
 SNASchema.methods.checkPassword = function check(userInputPlainPassword) {
-  return bcrypt.compareSync(userInputPlainPassword, this.password);
+  return bcrypt.compareSync(String(userInputPlainPassword), this.password);
 };
 
-// ** generate jwt token for middleware verification
-
+// ** generate jwt token, scheme and state are used to scope what this SNA may approve
 SNASchema.methods.generateJwt = function generate() {
   return jwt.sign(
     {
       id: this._id,
+      role: "SNA",
       scheme: this.scheme,
+      state: this.state,
     },
-    "this is a secrete a key",
-    { expiresIn: "30d" }
+    serverConfig.JWT_SECRET,
+    { expiresIn: serverConfig.JWT_EXPIRES_IN }
   );
 };
 
-const SNA = new mongoose.model("SNA", SNASchema);
+const SNA = mongoose.model("SNA", SNASchema);
 
 export default SNA;

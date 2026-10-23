@@ -7,14 +7,7 @@ class AssessorRepository extends CrudRepository {
   }
 
   async getAllAssesorByAssesmentAgencyId(assesmentAgencyId) {
-    try {
-      const response = await Assessor.find({
-        AssesmentAgency: assesmentAgencyId,
-      });
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return Assessor.find({ AssesmentAgency: assesmentAgencyId });
   }
 }
 

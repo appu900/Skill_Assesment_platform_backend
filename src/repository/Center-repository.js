@@ -1,5 +1,6 @@
 import CrudRepository from "./crud.repository.js";
 import Center from "../models/Center.js";
+import AppError from "../utils/AppError.js";
 
 class CenterRepository extends CrudRepository {
   constructor() {
@@ -7,138 +8,65 @@ class CenterRepository extends CrudRepository {
   }
 
   async fetchCenterDetails(centerId) {
-    try {
-      const center = await Center.findById(centerId)
-        .populate("trainingOrganizationId")
-        .populate("sectors");
-      return center;
-    } catch (error) {
-      throw error;
-    }
+    return Center.findById(centerId).populate("trainingOrganizationId").populate("sectors");
   }
 
   async getCenterByTrainingPartnerId(trainingPartnerId) {
-    try {
-      const response = await Center.find({
-        trainingOrganizationId: trainingPartnerId,
-      }).populate({
-        path: 'sectors',
-        populate: {
-          path: 'courses', 
-          model: 'Course', 
-          select: 'courseName _id'
-        },
-      })
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return Center.find({ trainingOrganizationId: trainingPartnerId }).populate({
+      path: "sectors",
+      populate: {
+        path: "courses",
+        model: "Course",
+        select: "courseName _id",
+      },
+    });
   }
 
   async filterCenters(queryObject) {
-    try {
-      const response = await Center.find(queryObject)
-        .populate("sectors")
-        .populate("trainingOrganizationId");
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return Center.find(queryObject).populate("sectors").populate("trainingOrganizationId");
   }
 
   async approveSchemesOfCenter(centerId, schemeName, state) {
-    try {
-      const center = await Center.findOne({
-        _id: centerId,
-        "schemes.schemeName": schemeName,
-        state: state,
-      });
-
-      if (!center) {
-        throw new Error("Center not found");
-      }
-      const scheme = center.schemes.find(
-        (scheme) => scheme.schemeName === schemeName
-      );
-      if (scheme) {
-        scheme.approveStatus = true;
-        await center.save();
-        return true;
-      } else {
-        throw new Error("Scheme not found");
-      }
-    } catch (error) {
-      throw error;
+    const center = await Center.findOne({
+      _id: centerId,
+      "schemes.schemeName": schemeName,
+      state: state,
+    });
+    if (!center) {
+      throw AppError.notFound("Center not found for this scheme and state");
     }
+    const scheme = center.schemes.find((item) => item.schemeName === schemeName);
+    scheme.approveStatus = true;
+    await center.save();
+    return true;
   }
 
   async getCentersByApprovedSchems(trainingPartnerId, schemeName, state) {
-    try {
-      const filter = {
-        trainingOrganizationId: trainingPartnerId,
-        state: state,
-        schemes: {
-          $elemMatch: {
-            schemeName,
-            approveStatus: true,
-          },
+    return Center.find({
+      trainingOrganizationId: trainingPartnerId,
+      state: state,
+      schemes: {
+        $elemMatch: {
+          schemeName,
+          approveStatus: true,
         },
-      };
-      // ** logging ..
-      console.log(filter);
-      const response = await Center.find(filter).populate("sectors");
-      return response;
-    } catch (error) {
-      throw error;
-    }
+      },
+    }).populate("sectors");
   }
 
-  async updateCenterData(centerId, updateData, trainingPartnerId) {
-    try {
-      const center = await Center.findById(centerId);
-      if (!center) {
-        throw new Error("Center not found");
-      }
-
-      // ** check if the center belongs to the training partner
-      if (center.trainingOrganizationId.toString() !== trainingPartnerId) {
-        throw new Error("Unauthorized attempt");
-      }
-
-      // ** remove the protected fields
-      const protectedFields = [
-        "_id",
-        "trainingOrganizationId",
-        "createdAt",
-        "updatedAt",
-        "PRN_NO",
-        "state",
-      ];
-      protectedFields.forEach((field) => delete updateData[field]);
-
-      // ** update the center data
-      const updatedCenter = await Center.findOneAndUpdate(
-        { _id: centerId },
-        { $set: updateData },
-        { new: true, runValidators: true }
-      );
-
-      return updatedCenter;
-    } catch (error) {
-      throw error;
-    }
+  async updateCenterData(centerId, updateData) {
+    return Center.findOneAndUpdate(
+      { _id: centerId },
+      { $set: updateData },
+      { new: true, runValidators: true }
+    );
   }
 
   async getAllCentersByASchemeName(schemeName, stateName) {
-    try {
-      const centers = await Center.find({
-        "schemes.schemeName": schemeName,
-        state: stateName,
-      });
-      return centers;
-    } catch (error) {
-      throw error;
-    }
+    return Center.find({
+      "schemes.schemeName": schemeName,
+      state: stateName,
+    });
   }
 }
 

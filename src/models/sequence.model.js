@@ -9,6 +9,6 @@ const sequenceSchema = new mongoose.Schema({
   },
 });
 
-const Sequence = new mongoose.model("Sequence", sequenceSchema);
+const Sequence = mongoose.model("Sequence", sequenceSchema);
 
 export default Sequence;

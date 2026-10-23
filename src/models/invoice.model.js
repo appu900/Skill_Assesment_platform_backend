@@ -23,11 +23,9 @@ const invoiceSchema = new mongoose.Schema({
   },
   UTR: {
     type: String,
-    default: "null",
   },
   transactionId: {
     type: String,
-    default: "null",
   },
   TrainingPartnerId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -41,16 +39,12 @@ const invoiceSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Batch",
   },
-
-  // onModel: {
-  //   type: String,
-  //   enum: ["TrainingPartner", "Admin", "AssesmentAgency"],
-  // },
-  // modelId: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   refPath: "onModel",
-  // },
+},
+{
+  timestamps: true,
 });
+
+invoiceSchema.index({ BatchId: 1 });
 
 const Invoice = mongoose.model("Invoice", invoiceSchema);
 

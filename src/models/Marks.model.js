@@ -127,5 +127,9 @@ const markSchema = new mongoose.Schema({
   },
 });
 
-const Mark = new mongoose.model("Mark", markSchema);
+markSchema.index({ examId: 1, studentId: 1 });
+markSchema.index({ batchId: 1 });
+markSchema.index({ studentId: 1 });
+
+const Mark = mongoose.model("Mark", markSchema);
 export default Mark;

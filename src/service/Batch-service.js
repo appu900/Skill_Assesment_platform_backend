@@ -1,12 +1,63 @@
+import mongoose from "mongoose";
 import BatchRepository from "../repository/Batch-repository.js";
-import StudentService from "./student-service.js";
 import StudentRepository from "../repository/student-repository.js";
 import TrainerRepository from "../repository/Trainer-Repository.js";
 import TrainingPartnerRepository from "../repository/TrainingPartner-Repository.js";
-import PriceService from "./Price-service.js";
+import CenterRepository from "../repository/Center-repository.js";
 import InvoiceService from "./InvoiceService.js";
 import SchemeRepository from "../repository/SchemeRepository.js";
-import mongoose from "mongoose";
+import AppError from "../utils/AppError.js";
+import ROLES from "../utils/roles.js";
+import { omit } from "../utils/fieldFilter.js";
+import { assertOwnerOrAdmin, isSameId } from "../utils/ownership.js";
+
+const GST_MULTIPLIER = 1.18;
+
+// ** status / payment fields that are only changed by the workflow, never by the client payload
+const PROTECTED_BATCH_FIELDS = [
+  "_id",
+  "ABN_Number",
+  "tpcode",
+  "trainingOrganization",
+  "trainingOrganizationId",
+  "approvedByGovernmentBody",
+  "certificateIssued",
+  "resultPublished",
+  "isAssigned",
+  "status",
+  "students",
+  "trainers",
+  "assessorName",
+  "assessorId",
+  "prePaymentInvoice",
+  "postPaymentInvoice",
+  "clientPaymentStatus",
+  "paymentStatus",
+  "paymentPublishedBy",
+  "transactionId",
+  "batchActivePermission",
+  "amountToPaid",
+  "perStudentCost",
+  "batchCompletedStatus",
+  "createdAt",
+  "updatedAt",
+];
+
+// ** fields of a student that are only set by marks / exam / certificate workflows
+const PROTECTED_STUDENT_FIELDS = [
+  "_id",
+  "redg_No",
+  "markUploadStatus",
+  "marks",
+  "absent",
+  "certificate",
+  "DateOfIssueMarksheet",
+  "Grade",
+  "enrolledBatch",
+  "trainingPartner",
+  "createdAt",
+  "updatedAt",
+];
 
 class BatchService {
   constructor() {
@@ -14,444 +65,324 @@ class BatchService {
     this.studentRepository = new StudentRepository();
     this.trainerRepository = new TrainerRepository();
     this.trainingPartnerRepository = new TrainingPartnerRepository();
-    this.priceService = new PriceService();
+    this.centerRepository = new CenterRepository();
     this.invoiceService = new InvoiceService();
     this.schemeRepository = new SchemeRepository();
   }
 
-  // ** A function to check before submittion of batch data every student in a batch has profile pic or not if not then return false
-
-  async checkImageForStudents(batchId){
-    try {
-      const batch = await this.batchRepository.get(batchId);
-      if (!batch) {
-        throw new Error("batch not found");
-      }
-      let studentsWithOutImage = [];
-      const students = batch.students;
-      let flag = true;
-      for (let i = 0; i < students.length; i++) {
-        const student = await this.studentRepository.get(students[i]);
-        if (!student.profilepic) {  
-          flag = false;
-          studentsWithOutImage.push(student.name);
-        }
-      }
-      return { flag,studentsWithOutImage };
-    } catch (error) {
-      throw error;
+  async getBatchOrFail(batchId) {
+    const batch = await this.batchRepository.get(batchId);
+    if (!batch) {
+      throw AppError.notFound("batch not found");
     }
+    return batch;
   }
 
-  async createBatch(data) {
-    try {
-      const trainingPartnerId = data.trainingOrganizationId;
-      const trainingPartner = await this.trainingPartnerRepository.get(
-        trainingPartnerId
-      );
-
-      if (!trainingPartner) {
-        throw new Error("training partner not found");
-      }
-
-      if (trainingPartner.applicationStatus !== "Approved") {
-        throw new Error("training partner is not approved");
-      }
-
-      data.trainingOrganization = trainingPartner.organizationName;
-      data.trainingOrganizationId = trainingPartner._id;
-
-      const batch = await this.batchRepository.create(data);
-      return batch;
-    } catch (error) {
-      throw error;
-    }
+  // ** batch that the logged in training partner owns (admin can access every batch)
+  async getOwnedBatch(batchId, user) {
+    const batch = await this.getBatchOrFail(batchId);
+    assertOwnerOrAdmin(batch.trainingOrganizationId, user, "This batch does not belong to you");
+    return batch;
   }
 
-  async addStudent(batchId, data) {
-    try {
-      const studentWithSameMprId = await this.studentRepository.getStudentWithMprId(data.MPR_Id);
-      if(studentWithSameMprId){
-        throw new Error("Student with same MPR ID already exists");
-      }
-      const batch = await this.batchRepository.get(batchId);
-      console.log(batch);
-      if (!batch) {
-        throw new Error("batch not found");
-      }
-      data.enrolledBatch = batch._id;
-      const student = await this.studentRepository.create(data);
-      batch.students.push(student);
-      await batch.save();
-      console.log("this is batch", batch);
-      return student;
-    } catch (error) {
-      throw error;
-    }
+  // ** names of the students of a batch that have no profile pic (one query instead of one per student)
+  async checkImageForStudents(batch) {
+    const students = await this.studentRepository.getStudentsByIds(batch.students);
+    const studentsWithOutImage = students
+      .filter((student) => !student.profilepic)
+      .map((student) => student.name);
+    return { flag: studentsWithOutImage.length === 0, studentsWithOutImage };
   }
 
-  async addTrainerTobatch(batchId, data) {
-    try {
-      const batch = await this.batchRepository.get(batchId);
-      if (!batch) {
-        throw new Error("batch not found");
-      }
-      const trainer = await this.trainerRepository.create(data);
-      trainer.batches.push(batch);
-      batch.trainers.push(trainer);
-      await batch.save();
-      await trainer.save();
-      return trainer;
-    } catch (error) {
-      throw error;
+  async createBatch(data, trainingPartnerId) {
+    const trainingPartner = await this.trainingPartnerRepository.get(trainingPartnerId);
+    if (!trainingPartner) {
+      throw AppError.notFound("training partner not found");
     }
+    if (trainingPartner.applicationStatus !== "Approved") {
+      throw AppError.forbidden("training partner is not approved");
+    }
+
+    const payload = omit(data, PROTECTED_BATCH_FIELDS);
+
+    if (payload.centerId) {
+      const center = await this.centerRepository.get(payload.centerId);
+      if (!center || !isSameId(center.trainingOrganizationId, trainingPartner._id)) {
+        throw new AppError("center does not belong to this training partner");
+      }
+    }
+
+    payload.trainingOrganization = trainingPartner.organizationName;
+    payload.trainingOrganizationId = trainingPartner._id;
+    // ** tp code is part of the ABN, take it from the training partner instead of the client
+    payload.tpcode = trainingPartner.tpCode;
+
+    return this.batchRepository.create(payload);
+  }
+
+  async addStudent(batchId, data, user) {
+    const batch = await this.getOwnedBatch(batchId, user);
+    if (batch.batchActivePermission) {
+      throw new AppError("batch is already submitted, students cannot be added");
+    }
+    if (!data.MPR_Id) {
+      throw new AppError("MPR Id is required");
+    }
+    const studentWithSameMprId = await this.studentRepository.getStudentWithMprId(data.MPR_Id);
+    if (studentWithSameMprId) {
+      throw AppError.conflict("Student with same MPR ID already exists");
+    }
+
+    const payload = omit(data, PROTECTED_STUDENT_FIELDS);
+    payload.enrolledBatch = batch._id;
+    payload.trainingPartner = batch.trainingOrganizationId;
+
+    const student = await this.studentRepository.create(payload);
+    batch.students.push(student._id);
+    await batch.save();
+    return student;
+  }
+
+  async addTrainerTobatch(batchId, data, user) {
+    const batch = await this.getOwnedBatch(batchId, user);
+    const trainer = await this.trainerRepository.create({
+      ...omit(data, ["_id", "batches", "resultSheet"]),
+      trainingPartner: batch.trainingOrganizationId,
+    });
+    trainer.batches.push(batch._id);
+    batch.trainers.push(trainer._id);
+    await batch.save();
+    await trainer.save();
+    return trainer;
   }
 
   async getBatchData(batchId) {
-    try {
-      const res = await this.batchRepository.getBatchDetails(batchId);
-      return res;
-    } catch (error) {
-      throw error;
-    }
+    return this.batchRepository.getBatchDetails(batchId);
   }
 
   async getBatchesOfTrainingPartner(id) {
-    try {
-      const res =
-        await this.batchRepository.getAllbatchesForAnIndividualTrainingPartner(
-          id
-        );
-      return res;
-    } catch (error) {
-      throw error;
-    }
+    return this.batchRepository.getAllbatchesForAnIndividualTrainingPartner(id);
   }
 
-  async getAllBatces() {
-    try {
-      const response = await this.batchRepository.getAllBatches();
-      return response;
-    } catch (error) {
-      throw error;
-    }
+  async getAllBatces(pagination) {
+    return this.batchRepository.getAllBatches(pagination);
   }
 
   async filterQueryData(query) {
-    try {
-      const { state, sector, course, trainingOrganization } = query;
-      const queryObject = {};
-      if (state) {
-        queryObject.state = state;
-      }
-      if (sector) {
-        queryObject.sectorName = sector;
-      }
-      if (course) {
-        queryObject.courseName = course;
-      }
-      if (trainingOrganization) {
-        queryObject.trainingOrganization = trainingOrganization;
-      }
-      const response = await this.batchRepository.filterData(queryObject);
-      return response;
-    } catch (error) {
-      throw error;
+    const { state, sector, course, trainingOrganization } = query;
+    const queryObject = {};
+    if (state) {
+      queryObject.state = String(state);
     }
+    if (sector) {
+      queryObject.sectorName = String(sector);
+    }
+    if (course) {
+      queryObject.courseName = String(course);
+    }
+    if (trainingOrganization) {
+      queryObject.trainingOrganization = String(trainingOrganization);
+    }
+    return this.batchRepository.filterData(queryObject);
   }
 
-  // ** this will update the teachers in the batch ( data will contains only existing teacher ids coming from frontend)
-
-  async bulkTeacherInsert(batchId, data) {
-    try {
-      const batch = await this.batchRepository.get(batchId);
-      if (!batch) {
-        throw new Error("batch not found with this id");
-      }
-
-      if (!Array.isArray(data)) {
-        throw new Error("data should be in array format!");
-      }
-      const trainerIdObjects = data.map(
-        (id) => new mongoose.Types.ObjectId(id)
-      );
-      batch.trainers.push(...trainerIdObjects);
-      const response = await batch.save();
-      return response;
-    } catch (error) {
-      console.log(error);
-      throw error;
+  // ** adds existing trainers (ids from the frontend) of the same training partner to the batch
+  async bulkTeacherInsert(batchId, data, user) {
+    const batch = await this.getOwnedBatch(batchId, user);
+    if (!Array.isArray(data) || data.length === 0) {
+      throw new AppError("trainerIds should be a non empty array");
     }
+    if (!data.every((id) => mongoose.isValidObjectId(id))) {
+      throw new AppError("trainerIds contains an invalid id");
+    }
+
+    const trainers = await this.trainerRepository.model.find({
+      _id: { $in: data },
+      trainingPartner: batch.trainingOrganizationId,
+    });
+    if (trainers.length !== new Set(data.map(String)).size) {
+      throw new AppError("some trainers do not exist or belong to another training partner");
+    }
+
+    trainers.forEach((trainer) => batch.trainers.addToSet(trainer._id));
+    return batch.save();
   }
 
-  // ** this will update the batch payment status(client payment status) with invoice(pre & post)
-  async updateClientPayment(batchId, preInvoiceUrl, postInvoiceUrl) {
-    try {
-      const response = await this.batchRepository.updateClientPaymentStatus(
-        batchId,
-        preInvoiceUrl,
-        postInvoiceUrl
-      );
-      return response;
-    } catch (error) {
-      throw error;
+  // ** final submission of the batch by the training partner, calculates the payable amount
+  async activeBatch(batchId, user) {
+    const batch = await this.getOwnedBatch(batchId, user);
+
+    if (batch.batchActivePermission === true) {
+      throw new AppError("batch is already Submitted");
     }
+    if (batch.students.length === 0) {
+      throw new AppError("complete the batch with students first");
+    }
+    if (batch.trainers.length === 0) {
+      throw new AppError("Please add atleast One Trainer");
+    }
+
+    const { flag, studentsWithOutImage } = await this.checkImageForStudents(batch);
+    if (flag === false) {
+      throw new AppError(`students ${studentsWithOutImage.join(", ")} has no profile pic`);
+    }
+
+    let totalAmount = 0;
+    let perStudentCost = 0;
+
+    if (batch.schemeType === "Corporate") {
+      const tp = await this.trainingPartnerRepository.get(batch.trainingOrganizationId);
+      perStudentCost = tp?.organizationCorporatePaymentFee || 0;
+      totalAmount = perStudentCost * batch.students.length * GST_MULTIPLIER;
+    } else {
+      const scheme = await this.schemeRepository.findBySchemeName(batch.scheme);
+      if (!scheme) {
+        throw AppError.notFound(`scheme ${batch.scheme} not found`);
+      }
+      perStudentCost = scheme.pricePerStudent;
+      totalAmount = perStudentCost * batch.students.length;
+    }
+
+    await this.batchRepository.activateBatchByClient(batchId, totalAmount, perStudentCost);
+    return true;
   }
 
-  // ** this will update the batch payment status(admin payment status)
-  async updatefinalPaymentStatus(batchId) {
-    try {
-      const response = await this.batchRepository.updatePayamentStatus(batchId);
-      return response;
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  // ** active batch permission from client end
-
-  async activeBatch(batchId) {
-    try {
-      const batch = await this.batchRepository.get(batchId);
-
-      if (!batch) {
-        throw new Error("batch not found");
-      }
-
-      if(batch.batchActivePermission === true){
-        throw new Error("batch is already Submitted");
-      }
-
-      if (batch.students.length === 0) {
-        throw new Error("complete the batch with students first");
-      }
-
-      // ** if there is no trainers assigned then return error
-
-      if(batch.trainers.length === 0){
-        throw new Error("Please add atleast One Trainer")
-      }
-
-      // ** check for image ..of students before activating the batch
-
-      const {flag,studentsWithOutImage} = await this.checkImageForStudents(batchId);
-      if(flag === false){
-        throw new Error(`students ${studentsWithOutImage} has no profile pic`);
-      }
-
-      const tp = await this.trainingPartnerRepository.get(
-        batch.trainingOrganizationId
-      );
-
-      // ** calculate payment amount if schemeType is Corporate
-      let totalAmount = 0;
-      let perStudentCost = 0;
-
-      // if(!batch.organizationCorporatePaymentFee){
-      //   throw new Error("Corporate fee is not assigned by Admin")
-      // }
-
-      if (batch.schemeType === "Corporate") {
-        const baseAmount = tp.organizationCorporatePaymentFee * batch.students.length;
-        const amountWithTax = baseAmount * 1.18;
-        totalAmount = amountWithTax; 
-        batch.amountToPaid = totalAmount;
-        perStudentCost = tp.organizationCorporatePaymentFee;
-      } else {
-        //  ** fetch scheme code and calculate payment amount based on scheme code
-        const scheme = await this.schemeRepository.findBySchemeName(
-          batch.scheme
-        );
-        totalAmount = scheme.pricePerStudent * batch.students.length;
-        perStudentCost = scheme.pricePerStudent;
-      }
-
-      const invoiceData = {
-        payer: "TrainingPartner",
-        payee: "Admin",
-        purpose: "batch payment",
-        amount: totalAmount,
-        paymentStatus: false,
-        TrainingPartnerId: batch.trainingOrganizationId,
-        BatchId: batch._id,
-      };
-
-      // this.invoiceService.createInvoice(invoiceData).catch((error) => {
-      //   console.log("error in invoice generation", error);
-      // });
-
-      const response = await this.batchRepository.activateBatchByClient(
-        batchId,
-        totalAmount,
-        perStudentCost
-      );
-
-      return true;
-    } catch (error) {
-      console.log(error.message);
-      throw error;
-    }
-  }
-
-  // ** manual payment amount add from admin
-
+  // ** admin sets the payable amount of a corporate batch manually
   async addPaymentCorporatePayment(batchId, amount) {
-    try {
-      const batch = await this.batchRepository.get(batchId);
-      if (batch.corporatePaymentType === false) {
-        throw new Error("this batch is not corporate type");
-      }
-
-      if (batch.batchActivePermission === false) {
-        throw new Error("this batch is not ready to accept payment");
-      }
-
-      batch.amountToPaid = amount;
-      const response = await batch.save();
-      const invoiceData = {
-        payer: "TrainingPartner",
-        payee: "Admin",
-        purpose: "batch payment",
-        payAbleamount: amount,
-        paidAmount: 0,
-        paymentStatus: false,
-        TrainingPartnerId: batch.trainingOrganizationId,
-        BatchId: batch._id,
-      };
-
-      this.invoiceService.createInvoice(invoiceData).catch((error) => {
-        console.log("error in invoice generation", error);
-      });
-      return response;
-    } catch (error) {
-      throw error;
+    const batch = await this.getBatchOrFail(batchId);
+    if (batch.schemeType !== "Corporate") {
+      throw new AppError("this batch is not corporate type");
     }
+    if (batch.batchActivePermission === false) {
+      throw new AppError("this batch is not ready to accept payment");
+    }
+    if (batch.paymentStatus) {
+      throw new AppError("this batch is already paid");
+    }
+    const payableAmount = Number(amount);
+    if (Number.isNaN(payableAmount) || payableAmount <= 0) {
+      throw new AppError("amount must be a positive number");
+    }
+
+    batch.amountToPaid = payableAmount;
+    const response = await batch.save();
+
+    await this.invoiceService.upsertBatchInvoice(batch._id, {
+      payer: "TrainingPartner",
+      payee: "Admin",
+      purpose: "batch payment",
+      amount: payableAmount,
+      paymentStatus: false,
+      TrainingPartnerId: batch.trainingOrganizationId,
+      BatchId: batch._id,
+    });
+    return response;
   }
 
-  // ** tp will update the payment clientsidepayement status with pre and post invoice
+  // ** tp uploads the pre and post payment invoice with the transaction id
   async updateClientPaymentDetails(
     batchId,
     preinVoiceUrl,
     postInvoiceUrl,
     transactionId,
-    paymentPublishedBy
+    paymentPublishedBy,
+    user
   ) {
-    try {
-      const batch = await this.batchRepository.get(batchId);
-      if (!batch) {
-        throw new Error("batch not found");
-      }
-      batch.clientPaymentStatus = true;
-      batch.prePaymentInvoice = preinVoiceUrl;
-      batch.postPaymentInvoice = postInvoiceUrl;
-      batch.paymentPublishedBy = paymentPublishedBy;
-      batch.transactionId = transactionId;
-      const response = await batch.save();
-      return response;
-    } catch (error) {
-      throw error;
+    const batch = await this.getOwnedBatch(batchId, user);
+    if (!batch.batchActivePermission) {
+      throw new AppError("submit the batch before uploading payment details");
     }
+    if (batch.paymentStatus) {
+      throw new AppError("payment of this batch is already approved");
+    }
+    batch.clientPaymentStatus = true;
+    batch.prePaymentInvoice = preinVoiceUrl;
+    batch.postPaymentInvoice = postInvoiceUrl;
+    batch.paymentPublishedBy = paymentPublishedBy;
+    batch.transactionId = transactionId;
+    return batch.save();
   }
 
   async getAllPaymentNotifications() {
-    try {
-      const response = await this.batchRepository.getBatchesByPendingPayment();
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return this.batchRepository.getBatchesByPendingPayment();
   }
 
   async getBatchByCorporatePayment() {
-    try {
-      const response =
-        await this.batchRepository.getAllBatchByCorporatePayment();
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return this.batchRepository.getAllBatchByCorporatePayment();
   }
 
+  // ** admin approves the payment of a batch
   async updateFinalPaymentStatus(batchId) {
-    try {
-      const response = await this.batchRepository.updatePayamentStatus(batchId);
-      const invoice = await this.invoiceService.getInvoiceByBatchId(batchId);
-      invoice.paymentStatus = true;
-      invoice.paymentDate = new Date();
-      await invoice.save();
-      return true;
-    } catch (error) {
-      throw error;
+    const batch = await this.getBatchOrFail(batchId);
+    if (!batch.clientPaymentStatus) {
+      throw new AppError("training partner has not uploaded the payment details yet");
     }
+    if (batch.schemeType !== "Corporate" && !batch.approvedByGovernmentBody) {
+      throw new AppError("government batch is not approved by the SNA yet");
+    }
+
+    await this.batchRepository.updatePayamentStatus(batchId);
+    await this.invoiceService.upsertBatchInvoice(batch._id, {
+      payer: "TrainingPartner",
+      payee: "Admin",
+      purpose: "batch payment",
+      amount: batch.amountToPaid,
+      paymentStatus: true,
+      paymentDate: new Date(),
+      transactionId: batch.transactionId,
+      TrainingPartnerId: batch.trainingOrganizationId,
+      BatchId: batch._id,
+    });
+    return true;
   }
 
-  // ** this will fetch the all batches for payment approval after approved by SNAs
-
+  // ** all government batches that are approved by SNAs and wait for payment approval
   async getAllGovernmentBatchesForPaymentApproval() {
-    try {
-      const response =
-        await this.batchRepository.getAllGovernmentBatchesPendingPaymentData();
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return this.batchRepository.getAllGovernmentBatchesPendingPaymentData();
   }
 
-  async filterStateWiseAndScehemWiseData(query) {
-    try {
-      let queryObject = {};
-      const { state, scheme } = query;
-      if (state) {
-        queryObject.state = state;
-      }
-      if (scheme) {
-        queryObject.scheme = scheme;
-      }
-      queryObject.batchActivePermission = true;
-      queryObject.approvedByGovernmentBody = false;
-      console.log(queryObject);
-      const response = await this.batchRepository.filterData(queryObject);
-      return response;
-    } catch (error) {
-      throw error;
+  // ** an SNA only sees the batches of its own state and scheme
+  async filterStateWiseAndScehemWiseData(query, user) {
+    const queryObject = {};
+    const state = user?.role === ROLES.SNA ? user.state : query.state;
+    const scheme = user?.role === ROLES.SNA ? user.scheme : query.scheme;
+    if (state) {
+      queryObject.state = String(state);
     }
+    if (scheme) {
+      queryObject.scheme = String(scheme);
+    }
+    queryObject.batchActivePermission = true;
+    queryObject.approvedByGovernmentBody = false;
+    return this.batchRepository.filterData(queryObject);
   }
 
-  // ** this will approve the batch by SNA
-
-  async approveGovernmentBatch(batchId) {
-    try {
-      const batch = await this.batchRepository.get(batchId);
-      if (!batch) {
-        throw new Error("batch not found");
-      }
-      batch.approvedByGovernmentBody = true;
-      const response = await batch.save();
-      const resonseobj = {
-        batchId: response._id,
-        sucess: true,
-      };
-      return resonseobj;
-    } catch (error) {
-      throw error;
+  // ** approval of a government batch by the SNA of the same state and scheme
+  async approveGovernmentBatch(batchId, user) {
+    const batch = await this.getBatchOrFail(batchId);
+    if (user?.role === ROLES.SNA && (batch.scheme !== user.scheme || batch.state !== user.state)) {
+      throw AppError.forbidden("This batch does not belong to your state or scheme");
     }
+    if (batch.schemeType === "Corporate") {
+      throw new AppError("corporate batches do not need SNA approval");
+    }
+    if (!batch.batchActivePermission) {
+      throw new AppError("batch is not submitted yet");
+    }
+    batch.approvedByGovernmentBody = true;
+    const response = await batch.save();
+    return {
+      batchId: response._id,
+      sucess: true,
+    };
   }
 
-  async getAllBatchesBySchemeName(schemeName,state) {
-    try {
-      console.log(state)
-      const response = await this.batchRepository.getBatchesBySchemeName(
-        schemeName,
-        state
-      );
-      return response;
-    } catch (error) {
-      throw error;
+  async getAllBatchesBySchemeName(schemeName, state, user) {
+    if (user?.role === ROLES.SNA) {
+      return this.batchRepository.getBatchesBySchemeName(user.scheme, user.state);
     }
+    return this.batchRepository.getBatchesBySchemeName(String(schemeName), String(state));
   }
-
-
- 
 }
 
 export default BatchService;

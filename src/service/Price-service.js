@@ -6,21 +6,11 @@ class PriceService {
   }
 
   async createPrice(data) {
-    try {
-      const res = await this.priceRepository.create(data);
-      return res;
-    } catch (error) {
-      throw error;
-    }
+    return this.priceRepository.create(data);
   }
 
   async getPriceDetails(schemeName) {
-    try {
-      const response = await this.priceRepository.getByScheme(schemeName);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return this.priceRepository.getByScheme(schemeName);
   }
 }
 

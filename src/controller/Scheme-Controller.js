@@ -1,74 +1,38 @@
+import { StatusCodes } from "http-status-codes";
 import upload from "../config/s3-imageUpload-config.js";
 import SchemeService from "../service/SchemeService.js";
-import { StatusCodes } from "http-status-codes";
+import asyncHandler from "../utils/asyncHandler.js";
+import runUpload from "../utils/runUpload.js";
 
 const schemeService = new SchemeService();
-const singleFileUploader = upload.single("image")
+const singleFileUploader = upload.single("image");
 
-const createScheme = async (req, res) => {
-  singleFileUploader(req,res,async function(err) {
-    
-    if(err){
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        error:err.message,
-        message:"Something went wrong"
-      })
-    }
- 
-  try {
-    const paylaod = req.body;
-    const imageUrl = req.file?.location;
-    paylaod.logo = imageUrl;
-    const response = await schemeService.create(paylaod);
-    return res.status(StatusCodes.CREATED).json({
-      success: true,
-      data: response,
-      message: "Scheme created successfully",
-    });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: error.message,
-      message: "something went wrong",
-    });
-  }
-})
-};
+const createScheme = asyncHandler(async (req, res) => {
+  await runUpload(singleFileUploader, req, res);
+  const response = await schemeService.create({ ...req.body, logo: req.file?.location });
+  return res.status(StatusCodes.CREATED).json({
+    success: true,
+    data: response,
+    message: "Scheme created successfully",
+  });
+});
 
-const fetchAllSchems = async (req, res) => {
-  try {
-    const response = await schemeService.getAllSchems();
-    return res.status(StatusCodes.OK).json({
-      success: true,
-      data: response,
-      message: "All Schemes fetched successfully",
-    });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: error.message,
-      message: "something went wrong",
-    });
-  }
-};
+const fetchAllSchems = asyncHandler(async (req, res) => {
+  const response = await schemeService.getAllSchems();
+  return res.status(StatusCodes.OK).json({
+    success: true,
+    data: response,
+    message: "All Schemes fetched successfully",
+  });
+});
 
-const fetchAllSchemeOfSchemeType = async (req, res) => {
-  try {
-    const response = await schemeService.getSchemeBySchemeType(
-      req.query.schemeType
-    );
-    return res.status(StatusCodes.OK).json({
-      success: true,
-      data: response,
-      message: "All Schemes fetched successfully",
-    });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: error.message,
-      message: "something went wrong",
-    });
-  }
-};
+const fetchAllSchemeOfSchemeType = asyncHandler(async (req, res) => {
+  const response = await schemeService.getSchemeBySchemeType(req.query.schemeType);
+  return res.status(StatusCodes.OK).json({
+    success: true,
+    data: response,
+    message: "All Schemes fetched successfully",
+  });
+});
 
-export { createScheme, fetchAllSchems,fetchAllSchemeOfSchemeType };
+export { createScheme, fetchAllSchems, fetchAllSchemeOfSchemeType };

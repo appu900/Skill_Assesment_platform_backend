@@ -7,12 +7,7 @@ class InvoiceRepository extends CrudRepository {
   }
 
   async getByBatchId(batchId) {
-    try {
-      const response = await Invoice.findOne({ BatchId: batchId });
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return Invoice.findOne({ BatchId: batchId });
   }
 }
 

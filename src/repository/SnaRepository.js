@@ -7,12 +7,7 @@ class SnaRepository extends CrudRepository {
   }
 
   async findByEmail(email) {
-    try {
-      const response = await SNA.findOne({ email });
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return SNA.findOne({ email: String(email) });
   }
 }
 

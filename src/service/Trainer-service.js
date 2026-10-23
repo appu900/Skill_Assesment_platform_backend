@@ -1,76 +1,59 @@
 import TrainerRepository from "../repository/Trainer-Repository.js";
+import BatchRepository from "../repository/Batch-repository.js";
+import AppError from "../utils/AppError.js";
+import { omit } from "../utils/fieldFilter.js";
+import { assertOwnerOrAdmin } from "../utils/ownership.js";
 
 class TrainerService {
   constructor() {
     this.trainerRepository = new TrainerRepository();
+    this.batchRepository = new BatchRepository();
   }
 
-  async createTrainer(data) {
-    try {
-      const trainer = await this.trainerRepository.createTrainner(data);
-      return trainer;
-    } catch (error) {
-      console.log("service layer error",error.message)
-      if (error.message === "Trainer already exists") {
-        throw new Error("Trainer already exists");
-      }
-      throw error;
+  async getTrainerOrFail(trainerId) {
+    const trainer = await this.trainerRepository.get(trainerId);
+    if (!trainer) {
+      throw AppError.notFound("Trainer not Found");
     }
+    return trainer;
   }
 
-  async getAllTrainer() {
-    try {
-      const trainers = await this.trainerRepository.getAll();
-      return trainers;
-    } catch (error) {
-      throw error;
-    }
+  async createTrainer(data, trainingPartnerId) {
+    return this.trainerRepository.createTrainner({
+      ...omit(data, ["_id", "batches", "resultSheet", "trainingPartner"]),
+      trainingPartner: trainingPartnerId,
+    });
+  }
+
+  async getAllTrainer(pagination) {
+    return this.trainerRepository.getAll(pagination);
   }
 
   async getTrainerById(trainerId) {
-    try {
-      const trainer = await this.trainerRepository.get(trainerId);
-      return trainer;
-    } catch (error) {
-      throw error;
-    }
+    return this.trainerRepository.get(trainerId);
   }
 
-  async deleteTrainer(id) {
-    try {
-      const response = await this.trainerRepository.destroy(id);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+  // ** removes the trainer and its references from every batch
+  async deleteTrainer(id, user) {
+    const trainer = await this.getTrainerOrFail(id);
+    assertOwnerOrAdmin(trainer.trainingPartner, user, "This trainer does not belong to you");
+    await this.batchRepository.model.updateMany({ trainers: trainer._id }, { $pull: { trainers: trainer._id } });
+    return this.trainerRepository.destroy(id);
   }
-
-  // ** getinng all trainingpartner belongs to a individual
 
   async getAllTrainerBelongsToTrainingPartner(trainingPartnerId) {
-    try {
-      const response =
-        await this.trainerRepository.fetchTrainersOfTrainingPartner(
-          trainingPartnerId
-        );
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return this.trainerRepository.fetchTrainersOfTrainingPartner(trainingPartnerId);
   }
 
-  async uploadTResultSheet(trainerId, resultSheetUrl) {
-    try {
-      const trainer = await this.trainerRepository.get(trainerId);
-      if (!trainer) {
-        throw new Error("Trainer not Found");
-      }
-      trainer.resultSheet = resultSheetUrl;
-      const response = await trainer.save();
-      return true;
-    } catch (error) {
-      throw error;
+  async uploadTResultSheet(trainerId, resultSheetUrl, user) {
+    const trainer = await this.getTrainerOrFail(trainerId);
+    assertOwnerOrAdmin(trainer.trainingPartner, user, "This trainer does not belong to you");
+    if (!resultSheetUrl) {
+      throw new AppError("resultSheet file is required");
     }
+    trainer.resultSheet = resultSheetUrl;
+    await trainer.save();
+    return true;
   }
 }
 

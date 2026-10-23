@@ -8,45 +8,15 @@ class SectorService {
   }
 
   async create(data) {
-    try {
-      const response = await this.sectorRepository.create(data);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return this.sectorRepository.create(data);
   }
 
   async getAllSector() {
-    try {
-      const response = await this.sectorRepository.getAll();
-      console.log(response);
-      return response;
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
+    return this.sectorRepository.getAll();
   }
 
   async getCoursesOfSector(sectorName) {
-    try {
-      const response = await this.courseRepository.getAllCoursesBySectorName(sectorName);
-      return response
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  async getAllSectorsByASchemeNameAndState(scheme, state) {
-    try {
-      const response =
-        await this.sectorRepository.getAllSectorsByScehemeAndStateName(
-          scheme,
-          state
-        );
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return this.courseRepository.getAllCoursesBySectorName(sectorName);
   }
 }
 

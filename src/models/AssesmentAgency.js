@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import serverConfig from "../config/serverConfig.js";
+import hidePassword from "./plugins/hidePassword.js";
 
 const assesmentAgencySchema = new mongoose.Schema(
   {
@@ -53,6 +55,7 @@ const assesmentAgencySchema = new mongoose.Schema(
     role: {
       type: String,
       default: "AssesmentAgency",
+      enum: ["AssesmentAgency"],
     },
     email: {
       type: String,
@@ -140,6 +143,9 @@ const assesmentAgencySchema = new mongoose.Schema(
   }
 );
 
+assesmentAgencySchema.plugin(hidePassword);
+assesmentAgencySchema.index({ applicationStatus: 1 });
+
 assesmentAgencySchema.pre("save", function (next) {
   const assesmentAgency = this;
   if (assesmentAgency.isModified("password")) {
@@ -154,7 +160,7 @@ assesmentAgencySchema.pre("save", function (next) {
 assesmentAgencySchema.methods.checkPassword = function check(
   userInputPlainPassword
 ) {
-  return bcrypt.compareSync(userInputPlainPassword, this.password);
+  return bcrypt.compareSync(String(userInputPlainPassword), this.password);
 };
 
 // *** function for generate token
@@ -165,8 +171,8 @@ assesmentAgencySchema.methods.generateJwt = function generate() {
       role: this.role,
       name: this.agencyName,
     },
-    "this is a secrete a key",
-    { expiresIn: "1d" }
+    serverConfig.JWT_SECRET,
+    { expiresIn: serverConfig.JWT_EXPIRES_IN }
   );
 };
 

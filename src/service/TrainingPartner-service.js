@@ -1,31 +1,60 @@
 import TrainingPartnerRepository from "../repository/TrainingPartner-Repository.js";
-import sender from "../config/emailconfig.js";
 import sendEmail from "./email-service.js";
+import AppError from "../utils/AppError.js";
+import ROLES from "../utils/roles.js";
+import { omit } from "../utils/fieldFilter.js";
+import { assertOwnerOrAdmin } from "../utils/ownership.js";
+
+const SENDER_EMAIL = "awardingbody@cutm.ac.in";
+
+// ** fields a training partner can never set on its own record
+const PROTECTED_FIELDS = [
+  "_id",
+  "role",
+  "tpCode",
+  "applicationStatus",
+  "applicationViewed",
+  "editPermission",
+  "noOfEditRequest",
+  "organizationCorporatePaymentFee",
+  "paymentStatus",
+  "status",
+  "centers",
+  "certificates",
+  "createdAt",
+  "updatedAt",
+];
 
 class TrainingPartnerService {
   constructor() {
     this.trainingPartnerRepository = new TrainingPartnerRepository();
   }
 
-  //   ** create trainingPartner
+  async getTrainingPartnerOrFail(id) {
+    const tp = await this.trainingPartnerRepository.get(id);
+    if (!tp) {
+      throw AppError.notFound("Training Partner not found");
+    }
+    return tp;
+  }
+
+  //   ** create trainingPartner (public registration)
   async createTrainingPartner(data) {
     try {
-      const userPassword = data.password;
-      const responsePayload = await this.trainingPartnerRepository.create(data);
-
-      console.log("responsePayload", responsePayload);
-
-      sendEmail(
-        "awardingbody@cutm.ac.in",
+      const responsePayload = await this.trainingPartnerRepository.create(
+        omit(data, PROTECTED_FIELDS)
+      );
+      // ** never send the password over email
+      await sendEmail(
+        SENDER_EMAIL,
         responsePayload.registeredOfficeEmail,
         "TrainingOrganization Created",
-        `Your Training Organization has been created successfully. Your login credentials are registerdOfficeEmail and password is ${userPassword}`
+        "Your Training Organization application has been submitted successfully. You can login with your registered office email and the password you have set once the application is approved."
       );
-      
       return responsePayload;
     } catch (error) {
       if (error.code === 11000) {
-        throw new Error("Training Partner already exists with is email");
+        throw AppError.conflict("Training Partner already exists with this email");
       }
       throw error;
     }
@@ -33,209 +62,129 @@ class TrainingPartnerService {
 
   // ** login functionality of traingPartner
   async login(email, password) {
-    try {
-      console.log(email, password, "service layer");
-      const trainingPartner = await this.trainingPartnerRepository.findByEmail(
-        email
-      );
-      if (!trainingPartner) {
-        throw new Error("user not found with this email");
-      }
-      if (!trainingPartner.checkPassword(password)) {
-        throw new Error("incorrect Password");
-      }
-      const token = trainingPartner.generateJwt();
-      const response = {
-        data: trainingPartner,
-        token: token,
-      };
-      console.log(response);
-      return response;
-    } catch (error) {
-      throw error;
+    if (!email || !password) {
+      throw new AppError("Email and password are required");
     }
+    const trainingPartner = await this.trainingPartnerRepository.findByEmail(email);
+    if (!trainingPartner || !trainingPartner.checkPassword(password)) {
+      throw AppError.unauthorized("Invalid email or password");
+    }
+    return {
+      data: trainingPartner,
+      token: trainingPartner.generateJwt(),
+    };
   }
 
-  // ** get a trainingPartnerData based on Id
   async getTrainingPartnerById(id) {
-    try {
-      const res = this.trainingPartnerRepository.get(id);
-      return res;
-    } catch (error) {
-      throw error;
-    }
+    return this.trainingPartnerRepository.get(id);
   }
 
-  // ** get all tp data
-
-  async getAllTrainingParterData() {
-    try {
-      const res = await this.trainingPartnerRepository.getAll();
-      return res;
-    } catch (error) {
-      console.log("error in getting all trainingPartner data", error.message);
-      throw error;
-    }
+  async getAllTrainingParterData(pagination) {
+    return this.trainingPartnerRepository.getAll(pagination);
   }
 
-  async updateTrainingPartnerDetails(id, data) {
-    try {
-      const tp = await this.trainingPartnerRepository.get(id);
+  // ** admin can update any non sensitive field, a training partner only its own profile fields
+  async updateTrainingPartnerDetails(id, data, user) {
+    await this.getTrainingPartnerOrFail(id);
+    assertOwnerOrAdmin(id, user);
 
-      if (!tp) {
-        throw new Error("Training Partner details not found");
-      }
-      const response = await this.trainingPartnerRepository.update(id, data);
-      return response;
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
+    // ** password must go through save() to be hashed, never through a direct update
+    const blockedFields =
+      user.role === ROLES.ADMIN
+        ? ["_id", "role", "tpCode", "password", "createdAt", "updatedAt"]
+        : [...PROTECTED_FIELDS, "password", "registeredOfficeEmail"];
+
+    return this.trainingPartnerRepository.update(id, omit(data, blockedFields));
   }
 
   async ApproveApplication(id, paymentAmount) {
-    try {
-      const tp = await this.trainingPartnerRepository.get(id);
-      if (!tp) {
-        throw new Error("Training Partner not found");
-      }
+    const tp = await this.getTrainingPartnerOrFail(id);
 
-
-      // ** check if the tp -> scheme is not corporate then paymentAmount should be 0
-
-      const trainingPartnerScheme = tp.scheme;
-      if (trainingPartnerScheme !== "Corporate") {
-        paymentAmount = 0;
-      }
-
-      const response =
-        await this.trainingPartnerRepository.updateStatusApproved(
-          id,
-          paymentAmount
-        );
-      console.log("Approved Response Data", response.registeredOfficeEmail);
-      sendEmail(
-        "awardingbody@cutm.ac.in",
-        response.registeredOfficeEmail,
-        "Application Approved",
-        `Your Application has been Approved by the Admin. You can now login to the portal and start your training services. Thank You and your login credentials are email`
-      );
-      return response;
-    } catch (error) {
-      throw error;
+    // ** only corporate training partners pay a per student fee
+    let fee = Number(paymentAmount) || 0;
+    if (tp.scheme !== "Corporate") {
+      fee = 0;
     }
+    if (fee < 0) {
+      throw new AppError("Payment amount cannot be negative");
+    }
+
+    const response = await this.trainingPartnerRepository.updateStatusApproved(id, fee);
+    await sendEmail(
+      SENDER_EMAIL,
+      response.registeredOfficeEmail,
+      "Application Approved",
+      "Your Application has been Approved by the Admin. You can now login to the portal with your registered office email and start your training services. Thank You"
+    );
+    return response;
   }
 
   async rejectApplication(id) {
-    try {
-      const response =
-        await this.trainingPartnerRepository.updateStatusRejected(id);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    await this.getTrainingPartnerOrFail(id);
+    return this.trainingPartnerRepository.updateStatusRejected(id);
   }
 
   async getNewOnbordedTrainingPartner() {
-    try {
-      const response =
-        await this.trainingPartnerRepository.getNewPendingRequests();
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return this.trainingPartnerRepository.getNewPendingRequests();
   }
 
   async getAllApprovedTrainingPartner() {
-    try {
-      const response =
-        await this.trainingPartnerRepository.getApprovedApplications();
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return this.trainingPartnerRepository.getApprovedApplications();
   }
 
-  // ** filter trainingPartner based on differnet query parameters
-  /**
-   *  scheme
-   *  sector []
-   *  state
-   *  course []
-   */
+  // ** filter trainingPartner based on scheme, sector, state and course
   async getTrainingPartnersAccordingTofilter(query) {
-    try {
-      const { sector, registeredOfficeState, course, scheme } = query;
-      const queryObject = {};
-      if (sector) {
-        queryObject.sector = { $in: [sector] };
-      }
-      if (registeredOfficeState) {
-        queryObject.registeredOfficeState = registeredOfficeState;
-      }
-      if (course) {
-        queryObject.courses = { $in: [course] };
-      }
-      if (scheme) {
-        queryObject.scheme = scheme;
-      }
+    const { sector, registeredOfficeState, course, scheme } = query;
+    const queryObject = {};
+    if (sector) {
+      queryObject.sector = { $in: [String(sector)] };
+    }
+    if (registeredOfficeState) {
+      queryObject.registeredOfficeState = String(registeredOfficeState);
+    }
+    if (course) {
+      queryObject.courses = { $in: [String(course)] };
+    }
+    if (scheme) {
+      queryObject.scheme = String(scheme);
+    }
+    return this.trainingPartnerRepository.filterData(queryObject);
+  }
 
-      const response = await this.trainingPartnerRepository.filterData(
-        queryObject
-      );
-      return response;
+  async updateEmail(trainingPartnerId, newEmail, user) {
+    await this.getTrainingPartnerOrFail(trainingPartnerId);
+    assertOwnerOrAdmin(trainingPartnerId, user);
+    if (!newEmail) {
+      throw new AppError("Email is required");
+    }
+    try {
+      return await this.trainingPartnerRepository.updateEmail(trainingPartnerId, String(newEmail));
     } catch (error) {
+      if (error.code === 11000) {
+        throw AppError.conflict("This email is already used by another Training Partner");
+      }
       throw error;
     }
   }
 
-  // ** update personal information of TrainingPartner sector and email
-
-  async updateEmail(trainingPartnerId, newEmail) {
-    try {
-      const tp = await this.trainingPartnerRepository.get(trainingPartnerId);
-
-      if (!tp) {
-        throw new Error("trainingPartner not found");
-      }
-
-      const response = await this.trainingPartnerRepository.updateEmail(
-        trainingPartnerId,
-        newEmail
-      );
-      return response;
-    } catch (error) {
-      throw error;
+  async updateSector(id, sectorName, user) {
+    const tp = await this.getTrainingPartnerOrFail(id);
+    assertOwnerOrAdmin(id, user);
+    if (!sectorName) {
+      throw new AppError("Sector is required");
     }
+    tp.sector.addToSet(String(sectorName));
+    return tp.save();
   }
 
-  async updateSector(id, sectorName) {
-    try {
-      const tp = await this.trainingPartnerRepository.get(id);
-      if (!tp) {
-        throw new Error("training Partner not found");
-      }
-
-      tp.sector.push(sectorName);
-      const response = await tp.save();
-      return response;
-    } catch (error) {
-      throw error;
+  async updateCourse(id, courseName, user) {
+    const tp = await this.getTrainingPartnerOrFail(id);
+    assertOwnerOrAdmin(id, user);
+    if (!courseName) {
+      throw new AppError("Course is required");
     }
-  }
-
-  async updateCourse(id, courseName) {
-    try {
-      const trainingPartner = await this.trainingPartnerRepository.get(id);
-      if (!trainingPartner) {
-        throw new Error("training partner not found");
-      }
-      trainingPartner.courses.push(courseName);
-      const response = await trainingPartner.save();
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    tp.courses.addToSet(String(courseName));
+    return tp.save();
   }
 }
 

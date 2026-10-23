@@ -1,4 +1,6 @@
 import SnaRepository from "../repository/SnaRepository.js";
+import AppError from "../utils/AppError.js";
+import { omit } from "../utils/fieldFilter.js";
 
 class SnaService {
   constructor() {
@@ -7,44 +9,34 @@ class SnaService {
 
   async create(data) {
     try {
-      const response = await this.snaRepository.create(data);
-      return response;
+      return await this.snaRepository.create(omit(data, ["_id", "role"]));
     } catch (error) {
+      if (error.code === 11000) {
+        throw AppError.conflict("SNA already exists with this email");
+      }
       throw error;
     }
   }
 
   async login(email, password, scheme) {
-    try {
-      const sna = await this.snaRepository.findByEmail(email);
-      if (!sna) {
-        throw new Error("User not found");
-      }
-      if (!sna.checkPassword(password)) {
-        throw new Error("Incorrect password");
-      }
-      if (sna.scheme !== scheme) {
-        throw new Error("unAuthorized login");
-      }
-      const token = sna.generateJwt();
-      sna.password = null;
-      const response = {
-        data: sna,
-        token: token,
-      };
-      return response;
-    } catch (error) {
-      throw error;
+    if (!email || !password) {
+      throw new AppError("Email and password are required");
     }
+    const sna = await this.snaRepository.findByEmail(email);
+    if (!sna || !sna.checkPassword(password)) {
+      throw AppError.unauthorized("Invalid email or password");
+    }
+    if (scheme && sna.scheme !== scheme) {
+      throw AppError.unauthorized("unAuthorized login for this scheme");
+    }
+    return {
+      data: sna,
+      token: sna.generateJwt(),
+    };
   }
 
   async getAllSna() {
-    try {
-      const response = await this.snaRepository.getAll();
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return this.snaRepository.getAll();
   }
 }
 

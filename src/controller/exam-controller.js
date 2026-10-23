@@ -1,265 +1,152 @@
 import { StatusCodes } from "http-status-codes";
 import ExamService from "../service/Exam-service.js";
+import CertificateService from "../service/CertificateService.js";
 import upload from "../config/s3-imageUpload-config.js";
+import asyncHandler from "../utils/asyncHandler.js";
+import runUpload from "../utils/runUpload.js";
+import { getPagination } from "../utils/pagination.js";
+
 const examService = new ExamService();
+const certificateService = new CertificateService();
 
 const fileUploader = upload.fields([
   { name: "attendanceSheet", maxCount: 1 },
   { name: "resultSheet", maxCount: 1 },
 ]);
-
 const multiplePhotoUploader = upload.array("photos", 10);
 
-const assignAnExam = async (req, res) => {
-  try {
-    const exam = await examService.createExam(
-      req.body.courseName,
-      req.body.batchId,
-      req.body.assesmentAgencyId,
-      req.body.trainingPartnerId,
-    );
-    return res.status(StatusCodes.CREATED).json({
-      success: true,
-      data: exam,
-      message: "exam scheduled sucessfully",
-    });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: error.message,
-      message: "something went wrong",
-    });
-  }
-};
+const assignAnExam = asyncHandler(async (req, res) => {
+  const exam = await examService.createExam(
+    req.body.courseName,
+    req.body.batchId,
+    req.body.assesmentAgencyId
+  );
+  return res.status(StatusCodes.CREATED).json({
+    success: true,
+    data: exam,
+    message: "exam scheduled sucessfully",
+  });
+});
 
-const getALlExams = async (req, res) => {
-  try {
-    const exams = await examService.getALlExamDetails();
-    return res.status(StatusCodes.OK).json({
-      success: true,
-      message: "data fetched sucessfully",
-      data: exams,
-    });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: error.message,
-      message: "something went wrong",
-    });
-  }
-};
+const getALlExams = asyncHandler(async (req, res) => {
+  const exams = await examService.getALlExamDetails(getPagination(req.query));
+  return res.status(StatusCodes.OK).json({
+    success: true,
+    message: "data fetched sucessfully",
+    data: exams,
+  });
+});
 
-const getALLExamsBelongsToAnAssesmentAgency = async (req, res) => {
-  try {
-    const id = req.params.id;
-    const exams = await examService.getExamsByAgencyId(id);
-    return res.status(StatusCodes.OK).json({
-      data: exams,
-      success: true,
-      message: "data fetched sucessfully",
-    });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: error.message,
-      message: "something went wrong",
-    });
-  }
-};
+const getALLExamsBelongsToAnAssesmentAgency = asyncHandler(async (req, res) => {
+  const exams = await examService.getExamsByAgencyId(req.params.id);
+  return res.status(StatusCodes.OK).json({
+    data: exams,
+    success: true,
+    message: "data fetched sucessfully",
+  });
+});
 
-const assignAssesorToExam = async (req, res) => {
-  try {
-    const examId = req.params.id;
-    const assessorId = req.body.assessorId;
-    const response = await examService.assignAssesor(examId, assessorId);
-    return res.status(StatusCodes.OK).json({
-      success: true,
-      message: "assesor assigned",
-      data: response,
-    });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: error.message,
-      message: "something went wrong",
-    });
-  }
-};
+const assignAssesorToExam = asyncHandler(async (req, res) => {
+  const response = await examService.assignAssesor(req.params.id, req.body.assessorId, req.user);
+  return res.status(StatusCodes.OK).json({
+    success: true,
+    message: "assesor assigned",
+    data: response,
+  });
+});
 
-const fetchAExamDetails = async (req, res) => {
-  try {
-    const response = await examService.getAExamDetails(req.params.id);
-    return res.status(StatusCodes.OK).json({
-      success: true,
-      data: response,
-      message: "data fetched sucessfully",
-    });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: error.message,
-      message: "something went wrong",
-    });
-  }
-};
+const fetchAExamDetails = asyncHandler(async (req, res) => {
+  const response = await examService.getAExamDetails(req.params.id);
+  return res.status(StatusCodes.OK).json({
+    success: true,
+    data: response,
+    message: "data fetched sucessfully",
+  });
+});
 
-const getAttendanceSheetForExam = async (req, res) => {
-  try {
-    const response = await examService.getAttendanceSheet(req.params.id);
-    return res.status(StatusCodes.OK).json({
-      success: true,
-      data: response,
-      message: "data fetched sucessfully",
-    });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: error.message,
-      message: "something went wrong",
-    });
-  }
-};
+const getAttendanceSheetForExam = asyncHandler(async (req, res) => {
+  const response = await examService.getAttendanceSheet(req.params.id);
+  return res.status(StatusCodes.OK).json({
+    success: true,
+    data: response,
+    message: "data fetched sucessfully",
+  });
+});
 
-async function changeExamCompleteStatus(req, res) {
-  try {
-    fileUploader(req, res, async function (err) {
-      if (err) {
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-          success: false,
-          error: err.message,
-          message: "something went wrong in uploading files",
-        });
-      }
+const changeExamCompleteStatus = asyncHandler(async (req, res) => {
+  await runUpload(fileUploader, req, res);
+  const response = await examService.updateExamStatus(
+    req.params.id,
+    req.files?.attendanceSheet?.[0]?.location,
+    req.files?.resultSheet?.[0]?.location,
+    req.user
+  );
+  return res.status(StatusCodes.OK).json({
+    success: true,
+    message: "exam status changed",
+    data: response,
+  });
+});
 
-      const examId = req.params.id;
-      const attendanceSheet = req.files?.attendanceSheet[0].location;
-      const resultSheet = req.files?.resultSheet[0].location;
+const uploadPhotos = asyncHandler(async (req, res) => {
+  await runUpload(multiplePhotoUploader, req, res);
+  const imagePayload = (req.files || []).map((item) => item.location);
+  const response = await examService.uploadMultiplePhotos(req.params.id, imagePayload, req.user);
+  return res.status(StatusCodes.OK).json({
+    success: true,
+    message: "photos uploaded",
+    data: response,
+  });
+});
 
-      const response = await examService.updateExamStatus(
-        examId,
-        attendanceSheet,
-        resultSheet
-      );
+const addAssesmentDate = asyncHandler(async (req, res) => {
+  const response = await examService.updateAssesmentDate(req.params.id, req.body.date, req.user);
+  return res.status(StatusCodes.OK).json({
+    success: true,
+    message: "date updated",
+    data: response,
+  });
+});
 
-      return res.status(StatusCodes.OK).json({
-        success: true,
-        message: "exam status changed",
-        data: response,
-      });
-    });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: error.message,
-      message: "something went wrong",
-    });
-  }
-}
+const updateExamPaymentStatus = asyncHandler(async (req, res) => {
+  const response = await examService.updatePaymentStatus(req.params.id);
+  return res.status(StatusCodes.OK).json({
+    success: true,
+    message: "payment status updated",
+    data: response,
+  });
+});
 
-const uploadPhotos = async (req, res) => {
-  try {
-    multiplePhotoUploader(req, res, async function (err) {
-      if (err) {
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-          success: false,
-          error: err.message,
-          message: "something went wrong in uploading files",
-        });
-      }
-      console.log(req.files);
-      const id = req.params.id;
-      const imagePayload = req.files?.map((item) => item.location);
-      const response = await examService.uploadMultiplePhotos(id, imagePayload);
-      return res.status(StatusCodes.OK).json({
-        success: true,
-        message: "photos uploaded",
-        data: response,
-      });
-    });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: error.message,
-      message: "something went wrong",
-    });
-  }
-};
+const updateStudentAttendanceNumber = asyncHandler(async (req, res) => {
+  const response = await examService.updateCandidateAttendanceNumber(
+    req.params.id,
+    req.body.attendanceNumber,
+    req.user
+  );
+  return res.status(StatusCodes.OK).json({
+    success: true,
+    message: "attendance number updated",
+    data: response,
+  });
+});
 
-const addAssesmentDate = async (req, res) => {
-  try {
-    const id = req.params.id;
-    const date = req.body.date;
-    const response = await examService.updateAssesmentDate(id, date);
-    return res.status(StatusCodes.OK).json({
-      success: true,
-      message: "date updated",
-      data: response,
-    });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: error.message,
-      message: "something went wrong",
-    });
-  }
-};
+// ** certificates are generated in the background (bullmq), poll the status endpoint for progress
+const publishCertificate = asyncHandler(async (req, res) => {
+  const response = await examService.publishCeritificates(req.params.id);
+  return res.status(StatusCodes.ACCEPTED).json({
+    success: true,
+    data: response,
+    message: "Certificate generation started",
+  });
+});
 
-const updateExamPaymentStatus = async (req, res) => {
-  try {
-    const examId = req.params.id;
-    console.log(examId);
-    const response = await examService.updatePaymentStatus(examId);
-    return res.status(StatusCodes.OK).json({
-      success: true,
-      message: "payment status updated",
-      data: response,
-    });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: error.message,
-      message: "something went wrong",
-    });
-  }
-};
-
-const updateStudentAttendanceNumber = async (req, res) => {
-  try {
-    const response = await examService.updateCandidateAttendanceNumber(
-      req.params.id,
-      req.body.attendanceNumber
-    );
-    return res.status(StatusCodes.OK).json({
-      success: true,
-      message: "attendance number updated",
-      data: response,
-    });
-  } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: error.message,
-      message: "something went wrong",
-    });
-  }
-};
-
-const publishCertificate = async (req, res) => {
-  try {
-    const examId = req.params.id;
-    const response = await examService.publishCeritificates(examId);
-    return res.status(StatusCodes.OK).json({
-      message: "Certificate Issued sucessfully",
-    });
-  } catch (error) {
-    return (
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).
-      json({
-        success: false,
-        message:error.message
-      })
-    );
-  }
-};
+const getCertificatePublishStatus = asyncHandler(async (req, res) => {
+  const response = await certificateService.getPublishStatus(req.params.id);
+  return res.status(StatusCodes.OK).json({
+    success: true,
+    data: response,
+  });
+});
 
 export {
   assignAnExam,
@@ -273,5 +160,6 @@ export {
   updateExamPaymentStatus,
   addAssesmentDate,
   updateStudentAttendanceNumber,
-  publishCertificate
+  publishCertificate,
+  getCertificatePublishStatus,
 };

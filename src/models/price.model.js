@@ -11,5 +11,5 @@ const priceSchema = new mongoose.Schema({
   },
 });
 
-const Price = new mongoose.model("Price", priceSchema);
+const Price = mongoose.model("Price", priceSchema);
 export default Price;

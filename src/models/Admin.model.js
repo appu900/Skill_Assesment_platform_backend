@@ -1,12 +1,14 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import serverConfig from "../config/serverConfig.js";
+import hidePassword from "./plugins/hidePassword.js";
 
 const adminSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, "Email is required"],
+      required: [true, "Name is required"],
     },
     email: {
       type: String,
@@ -28,17 +30,19 @@ const adminSchema = new mongoose.Schema(
   }
 );
 
-// ** hash the password before saving the admin document to db
+adminSchema.plugin(hidePassword);
+
+// ** hash the password only when it is set or changed, re-hashing a hash locks the admin out
 adminSchema.pre("save", function (next) {
-  const admin = this;
-  const SALT = bcrypt.genSaltSync(10);
-  const hashedPassword = bcrypt.hashSync(admin.password, SALT);
-  admin.password = hashedPassword;
+  if (this.isModified("password")) {
+    const SALT = bcrypt.genSaltSync(10);
+    this.password = bcrypt.hashSync(this.password, SALT);
+  }
   next();
 });
 
 adminSchema.methods.comparePassword = function compare(inputPassword) {
-  return bcrypt.compareSync(inputPassword, this.password);
+  return bcrypt.compareSync(String(inputPassword), this.password);
 };
 
 adminSchema.methods.generateJwt = function generate() {
@@ -47,8 +51,8 @@ adminSchema.methods.generateJwt = function generate() {
       id: this._id,
       role: this.role,
     },
-    "this is a secrete a key",
-    { expiresIn: "1d" }
+    serverConfig.JWT_SECRET,
+    { expiresIn: serverConfig.JWT_EXPIRES_IN }
   );
 };
 

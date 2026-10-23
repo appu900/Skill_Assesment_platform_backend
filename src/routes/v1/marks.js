@@ -1,11 +1,15 @@
 import express from "express";
-import { createMark, getBatchMarkData, getIndividualStudentMarks, getStudentMarksByBatchId } from "../../controller/marks-upload-controller.js";
+import { allow, ROLES } from "../../middleware/auth.js";
+import {
+  createMark,
+  getBatchMarkData,
+  getIndividualStudentMarks,
+} from "../../controller/marks-upload-controller.js";
 
 const router = express.Router();
 
-router.post("/upload", createMark);
-router.get("/student/:id", getIndividualStudentMarks);
-// router.get("/batch/:id", getStudentMarksByBatchId);
-router.get("/batch/:id",getBatchMarkData)
+router.post("/upload", allow(ROLES.ASSESMENT_AGENCY, ROLES.ADMIN), createMark);
+router.get("/student/:id", allow(), getIndividualStudentMarks);
+router.get("/batch/:id", allow(), getBatchMarkData);
 
 export default router;

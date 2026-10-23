@@ -1,21 +1,18 @@
 import Admin from "../models/Admin.model.js";
 import CrudRepository from "./crud.repository.js";
 
-
 class AdminRepository extends CrudRepository {
   constructor() {
     super(Admin);
   }
 
   async findByEmail(email) {
-    try {
-      const res = await Admin.findOne({ email });
-      return res;
-    } catch (error) {
-      throw error;
-    }
+    return Admin.findOne({ email: String(email) });
+  }
+
+  async count() {
+    return Admin.countDocuments();
   }
 }
 
 export default AdminRepository;
-

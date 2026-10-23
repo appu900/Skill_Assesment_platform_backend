@@ -6,21 +6,11 @@ class NotificationService {
   }
 
   async createNotification(data) {
-    try {
-      const response = await this.notificationRepository.create(data);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return this.notificationRepository.create(data);
   }
 
-  async getAllNotifications(){
-    try {
-      const response = await this.notificationRepository.getAll();
-      return response;
-    } catch (error) {
-      throw error;
-    }
+  async getAllNotifications() {
+    return this.notificationRepository.getAll();
   }
 }
 

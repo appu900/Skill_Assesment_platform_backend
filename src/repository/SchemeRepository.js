@@ -7,21 +7,11 @@ class SchemeRepository extends CrudRepository {
   }
 
   async findBySchemeType(schemeType) {
-    try {
-      const response = await Scheme.find({ schemeType: schemeType });
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return Scheme.find({ schemeType: String(schemeType) });
   }
 
   async findBySchemeName(schemeName) {
-    try {
-      const response = await Scheme.findOne({ name: schemeName });
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return Scheme.findOne({ name: String(schemeName) });
   }
 }
 

@@ -1,311 +1,212 @@
-import { createChannel, publishMessage } from "../config/messageQueue.js";
 import AssesmentAgencyRepository from "../repository/AssesmentAgency-repository.js";
+import AssessorRepository from "../repository/Assessor-Repository.js";
 import BatchRepository from "../repository/Batch-repository.js";
 import ExamRepository from "../repository/Exam-repository.js";
-import TrainingPartnerRepository from "../repository/TrainingPartner-Repository.js";
-import StudentRepository from "../repository/student-repository.js";
-import CerificateRepository from "../repository/CertificateRepo.js";
-import SchemeRepository from "../repository/SchemeRepository.js";
+import MarkRepository from "../repository/Mark-repository.js";
+import { certificateQueue, JOB_NAMES } from "../queues/index.js";
+import AppError from "../utils/AppError.js";
+import { assertOwnerOrAdmin, isSameId } from "../utils/ownership.js";
 
 class ExamService {
   constructor() {
     this.examRepository = new ExamRepository();
     this.batchRepository = new BatchRepository();
     this.assesmentAgencyRepository = new AssesmentAgencyRepository();
-    this.trainingPartnerRepository = new TrainingPartnerRepository();
-    this.studentRepository = new StudentRepository();
-    this.certificateRepository = new CerificateRepository();
-    this.schemeRepository = new SchemeRepository();
+    this.assessorRepository = new AssessorRepository();
+    this.markRepository = new MarkRepository();
   }
 
-  async createExam(courseName, batchId, assesmentAgencyId, trainingPartnerId) {
-    try {
-      const batch = await this.batchRepository.get(batchId);
-
-      if (!batch) {
-        throw new Error("batch not found");
-      }
-
-      if (batch.isAssigned) {
-        throw new Error("batch is already assigned to an exam");
-      }
-
-      const trainingPartner = await this.trainingPartnerRepository.get(
-        trainingPartnerId
-      );
-
-      if (!trainingPartner) {
-        throw new Error("training partner not found");
-      }
-
-      const assesmentAgency = await this.assesmentAgencyRepository.get(
-        assesmentAgencyId
-      );
-
-      if (!assesmentAgency) {
-        throw new Error("assesment agency not found");
-      }
-
-      const payload = {
-        course: courseName,
-        sector: batch.sectorName,
-        state: batch.state,
-        scheme: batch.scheme,
-        CenterName: batch.CenterName,
-        courseCode: batch.courseCode,
-        CenterCode: batch.CenterCode,
-        batchId: batch._id,
-        assesmentAgencyId: assesmentAgency._id,
-        assesmentAgency: assesmentAgency.agencyName,
-        TrainingOrganization: trainingPartner.organizationName,
-        TrainingPartnerId: trainingPartner._id,
-        batchABN: batch.ABN_Number,
-        batchPaymentAmount: batch.amountToPaid,
-        totalStudents: batch.students.length,
-        perStudentCost: batch.perStudentCost,
-        courseCredit: batch.courseCredit,
-        courseLevel: batch.courseLevel,
-      };
-
-      batch.isAssigned = true;
-      await batch.save();
-
-      const response = await this.examRepository.create(payload);
-      return response;
-    } catch (error) {
-      throw error;
+  async getExamOrFail(examId) {
+    const exam = await this.examRepository.get(examId);
+    if (!exam) {
+      throw AppError.notFound("exam not found");
     }
+    return exam;
   }
 
-  async getALlExamDetails() {
-    try {
-      const exams = await this.examRepository.getAllExam();
-      return exams;
-    } catch (error) {
-      throw error;
+  // ** exam assigned to the logged in assesment agency (admin can access every exam)
+  async getOwnedExam(examId, user) {
+    const exam = await this.getExamOrFail(examId);
+    assertOwnerOrAdmin(exam.assesmentAgencyId, user, "This exam is not assigned to you");
+    return exam;
+  }
+
+  // ** admin assigns a paid batch to an approved assesment agency
+  async createExam(courseName, batchId, assesmentAgencyId) {
+    const batch = await this.batchRepository.get(batchId);
+    if (!batch) {
+      throw AppError.notFound("batch not found");
     }
+    if (batch.isAssigned) {
+      throw AppError.conflict("batch is already assigned to an exam");
+    }
+    if (!batch.batchActivePermission || !batch.paymentStatus) {
+      throw new AppError("batch must be submitted and paid before an exam is assigned");
+    }
+
+    const assesmentAgency = await this.assesmentAgencyRepository.get(assesmentAgencyId);
+    if (!assesmentAgency) {
+      throw AppError.notFound("assesment agency not found");
+    }
+    if (assesmentAgency.applicationStatus !== "Approved") {
+      throw new AppError("assesment agency is not approved");
+    }
+
+    const payload = {
+      course: courseName || batch.courseName,
+      sector: batch.sectorName,
+      state: batch.state,
+      scheme: batch.scheme,
+      CenterName: batch.centerName,
+      courseCode: batch.courseCode,
+      CenterCode: batch.CenterCode,
+      tpcode: batch.tpcode,
+      batchId: batch._id,
+      assesmentAgencyId: assesmentAgency._id,
+      assesmentAgency: assesmentAgency.agencyName,
+      // ** training partner always comes from the batch, never from the request
+      TrainingOrganization: batch.trainingOrganization,
+      TrainingPartnerId: batch.trainingOrganizationId,
+      batchABN: batch.ABN_Number,
+      batchPaymentAmount: batch.amountToPaid,
+      totalStudents: batch.students.length,
+      perStudentCost: batch.perStudentCost,
+      courseCredit: batch.courseCredit,
+      courseLevel: batch.courseLevel,
+    };
+
+    const response = await this.examRepository.create(payload);
+    batch.isAssigned = true;
+    await batch.save();
+    return response;
+  }
+
+  async getALlExamDetails(pagination) {
+    return this.examRepository.getAllExam(pagination);
   }
 
   async getExamsByAgencyId(testAgencyId) {
-    try {
-      const exams = await this.examRepository.findAllExamsByTestAgencyId(
-        testAgencyId
-      );
-      return exams;
-    } catch (error) {
-      throw error;
-    }
+    return this.examRepository.findAllExamsByTestAgencyId(testAgencyId);
   }
 
-  async assignAssesor(examId, assesorId) {
-    try {
-      const exam = await this.examRepository.addAssessorToExam(
-        examId,
-        assesorId
-      );
-      const batch = await this.batchRepository.get(exam.batchId);
-      batch.assessorId = assesorId;
-      await batch.save();
-      return true;
-    } catch (error) {
-      throw error;
+  async assignAssesor(examId, assesorId, user) {
+    const exam = await this.getOwnedExam(examId, user);
+    const assessor = await this.assessorRepository.get(assesorId);
+    if (!assessor) {
+      throw AppError.notFound("assessor not found");
     }
+    if (!isSameId(assessor.AssesmentAgency, exam.assesmentAgencyId)) {
+      throw new AppError("assessor does not belong to the assesment agency of this exam");
+    }
+
+    await this.examRepository.addAssessorToExam(examId, assesorId);
+    const batch = await this.batchRepository.get(exam.batchId);
+    if (batch) {
+      batch.assessorId = assessor._id;
+      batch.assessorName = assessor.name;
+      await batch.save();
+    }
+    return true;
   }
 
   async getAExamDetails(examId) {
-    try {
-      const exam = await this.examRepository.getAExam(examId);
-      return exam;
-    } catch (error) {
-      throw error;
-    }
+    return this.examRepository.getAExam(examId);
   }
 
   async getAttendanceSheet(examId) {
-    try {
-      const exam = await this.examRepository.getAExam(examId);
-      return exam;
-    } catch (error) {
-      throw error;
-    }
+    return this.examRepository.getAExam(examId);
   }
 
-  async updateExamStatus(examId, attendanceSheetUrl, resultSheetUrl) {
-    try {
-      const exam = await this.examRepository.get(examId);
-      exam.markUploadAndExamCompleteStatus = true;
-      exam.attendanceSheet = attendanceSheetUrl;
-      exam.resultSheet = resultSheetUrl;
-      await exam.save();
-      return exam;
-    } catch (error) {
-      throw error;
+  async updateExamStatus(examId, attendanceSheetUrl, resultSheetUrl, user) {
+    const exam = await this.getOwnedExam(examId, user);
+    if (!attendanceSheetUrl || !resultSheetUrl) {
+      throw new AppError("attendanceSheet and resultSheet are required");
     }
+    exam.markUploadAndExamCompleteStatus = true;
+    exam.status = "completed";
+    exam.attendanceSheet = attendanceSheetUrl;
+    exam.resultSheet = resultSheetUrl;
+    await exam.save();
+    return exam;
   }
 
-  async uploadMultiplePhotos(examId, imagePayload) {
-    try {
-      const exam = await this.examRepository.get(examId);
-      exam.images = imagePayload;
-      await exam.save();
-      return exam.images;
-    } catch (error) {
-      throw error;
+  async uploadMultiplePhotos(examId, imagePayload, user) {
+    const exam = await this.getOwnedExam(examId, user);
+    if (!imagePayload || imagePayload.length === 0) {
+      throw new AppError("at least one photo is required");
     }
+    exam.images = imagePayload;
+    await exam.save();
+    return exam.images;
   }
 
   async updatePaymentStatus(examId) {
-    try {
-      console.log("examId", examId);
-      const response = await this.examRepository.updatePaymentStatus(examId);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    await this.getExamOrFail(examId);
+    return this.examRepository.updatePaymentStatus(examId);
   }
 
-  async updateAssesmentDate(examId, date) {
-    try {
-      const dateString = date.toString();
-      const response = await this.examRepository.updateExamDate(
-        examId,
-        dateString
-      );
-      return response;
-    } catch (error) {
-      throw error;
+  async updateAssesmentDate(examId, date, user) {
+    await this.getOwnedExam(examId, user);
+    if (!date) {
+      throw new AppError("date is required");
     }
+    return this.examRepository.updateExamDate(examId, date);
   }
 
-  async updateCandidateAttendanceNumber(examId, attendanceNumber) {
-    try {
-      const response = await this.examRepository.updateStudentAttendance(
-        examId,
-        attendanceNumber
-      );
-      return response;
-    } catch (error) {
-      throw error;
+  async updateCandidateAttendanceNumber(examId, attendanceNumber, user) {
+    const exam = await this.getOwnedExam(examId, user);
+    const present = Number(attendanceNumber);
+    if (!Number.isInteger(present) || present < 0 || present > (exam.totalStudents || 0)) {
+      throw new AppError(`attendance must be a number between 0 and ${exam.totalStudents || 0}`);
     }
+    exam.presentStudents = present;
+    exam.totalNoOfStudentAbsent = (exam.totalStudents || 0) - present;
+    await exam.save();
+    return true;
   }
 
+  // ** validates the exam and queues certificate generation, the certificate worker does the rest
   async publishCeritificates(examId) {
+    const exam = await this.getExamOrFail(examId);
+
+    if (exam.certificateIssued) {
+      throw AppError.conflict("Certificate for this exam Already published");
+    }
+    if (["queued", "processing"].includes(exam.certificateStatus)) {
+      throw AppError.conflict("Certificates for this exam are already being generated");
+    }
+    const marksCount = await this.markRepository.countByExam(examId);
+    if (marksCount === 0) {
+      throw new AppError("marks are not uploaded for this exam");
+    }
+
+    // ** atomic guard: only one publish request can move the exam into "queued"
+    const locked = await this.examRepository.model.findOneAndUpdate(
+      {
+        _id: examId,
+        certificateIssued: false,
+        certificateStatus: { $nin: ["queued", "processing"] },
+      },
+      { certificateStatus: "queued", certificateError: null },
+      { new: true }
+    );
+    if (!locked) {
+      throw AppError.conflict("Certificates for this exam are already being generated");
+    }
+
     try {
-      const exam = await this.examRepository.get(examId);
-
-      if (!exam) {
-        throw new Error("exam does not exits");
-      }
-      // const channel = await createChannel();
-
-      if (exam.certificateIssued) {
-        throw new Error("Certificate for this exam Already published");
-      }
-
-      const batch = await this.batchRepository.get(exam.batchId);
-      console.log(batch);
-      if (!batch) {
-        throw new Error(
-          "batch not found contact your bacekd developer something went wrong"
-        );
-      }
-      const scheme = await this.schemeRepository.findBySchemeName(batch.scheme);
-      const studentsData = batch.students;
-      studentsData.map(async (std) => {
-        // ** to be implemented in message queue infuture DATA.
-
-        // const payload = {
-        //   data: {
-        //     studentId: student,
-        //     batchId: exam.batchId,
-        //     examId: examId,
-        //     courseName:exam.course,
-        //     courseCredit:batch.courseCredit,
-        //     courseLevel:batch.courseLevel,
-        //     TrainingCenter: batch.centerName,
-        //     duration:batch.courseDuration
-        //   },
-        //   service: "CREATE_CERTIFICATE",
-        // };
-
-        // ** SEND MESSAGES TO QUEUE.
-        // await publishMessage(
-        //   channel,
-        //   "CREATE_CERTIFICATE",
-        //   JSON.stringify(payload)
-        // );
-
-        // ** LOGIC FOR IF SAME SERVER WILL BE USED FOR GENERATING CERTIFICATE.
-
-        const data = {
-          studentId: std,
-          batchId: exam.batchId,
-          examId: examId,
-          courseName: exam.course,
-          courseCredit: batch.courseCredit,
-          courseLevel: batch.courseLevel,
-          TrainingCenter: batch.centerName,
-          duration: batch.courseDuration,
-        };
-
-        // ** fetch students Data
-
-        const student = await this.studentRepository.get(data.studentId);
-        console.log("StuddentData", student);
-        const certificatePayload = {
-          studentName: student.name,
-          stutentProfilePic: student.profilepic,
-          studentId: student._id,
-          batchId: data.batchId,
-          fatherName: student.fathername,
-          DOB: student.dob,
-          Enrolment_number: student.MPR_Id,
-          qualification: data.courseName,
-          duration: data.duration,
-          credit: data.courseCredit,
-          level: data.courseLevel,
-          TrainingCenter: data.TrainingCenter,
-          District: student.district,
-          state: student.state,
-          grade: student.Grade,
-          placeOfIssue: "Bhubaneswar",
-          DateOfIssue: new Date(),
-          schemeLogo: scheme.logo,
-          studentRedgNo:student.redg_No,
-          schemeType:batch.schemeType
-        };
-
-        if (student.absent === false) {
-
-          // ** publish certificate 
-          const certificate = await this.certificateRepository.create(
-            certificatePayload
-          );
-
-          // ** add dateOfIssue to student
-          const dateOfIssueResponse = await this.studentRepository.addDateOfIssueMarksheet(student._id);
-          console.log(certificate);
-        }
+      const job = await certificateQueue.add(JOB_NAMES.PUBLISH_EXAM_CERTIFICATES, {
+        examId: String(examId),
       });
-
-      // ** update exam status to completed
-      exam.certificateIssued = true;
-      batch.batchCompletedStatus = true;
-      batch.certificateIssued = true;
-      batch.status = "Completed";
-      await exam.save();
-      await batch.save();
-      return true;
+      return { jobId: job.id, status: "queued" };
     } catch (error) {
-      throw error;
+      await this.examRepository.update(examId, {
+        certificateStatus: "failed",
+        certificateError: "could not queue the job",
+      });
+      throw new AppError("Certificate queue is not available, please try again later", 503);
     }
   }
 }
 
 export default ExamService;
-
-
-
-
-
-

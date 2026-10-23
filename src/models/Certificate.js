@@ -76,13 +76,27 @@ const certificateSchema = new mongoose.Schema({
   studentRedgNo:{
     type:String
   },
-  schemeType:{
-    type:String
-  }
-
+  schemeType: {
+    type: String,
+  },
+  examId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Exam",
+  },
+},
+{
+  timestamps: true,
 });
 
-certificateSchema.pre("save", async function (next) {
+certificateSchema.index({ batchId: 1 });
+certificateSchema.index({ studentId: 1 });
+certificateSchema.index({ Enrolment_number: 1 });
+
+certificateSchema.pre("save", async function () {
+  // ** generate the code only once, re-generating on every save changes issued certificate numbers
+  if (!this.isNew) {
+    return;
+  }
   const date = new Date();
   const year = date.getFullYear();
   const month = date.getMonth() + 1;
@@ -96,10 +110,9 @@ certificateSchema.pre("save", async function (next) {
   );
 
   this.certificateCode = `CUTM${year}${month}${seq.counter}`;
-  next();
 });
 
-const StudentCertificate = new mongoose.model(
+const StudentCertificate = mongoose.model(
   "StudentCertificate",
   certificateSchema
 );

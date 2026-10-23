@@ -1,17 +1,20 @@
-import express from 'express';
-import verifyIsTrainingPartner from '../../middleware/verifyTrainingPartner.js';
-import { createCenter, getAllCenterBySchemeNameAndState, getAllCentersOfTrainingPartner, getCenterDetails, updateCenterData } from '../../controller/CenterController.js';
+import express from "express";
+import { allow, ROLES } from "../../middleware/auth.js";
+import {
+  createCenter,
+  getAllCenterBySchemeNameAndState,
+  getAllCentersOfTrainingPartner,
+  getCenterDetails,
+  updateCenterData,
+} from "../../controller/CenterController.js";
 
 const router = express.Router();
+const { ADMIN, TRAINING_PARTNER } = ROLES;
 
-router.post("/",verifyIsTrainingPartner,createCenter);
-router.get("/tp/:id",getAllCentersOfTrainingPartner)
-router.put("/update/:id",verifyIsTrainingPartner,updateCenterData)
-router.get("/sna/query",getAllCenterBySchemeNameAndState)
-router.get("/:centerId",getCenterDetails)
+router.post("/", allow(TRAINING_PARTNER), createCenter);
+router.put("/update/:id", allow(TRAINING_PARTNER, ADMIN), updateCenterData);
+router.get("/tp/:id", allow(), getAllCentersOfTrainingPartner);
+router.get("/sna/query", allow(), getAllCenterBySchemeNameAndState);
+router.get("/:centerId", allow(), getCenterDetails);
 
 export default router;
-
-
-
-

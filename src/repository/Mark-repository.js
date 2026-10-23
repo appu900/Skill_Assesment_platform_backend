@@ -7,35 +7,24 @@ class MarkRepository extends CrudRepository {
   }
 
   async getMarkByStudentId(studentId) {
-    try {
-      const response = await Mark.findOne({ studentId: studentId });
-      console.log(response);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return Mark.findOne({ studentId: studentId });
+  }
+
+  async getMarkByExamAndStudent(examId, studentId) {
+    return Mark.findOne({ examId, studentId });
   }
 
   async getStudentMarksByBatchId(batchId) {
-    try {
-      const response = await Mark.find({ batchId: batchId });
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return Mark.find({ batchId: batchId });
   }
 
   async getAllMarksByExam(examId) {
-    try {
-      const response = await Mark.find({ examId: examId });
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return Mark.find({ examId: examId });
+  }
+
+  async countByExam(examId) {
+    return Mark.countDocuments({ examId });
   }
 }
 
 export default MarkRepository;
-
-
-

@@ -1,6 +1,6 @@
 import CrudRepository from "./crud.repository.js";
 import Trainer from "../models/Trainer.model.js";
-import mongoose from "mongoose";
+import AppError from "../utils/AppError.js";
 
 class TrainerRepository extends CrudRepository {
   constructor() {
@@ -8,29 +8,15 @@ class TrainerRepository extends CrudRepository {
   }
 
   async createTrainner(data) {
-    try {
-      const trainer = await Trainer.findOne({ email: data.email });
-      if (trainer) {
-        throw new Error("Trainer already exists");
-      }
-      else{
-        const response = await Trainer.create(data);
-        return response;
-      }
-    } catch (error) {
-      throw error;
+    const trainer = await Trainer.findOne({ email: String(data.email) });
+    if (trainer) {
+      throw AppError.conflict("Trainer already exists");
     }
+    return Trainer.create(data);
   }
 
   async fetchTrainersOfTrainingPartner(trainingPartnerId) {
-    try {
-      const response = await Trainer.find({
-        trainingPartner: trainingPartnerId,
-      });
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return Trainer.find({ trainingPartner: trainingPartnerId });
   }
 }
 

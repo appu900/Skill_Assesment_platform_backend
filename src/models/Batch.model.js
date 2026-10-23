@@ -208,13 +208,16 @@ batchSchema.pre("save", async function (next) {
       this.ABN_Number = `${stateInitial}${tpcode}${courseInitial}${sequence.seq}`;
       next();
     } catch (error) {
-      console.log(error.message);
-      next(error);
+        next(error);
     }
   } else {
     next();
   }
 });
+
+batchSchema.index({ trainingOrganizationId: 1 });
+batchSchema.index({ scheme: 1, state: 1 });
+batchSchema.index({ ABN_Number: 1 });
 
 const Batch = mongoose.model("Batch", batchSchema);
 

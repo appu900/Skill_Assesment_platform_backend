@@ -1,65 +1,44 @@
+import mongoose from "mongoose";
 import app from "./app.js";
+import serverConfig from "./config/serverConfig.js";
 import makeDatabaseConnection from "./config/database.conection.js";
-import os from "os";
-import cluster from "cluster";
-import "dotenv/config";
+import startWorkers from "./workers/index.js";
+import { closeQueues } from "./queues/index.js";
+import logger from "./utils/logger.js";
 
-const port = process.env.PORT || 5000;
+// ** never let one bad promise take the whole api down silently
+process.on("unhandledRejection", (reason) => {
+  logger.error("unhandled promise rejection", reason);
+});
 
-import MarkService from "./service/Mark-Service.js";
-const service = new MarkService();
-
-// ** clusteting for multi-core cpu
-
-// const totalCpus = os.cpus().length;
-// const workerToSubtract = 2;
-// const numWorkers = Math.max(totalCpus - workerToSubtract, 1);
-
-// if (cluster.isPrimary) {
-//   console.log(`Primary ${process.pid} is running`);
-//   for (let i = 0; i < numWorkers; i++) {
-//     cluster.fork();
-//   }
-
-//   cluster.on("exit", (worker, code, signal) => {
-//     console.log(
-//       `Worker ${worker.process.pid} died with code: ${code} and signal: ${signal}`
-//     );
-//     // Optionally restart the worker
-//     cluster.fork();
-//   });
-// } else {
-//   const startServer = async () => {
-//     try {
-//       await makeDatabaseConnection();
-//       app.listen(port, async () => {
-//         console.log(`Server is running on port ${port}`);
-//       });
-//     } catch (error) {
-//       console.log(error);
-//     }
-//   };
-//   startServer();
-// }
-
-// process.on('SIGTERM', () => {
-//   console.info('SIGTERM signal received.');
-//   console.log('Closing http server.');
-//   server.close(() => {
-//     console.log('Http server closed.');
-//     process.exit(0);
-//   });
-// });
-// ** function to start server
 const startServer = async () => {
-  try {
-    await makeDatabaseConnection();
-    app.listen(port, async () => {
-      console.log(`Server is running on port ${port}`);
+  await makeDatabaseConnection();
+
+  const stopWorkers = serverConfig.RUN_WORKERS_IN_PROCESS ? startWorkers() : null;
+
+  const server = app.listen(serverConfig.PORT, () => {
+    logger.info(`Server is running on port ${serverConfig.PORT}`);
+  });
+
+  const shutdown = (signal) => {
+    logger.info(`${signal} received, closing http server`);
+    server.close(async () => {
+      if (stopWorkers) {
+        await stopWorkers();
+      }
+      await closeQueues();
+      await mongoose.connection.close();
+      process.exit(0);
     });
-  } catch (error) {
-    console.log(error);
-  }
+    // ** force exit if connections do not close in time
+    setTimeout(() => process.exit(1), 15000).unref();
+  };
+
+  process.on("SIGTERM", () => shutdown("SIGTERM"));
+  process.on("SIGINT", () => shutdown("SIGINT"));
 };
 
-startServer();
+startServer().catch((error) => {
+  logger.error("server failed to start", error);
+  process.exit(1);
+});

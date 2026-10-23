@@ -1,100 +1,53 @@
 import { StatusCodes } from "http-status-codes";
+import vine from "@vinejs/vine";
 import AdminService from "../service/Admin-service.js";
 import NotificationService from "../service/NotificationService.js";
 import { adminAuthSchema } from "../validator/AdminAuthValidator.js";
-import vine, { errors } from "@vinejs/vine";
+import upload from "../config/s3-imageUpload-config.js";
+import asyncHandler from "../utils/asyncHandler.js";
+import runUpload from "../utils/runUpload.js";
+
 const adminService = new AdminService();
 const notificationService = new NotificationService();
-import upload from "../config/s3-imageUpload-config.js";
-
 const singleFileUploader = upload.single("pdf");
+const adminValidator = vine.compile(adminAuthSchema);
 
 class AdminController {
-  static async createNewAdmin(req, res) {
-    try {
-      //** validate the request data */
-      const validator = vine.compile(adminAuthSchema);
-      const payload = await validator.validate(req.body);
-      const response = await adminService.createAdmin(payload);
-      return res.status(201).json({
-        sucess: true,
-        data: response,
-      });
-    } catch (error) {
-      if (error instanceof errors.E_VALIDATION_ERROR) {
-        return res.status(400).json({
-          error: error.messages,
-        });
-      }
-      return res.status(500).json({
-        sucess: false,
-        data: {},
-        error: error.message,
-      });
-    }
-  }
+  static createNewAdmin = asyncHandler(async (req, res) => {
+    const payload = await adminValidator.validate(req.body);
+    const response = await adminService.createAdmin(payload, req.user);
+    return res.status(StatusCodes.CREATED).json({
+      success: true,
+      data: response,
+    });
+  });
 
-  static async login(req, res) {
-    try {
-      const response = await adminService.login(req.body);
-      return res.status(200).json({
-        success: true,
-        data: response,
-      });
-    } catch (error) {
-      return res.status(500).json({
-        sucess: false,
-        data: {},
-        error: error.message,
-      });
-    }
-  }
+  static login = asyncHandler(async (req, res) => {
+    const response = await adminService.login(req.body);
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      data: response,
+    });
+  });
 
-  static async createNewNotification(req, res) {
-    singleFileUploader(req, res, async (err) => {
-      if (err) {
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-          success: false,
-          error: err.message,
-          message: "Something went Wrong",
-        });
-      }
-    
-    try {
-      let payload = req.body;
-      const imageUrl = req.file?.location;
-      payload.pdf = imageUrl;
-      const result = await notificationService.createNotification(payload);
-      return res.status(StatusCodes.CREATED).json({
-        ok: true,
-        message: "Notification created Sucessfully",
-        data: result,
-      });
-    } catch (error) {
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        success: false,
-        message: "SomethinG Went Wrong in Creating Notification",
-        error: error.message,
-      });
-    }
-    })
-  }
+  static createNewNotification = asyncHandler(async (req, res) => {
+    await runUpload(singleFileUploader, req, res);
+    const payload = { ...req.body, pdf: req.file?.location };
+    const result = await notificationService.createNotification(payload);
+    return res.status(StatusCodes.CREATED).json({
+      success: true,
+      message: "Notification created Sucessfully",
+      data: result,
+    });
+  });
 
-  static async getAllNotifications(req, res) {
-    try {
-      const response = await notificationService.getAllNotifications();
-      return res.status(StatusCodes.OK).json({
-        ok: true,
-        data: response,
-      });
-    } catch (error) {
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        ok: false,
-        error: error.message,
-      });
-    }
-  }
+  static getAllNotifications = asyncHandler(async (req, res) => {
+    const response = await notificationService.getAllNotifications();
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      data: response,
+    });
+  });
 }
 
 export default AdminController;
-

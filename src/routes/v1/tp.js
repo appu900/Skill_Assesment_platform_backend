@@ -1,38 +1,31 @@
 import express from "express";
 import TrainingPartnerController from "../../controller/TrainingPartner-controller.js";
-import verifyIsAdmin from "../../middleware/verifyAdmin.js";
-import verifyIsTrainingPartner from "../../middleware/verifyTrainingPartner.js";
+import { allow, ROLES } from "../../middleware/auth.js";
+import { loginLimiter } from "../../middleware/rateLimiter.js";
+
 const router = express.Router();
+const { ADMIN, TRAINING_PARTNER } = ROLES;
 
-
-// ** TP
+// ** public
 router.post("/", TrainingPartnerController.onBoardTrainingPartner);
-router.post("/login", TrainingPartnerController.login);
+router.post("/login", loginLimiter, TrainingPartnerController.login);
 
-router.put("/info/email/:id", TrainingPartnerController.updateEmail);
-router.put("/sectors/:id", TrainingPartnerController.updateSector);
-router.put("/courses/:id", TrainingPartnerController.updateCourses);
+// ** training partner (own record) or admin
+router.put("/info/email/:id", allow(ADMIN, TRAINING_PARTNER), TrainingPartnerController.updateEmail);
+router.put("/sectors/:id", allow(ADMIN, TRAINING_PARTNER), TrainingPartnerController.updateSector);
+router.put("/courses/:id", allow(ADMIN, TRAINING_PARTNER), TrainingPartnerController.updateCourses);
 
-router.get("/:id", TrainingPartnerController.getTrainingPartnerById);
-router.get("/", TrainingPartnerController.getAllData);
+// ** any logged in user
+router.get("/all/query", allow(), TrainingPartnerController.filterTrainingPartnerData);
+router.get("/status/pending", allow(), TrainingPartnerController.getNewTrainingPartnerApplications);
+router.get("/status/approved", allow(), TrainingPartnerController.getApprovedTrainingPartnerData);
+router.get("/:id", allow(), TrainingPartnerController.getTrainingPartnerById);
+router.get("/", allow(), TrainingPartnerController.getAllData);
 
-router.get("/all/query", TrainingPartnerController.filterTrainingPartnerData);
+// ** admin only
+router.put("/approve/:id", allow(ADMIN), TrainingPartnerController.updateStatusToApproved);
+router.put("/reject/:id", allow(ADMIN), TrainingPartnerController.updateStatusToRejected);
 
-router.get(
-  "/status/pending",
-  TrainingPartnerController.getNewTrainingPartnerApplications
-);
-router.get(
-  "/status/approved",
-  TrainingPartnerController.getApprovedTrainingPartnerData
-);
-
-router.put("/:id", TrainingPartnerController.updateTrainingPartnerStatus);
-router.put(
-  "/approve/:id",
-  verifyIsAdmin,
-  TrainingPartnerController.updateStatusToApproved
-);
-router.put("/reject/:id", TrainingPartnerController.updateStatusToRejected);
+router.put("/:id", allow(ADMIN, TRAINING_PARTNER), TrainingPartnerController.updateTrainingPartnerStatus);
 
 export default router;

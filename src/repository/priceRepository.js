@@ -7,12 +7,7 @@ class PriceRepository extends CrudRepository {
   }
 
   async getByScheme(scheme) {
-    try {
-      const response = await Price.findOne({ scheme: scheme });
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return Price.findOne({ scheme: String(scheme) });
   }
 }
 

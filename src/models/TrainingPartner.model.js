@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import serverConfig from "../config/serverConfig.js";
+import hidePassword from "./plugins/hidePassword.js";
 import Sequence from "./sequence.model.js";
 const Schema = mongoose.Schema;
 
@@ -124,6 +126,9 @@ const trainingPartnerSchema = new Schema(
   }
 );
 
+trainingPartnerSchema.plugin(hidePassword);
+trainingPartnerSchema.index({ applicationStatus: 1 });
+
 // ** hasing the password before saving the document
 trainingPartnerSchema.pre("save", function (next) {
   const trainingPartner = this;
@@ -158,7 +163,7 @@ trainingPartnerSchema.pre("save", async function (next) {
 trainingPartnerSchema.methods.checkPassword = function check(
   userInputPlainPassword
 ) {
-  return bcrypt.compareSync(userInputPlainPassword, this.password);
+  return bcrypt.compareSync(String(userInputPlainPassword), this.password);
 };
 
 // ** generate jwt token for middleware verification
@@ -168,8 +173,8 @@ trainingPartnerSchema.methods.generateJwt = function generate() {
       id: this._id,
       role: this.role,
     },
-    "this is a secrete a key",
-    { expiresIn: "30d" }
+    serverConfig.JWT_SECRET,
+    { expiresIn: serverConfig.JWT_EXPIRES_IN }
   );
 };
 

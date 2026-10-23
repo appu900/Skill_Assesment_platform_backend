@@ -95,7 +95,7 @@ const monthlyInvoiceSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const AssesmentAgencyPaymentInvoice = new mongoose.model(
+const AssesmentAgencyPaymentInvoice = mongoose.model(
   "AssesmentAgencyPaymentInvoice",
   monthlyInvoiceSchema
 );

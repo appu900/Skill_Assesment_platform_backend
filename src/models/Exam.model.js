@@ -11,9 +11,23 @@ const examSchema = new mongoose.Schema(
       required: true,
     },
 
-    certificateIssued:{
+    certificateIssued: {
       type: Boolean,
       default: false,
+    },
+
+    // ** state of the background certificate publishing job
+    certificateStatus: {
+      type: String,
+      enum: ["not-started", "queued", "processing", "completed", "failed"],
+      default: "not-started",
+    },
+    certificateError: {
+      type: String,
+    },
+    certificatesIssuedCount: {
+      type: Number,
+      default: 0,
     },
 
     batchPaymentAmount: {
@@ -122,7 +136,8 @@ const examSchema = new mongoose.Schema(
   }
 );
 
-const Exam = new mongoose.model("Exam", examSchema);
-export default Exam;
+examSchema.index({ batchId: 1 });
+examSchema.index({ assesmentAgencyId: 1, month: 1, year: 1 });
 
-// end point of
+const Exam = mongoose.model("Exam", examSchema);
+export default Exam;

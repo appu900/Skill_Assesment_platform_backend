@@ -162,13 +162,20 @@ const StudentSchema = new mongoose.Schema(
 );
 
 
-StudentSchema.pre("save", async function(next){
-  if(this.isNew){
-    const counter = await StudentCounter.findByIdAndUpdate("s1", {$inc: {counter: 1}}, {new: true, upsert: true});
+StudentSchema.index({ enrolledBatch: 1 });
+StudentSchema.index({ MPR_Id: 1 });
+StudentSchema.index({ trainingPartner: 1 });
+
+// ** registration number is generated once when the student is created
+StudentSchema.pre("save", async function () {
+  if (this.isNew) {
+    const counter = await StudentCounter.findByIdAndUpdate(
+      "s1",
+      { $inc: { counter: 1 } },
+      { new: true, upsert: true }
+    );
     this.redg_No = `321${counter.counter}`;
-    next();
   }
-   
 })
 
 const Student = mongoose.model("Student", StudentSchema);

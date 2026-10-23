@@ -33,5 +33,5 @@ const schemeSchema = new mongoose.Schema({
   },
 });
 
-const Scheme = new mongoose.model("Scheme", schemeSchema);
+const Scheme = mongoose.model("Scheme", schemeSchema);
 export default Scheme;

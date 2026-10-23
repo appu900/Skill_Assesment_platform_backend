@@ -1,68 +1,29 @@
+import { applyPagination } from "../utils/pagination.js";
+
 class CrudRepository {
   constructor(model) {
     this.model = model;
   }
 
   async create(data) {
-    try {
-      const res = await this.model.create(data);
-      return res;
-    } catch (error) {
-      console.log(error)
-      throw error;
-    }
+    return this.model.create(data);
   }
 
   async update(id, data) {
-    try {
-      console.log(data)
-      const res = await this.model.findByIdAndUpdate(
-        id,
-        {
-          $set: data,
-        },
-        { new: true }
-      );
-      console.log("data after updated", res);
-      return res;
-    } catch (error) {
-      throw error;
-    }
+    return this.model.findByIdAndUpdate(id, { $set: data }, { new: true, runValidators: true });
   }
 
   async get(id) {
-    try {
-      const res = await this.model.findById(id);
-      return res;
-    } catch (error) {
-      throw error;
-    }
+    return this.model.findById(id);
   }
 
   async destroy(id) {
-    try {
-      const res = await this.model.findByIdAndDelete(id);
-      return res;
-    } catch (error) {
-      throw error;
-    }
+    return this.model.findByIdAndDelete(id);
   }
 
-  async getAll() {
-    try {
-      const res = await this.model.find();
-      return res;
-    } catch (error) {
-      throw error;
-    }
+  async getAll(pagination = null) {
+    return applyPagination(this.model.find().sort({ _id: -1 }), pagination);
   }
 }
 
 export default CrudRepository;
-
-
-
-
-
-
-
