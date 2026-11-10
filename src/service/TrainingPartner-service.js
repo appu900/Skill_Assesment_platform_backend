@@ -21,6 +21,8 @@ const PROTECTED_FIELDS = [
   "status",
   "centers",
   "certificates",
+  "createdByAdmin",
+  "createdBy",
   "createdAt",
   "updatedAt",
 ];

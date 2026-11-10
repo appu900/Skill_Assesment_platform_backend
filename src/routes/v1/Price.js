@@ -7,3 +7,4 @@ const router = express.Router();
 router.post("/", allow(ROLES.ADMIN), createPrice);
 
 export default router;
+

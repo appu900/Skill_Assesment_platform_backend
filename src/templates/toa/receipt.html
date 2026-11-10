@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  body { font-family: Arial, sans-serif; color: #1a1a1a; font-size: 11pt; margin: 0; }
+  .box { border: 1px solid #ccc; padding: 24px 28px; }
+  .org { font-size: 14pt; font-weight: bold; color: #1f3a5f; }
+  h1 { font-size: 20pt; margin: 18px 0 4px; }
+  .paid { display: inline-block; background: #e6f4ea; color: #137333; padding: 4px 10px; font-weight: bold; margin-bottom: 16px; }
+  table { width: 100%; border-collapse: collapse; }
+  td { padding: 8px 0; border-bottom: 1px solid #eee; }
+  td:first-child { color: #666; width: 40%; }
+  .amount td { font-size: 14pt; font-weight: bold; border-bottom: none; padding-top: 14px; }
+  .foot { margin-top: 24px; font-size: 9pt; color: #555; }
+</style>
+</head>
+<body>
+  <div class="box">
+    <div class="org">CUTM Awarding Body</div>
+    <div>Centurion University of Technology and Management</div>
+    <h1>Payment Receipt</h1>
+    <div class="paid">PAID</div>
+    <table>
+      <tr><td>Receipt number</td><td><b>{{receiptNumber}}</b></td></tr>
+      <tr><td>Date</td><td>{{paidAt}}</td></tr>
+      <tr><td>Received from</td><td>{{organizationName}} ({{tpCode}})</td></tr>
+      <tr><td>Against invoice</td><td>{{invoiceNumber}} · batch {{batchCode}}</td></tr>
+      <tr><td>Payment mode</td><td>{{method}} via {{gateway}}</td></tr>
+      <tr><td>Transaction reference</td><td>{{paymentId}}</td></tr>
+      <tr><td>Order reference</td><td>{{orderId}}</td></tr>
+      <tr class="amount"><td>Amount received</td><td>₹ {{amount}}</td></tr>
+    </table>
+    <div class="foot">This is a computer generated receipt and needs no signature.</div>
+  </div>
+</body>
+</html>

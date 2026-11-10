@@ -24,6 +24,14 @@ const centerSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
       },
+      // ** set by the SNA when it turns the centre down for this scheme
+      rejectStatus: {
+        type: Boolean,
+        default: false,
+      },
+      rejectReason: {
+        type: String,
+      },
     },
   ],
 

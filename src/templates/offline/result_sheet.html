@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  @page { size: A4 landscape; }
+  body { font-family: Arial, sans-serif; color: #1a1a1a; font-size: 9pt; margin: 0; }
+  .org { font-size: 13pt; font-weight: bold; }
+  h1 { font-size: 15pt; margin: 4px 0 10px; }
+  .info { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 3px 24px; margin-bottom: 12px; }
+  .info span { color: #666; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { border: 1px solid #888; padding: 5px 5px; text-align: left; }
+  th { background: #f0f0f0; }
+  td.num, th.num { text-align: right; }
+  .summary { margin-top: 10px; }
+  .foot { margin-top: 26px; display: flex; justify-content: space-between; }
+  .foot div { border-top: 1px solid #333; padding-top: 4px; width: 30%; text-align: center; }
+</style>
+</head>
+<body>
+  <div class="org">CUTM Awarding Body</div>
+  <h1>Result Sheet</h1>
+  <div class="info">
+    <div><span>Batch:</span> <b>{{batchCode}}</b> {{externalBatchId}}</div>
+    <div><span>Training partner:</span> {{trainingPartner}}</div>
+    <div><span>Scheme:</span> {{scheme}}</div>
+    <div><span>Job role:</span> {{jobRole}} {{qpCode}}</div>
+    <div><span>NSQF level:</span> {{nsqfLevel}}</div>
+    <div><span>Assessment date:</span> {{assessmentDate}}</div>
+    <div><span>Centre:</span> {{centreName}}</div>
+    <div><span>Assessor:</span> {{assessorName}}</div>
+    <div><span>Pass mark:</span> {{passPercent}}%</div>
+  </div>
+  <table>
+    <thead><tr><th>#</th><th>Enrolment No.</th><th>Candidate</th>{{#components}}<th class="num">{{label}} ({{max}})</th>{{/components}}<th class="num">Total ({{totalMax}})</th><th class="num">%</th><th>Grade</th><th>Result</th></tr></thead>
+    <tbody>
+      {{#rows}}<tr><td>{{index}}</td><td>{{enrollmentNumber}}</td><td>{{name}}</td>{{#marks}}<td class="num">{{value}}</td>{{/marks}}<td class="num">{{total}}</td><td class="num">{{percentage}}</td><td>{{grade}}</td><td>{{result}}</td></tr>{{/rows}}
+    </tbody>
+  </table>
+  <div class="summary">Appeared {{present}} · Passed {{passed}} · Failed {{failed}} · Absent {{absent}}</div>
+  <div class="foot"><div>Assessor</div><div>Verified by</div><div>Controller of Examinations</div></div>
+</body>
+</html>

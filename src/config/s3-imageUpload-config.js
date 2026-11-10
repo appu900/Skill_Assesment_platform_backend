@@ -11,6 +11,7 @@ const s3 = new S3Client({
     accessKeyId: serverConfig.AWS_ACCESS_KEY_ID,
     secretAccessKey: serverConfig.AWS_SECRET_ACCESS_KEY,
   },
+  ...(serverConfig.AWS_S3_ENDPOINT && { endpoint: serverConfig.AWS_S3_ENDPOINT, forcePathStyle: true }),
 });
 
 const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/jpg", "application/pdf"];

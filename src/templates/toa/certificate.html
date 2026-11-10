@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  @page { size: A4 landscape; margin: 0; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Georgia, "Times New Roman", serif; color: #1a1a1a; }
+  .page { width: 297mm; height: 210mm; padding: 14mm; }
+  .frame { height: 100%; border: 3px double #1f3a5f; padding: 12mm 16mm; position: relative; display: flex; flex-direction: column; }
+  .top { display: flex; justify-content: space-between; align-items: flex-start; font-family: Arial, sans-serif; }
+  .org { font-size: 13pt; font-weight: bold; color: #1f3a5f; letter-spacing: .5px; }
+  .sub { font-size: 9pt; color: #555; margin-top: 2px; }
+  .number { font-size: 9pt; text-align: right; color: #333; }
+  h1 { text-align: center; font-size: 30pt; margin: 14mm 0 2mm; color: #1f3a5f; font-weight: normal; letter-spacing: 1px; }
+  .lead { text-align: center; font-size: 12pt; color: #444; }
+  .name { text-align: center; font-size: 26pt; margin: 6mm 0 2mm; font-style: italic; }
+  .reg { text-align: center; font-family: Arial, sans-serif; font-size: 10pt; color: #555; }
+  .body { text-align: center; font-size: 12.5pt; line-height: 1.7; margin: 6mm auto 0; max-width: 210mm; }
+  .bottom { margin-top: auto; display: flex; justify-content: space-between; align-items: flex-end; font-family: Arial, sans-serif; font-size: 9pt; }
+  .sign { text-align: center; width: 60mm; border-top: 1px solid #333; padding-top: 2mm; }
+  .qr { text-align: center; color: #555; }
+  .qr img { width: 28mm; height: 28mm; display: block; margin: 0 auto 1mm; }
+</style>
+</head>
+<body>
+<div class="page"><div class="frame">
+  <div class="top">
+    <div>
+      <div class="org">CENTURION UNIVERSITY OF TECHNOLOGY AND MANAGEMENT</div>
+      <div class="sub">Awarding Body · in association with RailTel Corporation of India Ltd.</div>
+    </div>
+    <div class="number">Certificate No. <b>{{certificateNumber}}</b><br />Issued on {{issueDate}}</div>
+  </div>
+  <h1>Certificate of Completion</h1>
+  <div class="lead">Training of Assessors (ToA) Programme</div>
+  <div class="name">{{name}}</div>
+  <div class="reg">Registration ID {{registrationId}}</div>
+  <div class="body">
+    has successfully completed the <b>{{programmeName}}</b> conducted by <b>{{trainingPartner}}</b>
+    from {{startDate}} to {{endDate}} (batch {{batchCode}}) and has been declared <b>{{result}}</b>.
+  </div>
+  <div class="bottom">
+    <div class="sign">Controller of Examinations<br />CUTM Awarding Body</div>
+    <div class="qr"><img src="{{qrCode}}" alt="" />Scan to verify<br />{{verifyUrl}}</div>
+    <div class="sign">Programme Head<br />RailTel ToA</div>
+  </div>
+</div></div>
+</body>
+</html>

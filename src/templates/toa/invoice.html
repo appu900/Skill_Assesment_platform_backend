@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  body { font-family: Arial, sans-serif; color: #1a1a1a; font-size: 10.5pt; margin: 0; }
+  .head { display: flex; justify-content: space-between; border-bottom: 2px solid #1f3a5f; padding-bottom: 10px; }
+  .org { font-size: 14pt; font-weight: bold; color: #1f3a5f; }
+  h1 { font-size: 18pt; margin: 0; text-align: right; }
+  .meta { text-align: right; color: #333; margin-top: 4px; line-height: 1.5; }
+  .parties { display: flex; gap: 24px; margin: 18px 0; }
+  .parties div { flex: 1; line-height: 1.5; }
+  .label { color: #666; font-size: 9pt; text-transform: uppercase; letter-spacing: .5px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+  th, td { border: 1px solid #ccc; padding: 7px 8px; text-align: left; }
+  th { background: #f2f4f7; }
+  td.num, th.num { text-align: right; }
+  .totals { margin-top: 10px; margin-left: auto; width: 45%; }
+  .totals td { border: none; padding: 4px 8px; }
+  .grand td { font-weight: bold; border-top: 2px solid #1a1a1a; font-size: 12pt; }
+  .status { margin-top: 16px; padding: 8px 12px; background: #f2f4f7; display: inline-block; }
+  .foot { margin-top: 30px; font-size: 9pt; color: #555; }
+</style>
+</head>
+<body>
+  <div class="head">
+    <div>
+      <div class="org">CUTM Awarding Body</div>
+      <div>Centurion University of Technology and Management<br />Bhubaneswar, Odisha</div>
+    </div>
+    <div>
+      <h1>TAX INVOICE</h1>
+      <div class="meta">Invoice No. <b>{{invoiceNumber}}</b><br />Date {{invoiceDate}}<br />Due {{dueDate}}</div>
+    </div>
+  </div>
+  <div class="parties">
+    <div>
+      <div class="label">Billed to</div>
+      <b>{{payer.organizationName}}</b> ({{payer.tpCode}})<br />{{payer.address}} {{payer.state}}<br />GSTIN {{payer.gstNumber}}<br />{{payer.email}}
+    </div>
+    <div>
+      <div class="label">For</div>
+      RailTel Training of Assessors<br />Batch <b>{{batchCode}}</b> · {{programmeName}}<br />{{startDate}} – {{endDate}}
+    </div>
+  </div>
+  <table>
+    <thead><tr><th>#</th><th>Description</th><th class="num">Qty</th><th class="num">Rate (₹)</th><th class="num">Amount (₹)</th></tr></thead>
+    <tbody>
+      {{#lines}}<tr><td>{{index}}</td><td>{{description}}</td><td class="num">{{quantity}}</td><td class="num">{{rate}}</td><td class="num">{{amount}}</td></tr>{{/lines}}
+    </tbody>
+  </table>
+  <table class="totals">
+    <tr><td>Subtotal</td><td class="num">₹ {{subtotal}}</td></tr>
+    <tr><td>GST @ {{gstPercent}}%</td><td class="num">₹ {{gstAmount}}</td></tr>
+    <tr class="grand"><td>Total</td><td class="num">₹ {{total}}</td></tr>
+  </table>
+  <div class="status">Payment status: <b>{{statusLabel}}</b></div>
+  <div class="foot">This is a computer generated invoice. Pay online from the RailTel ToA portal.</div>
+</body>
+</html>

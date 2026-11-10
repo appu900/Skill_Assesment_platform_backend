@@ -37,6 +37,27 @@ class CenterRepository extends CrudRepository {
     }
     const scheme = center.schemes.find((item) => item.schemeName === schemeName);
     scheme.approveStatus = true;
+    scheme.rejectStatus = false;
+    scheme.rejectReason = undefined;
+    await center.save();
+    return true;
+  }
+
+  async rejectSchemeOfCenter(centerId, schemeName, state, reason) {
+    const center = await Center.findOne({
+      _id: centerId,
+      "schemes.schemeName": schemeName,
+      state: state,
+    });
+    if (!center) {
+      throw AppError.notFound("Center not found for this scheme and state");
+    }
+    const scheme = center.schemes.find((item) => item.schemeName === schemeName);
+    if (scheme.approveStatus) {
+      throw new AppError("this scheme is already approved for the center");
+    }
+    scheme.rejectStatus = true;
+    scheme.rejectReason = reason;
     await center.save();
     return true;
   }

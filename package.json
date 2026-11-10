@@ -8,18 +8,22 @@
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "worker": "node src/worker.js",
-    "worker:dev": "nodemon src/worker.js"
+    "worker:dev": "nodemon src/worker.js",
+    "seed:schemes": "node src/scripts/seed-schemes.js",
+    "seed:centres": "node src/scripts/seed-centres.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1156.0",
+    "@aws-sdk/s3-request-presigner": "^3.1156.0",
     "@vinejs/vine": "^2.0.0",
     "bcryptjs": "^2.4.3",
     "bullmq": "^6.4.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
+    "exceljs": "^4.4.0",
     "express": "^4.22.3",
     "express-rate-limit": "^8.7.1",
     "helmet": "^8.3.0",
@@ -29,7 +33,10 @@
     "mongoose": "^8.24.6",
     "multer": "^2.5.0",
     "multer-s3": "^3.0.1",
-    "nodemailer": "^10.2.1"
+    "nodemailer": "^10.2.1",
+    "pdf-lib": "^1.17.1",
+    "puppeteer": "^24.10.0",
+    "qrcode": "^1.5.4"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"

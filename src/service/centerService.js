@@ -1,5 +1,6 @@
 import CenterRepository from "../repository/Center-repository.js";
 import TrainingPartnerRepository from "../repository/TrainingPartner-Repository.js";
+import SchemeRepository from "../repository/SchemeRepository.js";
 import AppError from "../utils/AppError.js";
 import ROLES from "../utils/roles.js";
 import { omit } from "../utils/fieldFilter.js";
@@ -26,6 +27,7 @@ class CenterService {
   constructor() {
     this.centerRepository = new CenterRepository();
     this.trainingPartnerRepository = new TrainingPartnerRepository();
+    this.schemeRepository = new SchemeRepository();
   }
 
   async create(data, trainingPartnerId) {
@@ -69,9 +71,45 @@ class CenterService {
         $elemMatch: {
           schemeName: String(schemeName),
           approveStatus: false,
+          rejectStatus: { $ne: true },
         },
       },
     });
+  }
+
+  async corporateSchemeNames() {
+    return (await this.schemeRepository.findBySchemeType("Corporate")).map((scheme) => scheme.name);
+  }
+
+  // ** LC/RC: centres with a corporate scheme waiting for approval
+  async getPendingCorporateCenters() {
+    const schemeNames = await this.corporateSchemeNames();
+    return this.centerRepository.filterCenters({
+      schemes: {
+        $elemMatch: { schemeName: { $in: schemeNames }, approveStatus: false, rejectStatus: { $ne: true } },
+      },
+    });
+  }
+
+  // ** LC/RC approves / rejects a corporate scheme of a centre (the state is the centre's own)
+  async decideCorporateCenter(centerId, schemeName, approve, reason) {
+    if (!schemeName) {
+      throw new AppError("Please provide schemeName");
+    }
+    if (!(await this.corporateSchemeNames()).includes(String(schemeName))) {
+      throw new AppError(`${schemeName} is not a corporate scheme`);
+    }
+    const center = await this.centerRepository.fetchCenterDetails(centerId);
+    if (!center) {
+      throw AppError.notFound("Center not found");
+    }
+    if (approve) {
+      return this.centerRepository.approveSchemesOfCenter(centerId, String(schemeName), center.state);
+    }
+    if (!reason || !String(reason).trim()) {
+      throw new AppError("Please give a reason for the rejection");
+    }
+    return this.centerRepository.rejectSchemeOfCenter(centerId, String(schemeName), center.state, String(reason).trim().slice(0, 500));
   }
 
   async approveCenter(centerId, bodySchemeName, bodyState, user) {
@@ -80,6 +118,22 @@ class CenterService {
       throw new AppError("Please provide schemeName and state");
     }
     return this.centerRepository.approveSchemesOfCenter(centerId, String(schemeName), String(state));
+  }
+
+  async rejectCenter(centerId, bodySchemeName, bodyState, reason, user) {
+    const { schemeName, state } = resolveSchemeAndState(user, bodySchemeName, bodyState);
+    if (!schemeName || !state) {
+      throw new AppError("Please provide schemeName and state");
+    }
+    if (!reason || !String(reason).trim()) {
+      throw new AppError("Please give a reason for the rejection");
+    }
+    return this.centerRepository.rejectSchemeOfCenter(
+      centerId,
+      String(schemeName),
+      String(state),
+      String(reason).trim().slice(0, 500)
+    );
   }
 
   async updateSectorsInCenters(centerId, sectorId) {
