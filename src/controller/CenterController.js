@@ -47,6 +47,16 @@ const approveCenter = asyncHandler(async (req, res) => {
   });
 });
 
+const rejectCenter = asyncHandler(async (req, res) => {
+  const { schemeName, state, reason } = req.body;
+  const response = await centerService.rejectCenter(req.params.id, schemeName, state, reason, req.user);
+  return res.status(StatusCodes.OK).json({
+    success: true,
+    message: "Center rejected",
+    data: response,
+  });
+});
+
 const getAllApprovedCentersByScheme = asyncHandler(async (req, res) => {
   const { trainingPartnerId, schemeName, state } = req.query;
   if (!trainingPartnerId || !schemeName || !state) {
@@ -99,6 +109,7 @@ export {
   getAllCentersOfTrainingPartner,
   filterCenterBySchemeAndState,
   approveCenter,
+  rejectCenter,
   getAllApprovedCentersByScheme,
   updateCenterData,
   getAllCenterBySchemeNameAndState,

@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import { StatusCodes } from "http-status-codes";
 import serverConfig from "../config/serverConfig.js";
-import ROLES from "../utils/roles.js";
+import ROLES, { CORE_ROLES } from "../utils/roles.js";
 
 export { ROLES };
 
@@ -56,8 +56,8 @@ const authorize = (...roles) => (req, res, next) => {
   next();
 };
 
-// ** authenticate + authorize in one step, with no roles any logged in user is allowed
-const allow = (...roles) =>
-  roles.length === 0 ? [authenticate] : [authenticate, authorize(...roles)];
+// ** authenticate + authorize in one step; with no roles any logged in user of the skill portal is allowed
+// ** (RailTel ToA accounts are kept out of every existing route, they only reach /v1/toa)
+const allow = (...roles) => [authenticate, authorize(...(roles.length === 0 ? CORE_ROLES : roles))];
 
 export { authenticate, optionalAuthenticate, authorize, allow };

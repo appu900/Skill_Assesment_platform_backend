@@ -121,6 +121,11 @@ const examSchema = new mongoose.Schema(
     resultSheet: {
       type: String,
     },
+    // ** set when the approving body (admin, or LC/RC for corporate) sends the result back to the agency
+    resultRejectionReason: {
+      type: String,
+      default: null,
+    },
     perStudentCost: {
       type: Number,
     },

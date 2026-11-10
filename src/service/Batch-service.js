@@ -6,12 +6,11 @@ import TrainingPartnerRepository from "../repository/TrainingPartner-Repository.
 import CenterRepository from "../repository/Center-repository.js";
 import InvoiceService from "./InvoiceService.js";
 import SchemeRepository from "../repository/SchemeRepository.js";
+import ConfigService from "./ConfigService.js";
 import AppError from "../utils/AppError.js";
 import ROLES from "../utils/roles.js";
 import { omit } from "../utils/fieldFilter.js";
 import { assertOwnerOrAdmin, isSameId } from "../utils/ownership.js";
-
-const GST_MULTIPLIER = 1.18;
 
 // ** status / payment fields that are only changed by the workflow, never by the client payload
 const PROTECTED_BATCH_FIELDS = [
@@ -21,6 +20,8 @@ const PROTECTED_BATCH_FIELDS = [
   "trainingOrganization",
   "trainingOrganizationId",
   "approvedByGovernmentBody",
+  "rejectedByGovernmentBody",
+  "governmentRejectionReason",
   "certificateIssued",
   "resultPublished",
   "isAssigned",
@@ -68,6 +69,7 @@ class BatchService {
     this.centerRepository = new CenterRepository();
     this.invoiceService = new InvoiceService();
     this.schemeRepository = new SchemeRepository();
+    this.configService = new ConfigService();
   }
 
   async getBatchOrFail(batchId) {
@@ -215,36 +217,52 @@ class BatchService {
     if (batch.batchActivePermission === true) {
       throw new AppError("batch is already Submitted");
     }
-    if (batch.students.length === 0) {
-      throw new AppError("complete the batch with students first");
+    // ** the rules and the fee come from the configuration (mongodb, cached in redis), most specific scope wins
+    const context = {
+      schemeType: batch.schemeType,
+      scheme: batch.scheme,
+      trainingPartnerId: String(batch.trainingOrganizationId),
+    };
+    const [rules, fees] = await Promise.all([this.configService.get("batchRules", context), this.configService.get("fees", context)]);
+
+    const candidates = batch.students.length;
+    if (candidates === 0 || candidates < rules.minCandidates) {
+      throw new AppError(`a batch needs at least ${Math.max(rules.minCandidates, 1)} candidate(s) before it can be submitted`);
     }
-    if (batch.trainers.length === 0) {
+    if (rules.maxCandidates > 0 && candidates > rules.maxCandidates) {
+      throw new AppError(`a batch can have at most ${rules.maxCandidates} candidates`);
+    }
+    if (rules.requireTrainer && batch.trainers.length === 0) {
       throw new AppError("Please add atleast One Trainer");
     }
-
-    const { flag, studentsWithOutImage } = await this.checkImageForStudents(batch);
-    if (flag === false) {
-      throw new AppError(`students ${studentsWithOutImage.join(", ")} has no profile pic`);
-    }
-
-    let totalAmount = 0;
-    let perStudentCost = 0;
-
-    if (batch.schemeType === "Corporate") {
-      const tp = await this.trainingPartnerRepository.get(batch.trainingOrganizationId);
-      perStudentCost = tp?.organizationCorporatePaymentFee || 0;
-      totalAmount = perStudentCost * batch.students.length * GST_MULTIPLIER;
-    } else {
-      const scheme = await this.schemeRepository.findBySchemeName(batch.scheme);
-      if (!scheme) {
-        throw AppError.notFound(`scheme ${batch.scheme} not found`);
+    if (rules.requireCandidatePhoto) {
+      const { flag, studentsWithOutImage } = await this.checkImageForStudents(batch);
+      if (flag === false) {
+        throw new AppError(`students ${studentsWithOutImage.join(", ")} has no profile pic`);
       }
-      perStudentCost = scheme.pricePerStudent;
-      totalAmount = perStudentCost * batch.students.length;
     }
+
+    const perStudentCost = await this.ratePerCandidate(batch, fees);
+    const totalAmount = Math.round(perStudentCost * candidates * (1 + fees.gstPercent / 100) * 100) / 100;
 
     await this.batchRepository.activateBatchByClient(batchId, totalAmount, perStudentCost);
     return true;
+  }
+
+  // ** per-candidate rate from the source the fees setting names
+  async ratePerCandidate(batch, fees) {
+    if (fees.rateSource === "fixed") {
+      return fees.perCandidate;
+    }
+    if (fees.rateSource === "trainingPartner") {
+      const tp = await this.trainingPartnerRepository.get(batch.trainingOrganizationId);
+      return tp?.organizationCorporatePaymentFee || 0;
+    }
+    const scheme = await this.schemeRepository.findBySchemeName(batch.scheme);
+    if (!scheme) {
+      throw AppError.notFound(`scheme ${batch.scheme} not found`);
+    }
+    return scheme.pricePerStudent;
   }
 
   // ** admin sets the payable amount of a corporate batch manually
@@ -317,8 +335,10 @@ class BatchService {
     if (!batch.clientPaymentStatus) {
       throw new AppError("training partner has not uploaded the payment details yet");
     }
-    if (batch.schemeType !== "Corporate" && !batch.approvedByGovernmentBody) {
-      throw new AppError("government batch is not approved by the SNA yet");
+    if (!batch.approvedByGovernmentBody) {
+      throw new AppError(
+        batch.schemeType === "Corporate" ? "corporate batch is not approved by the LC/RC yet" : "government batch is not approved by the SNA yet"
+      );
     }
 
     await this.batchRepository.updatePayamentStatus(batchId);
@@ -376,6 +396,69 @@ class BatchService {
       sucess: true,
     };
   }
+
+  // ** LC/RC: corporate batches; "pending" = submitted and waiting for approval
+  async getCorporateBatches(status) {
+    const query = { schemeType: "Corporate" };
+    if (status === "pending") {
+      query.batchActivePermission = true;
+      query.approvedByGovernmentBody = false;
+    }
+    return this.batchRepository.filterData(query);
+  }
+
+  // ** LC/RC approves a submitted corporate batch (same flag the SNA sets on government batches)
+  async approveCorporateBatch(batchId) {
+    const batch = await this.getBatchOrFail(batchId);
+    if (batch.schemeType !== "Corporate") {
+      throw new AppError("only corporate batches are approved by the LC/RC");
+    }
+    if (!batch.batchActivePermission) {
+      throw new AppError("batch is not submitted yet");
+    }
+    batch.approvedByGovernmentBody = true;
+    await batch.save();
+    return { batchId: batch._id, approved: true };
+  }
+
+  async rejectCorporateBatch(batchId, reason) {
+    const batch = await this.getBatchOrFail(batchId);
+    if (batch.schemeType !== "Corporate") {
+      throw new AppError("only corporate batches are rejected by the LC/RC");
+    }
+    return this.sendBatchBack(batch, reason);
+  }
+
+  // ** a submitted, unapproved batch goes back to the training partner as a draft with a reason
+  async sendBatchBack(batch, reason) {
+    if (!batch.batchActivePermission || batch.approvedByGovernmentBody) {
+      throw new AppError("only submitted batches that are not approved yet can be rejected");
+    }
+    if (!reason || !String(reason).trim()) {
+      throw new AppError("Please give a reason for the rejection");
+    }
+    batch.batchActivePermission = false;
+    batch.amountToPaid = 0;
+    batch.perStudentCost = 0;
+    batch.rejectedByGovernmentBody = true;
+    batch.governmentRejectionReason = String(reason).trim().slice(0, 500);
+    await batch.save();
+    return { batchId: batch._id, rejected: true };
+  }
+
+  // ** the SNA sends a submitted government batch back to the training partner with a reason;
+  // ** it becomes a draft again so candidates can be fixed and the batch resubmitted
+  async rejectGovernmentBatch(batchId, reason, user) {
+    const batch = await this.getBatchOrFail(batchId);
+    if (user?.role === ROLES.SNA && (batch.scheme !== user.scheme || batch.state !== user.state)) {
+      throw AppError.forbidden("This batch does not belong to your state or scheme");
+    }
+    if (batch.schemeType === "Corporate") {
+      throw new AppError("corporate batches do not need SNA approval");
+    }
+    return this.sendBatchBack(batch, reason);
+  }
+
 
   async getAllBatchesBySchemeName(schemeName, state, user) {
     if (user?.role === ROLES.SNA) {

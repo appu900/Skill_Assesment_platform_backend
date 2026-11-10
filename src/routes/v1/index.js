@@ -17,6 +17,12 @@ import courseRoutes from "./course.js"
 import schemeRoutes from "./Scheme.js"
 import priceRouter from "./Price.js"
 import certificateRoutes from "./Certificate.js"
+import analyticsRoutes from "./analytics.js";
+import configRoutes from "./config.js";
+import lcrcRoutes from "./lcrc.js";
+import toaRoutes from "./toa/index.js";
+import offlineRoutes from "./offline/index.js";
+import certificateFormatRoutes from "./certificate-formats.js";
 
 const router = express.Router();
 
@@ -37,5 +43,11 @@ router.use("/v1/course",courseRoutes)
 router.use("/v1/scheme",schemeRoutes)
 router.use("/v1/price",priceRouter)
 router.use("/v1/certificate",certificateRoutes)
+router.use("/v1/analytics",analyticsRoutes)
+router.use("/v1/config",configRoutes)
+router.use("/v1/lcrc",lcrcRoutes)
+router.use("/v1/toa",toaRoutes)
+router.use("/v1/offline",offlineRoutes)
+router.use("/v1/certificate-formats",certificateFormatRoutes)
 
 export default router;

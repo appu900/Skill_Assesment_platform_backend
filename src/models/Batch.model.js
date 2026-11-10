@@ -33,6 +33,15 @@ const batchSchema = new mongoose.Schema(
       default: false,
     },
 
+    // ** set when the SNA sends a submitted batch back to the training partner, cleared on resubmission
+    rejectedByGovernmentBody: {
+      type: Boolean,
+      default: false,
+    },
+    governmentRejectionReason: {
+      type: String,
+    },
+
     certificateIssued: {
       type: Boolean,
       default: false,

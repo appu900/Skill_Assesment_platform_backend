@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  body { font-family: Arial, sans-serif; color: #1a1a1a; font-size: 9.5pt; margin: 0; }
+  .org { font-size: 13pt; font-weight: bold; }
+  h1 { font-size: 15pt; margin: 4px 0 10px; }
+  .info { display: grid; grid-template-columns: 1fr 1fr; gap: 3px 24px; margin-bottom: 12px; }
+  .info span { color: #666; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { border: 1px solid #888; padding: 6px 5px; text-align: left; }
+  th { background: #f0f0f0; }
+  td.sign { width: 22%; }
+  .foot { margin-top: 26px; display: flex; justify-content: space-between; }
+  .foot div { border-top: 1px solid #333; padding-top: 4px; width: 38%; text-align: center; }
+</style>
+</head>
+<body>
+  <div class="org">CUTM Awarding Body</div>
+  <h1>Assessment Attendance Sheet</h1>
+  <div class="info">
+    <div><span>Batch:</span> <b>{{batchCode}}</b> {{externalBatchId}}</div>
+    <div><span>Training partner:</span> {{trainingPartner}} ({{tpCode}})</div>
+    <div><span>Job role:</span> {{jobRole}} {{qpCode}}</div>
+    <div><span>Scheme:</span> {{scheme}}</div>
+    <div><span>Centre:</span> {{centreName}}, {{district}} {{state}}</div>
+    <div><span>Assessment date:</span> <b>{{assessmentDate}}</b></div>
+    <div><span>Assessor:</span> {{assessorName}} ({{assessorCode}})</div>
+    <div><span>Present / total:</span> {{present}} / {{count}}</div>
+  </div>
+  <table>
+    <thead><tr><th>#</th><th>Enrolment No.</th><th>Candidate ID</th><th>Candidate name</th><th>Father's name</th><th>Attendance</th><th>Signature</th></tr></thead>
+    <tbody>
+      {{#rows}}<tr><td>{{index}}</td><td>{{enrollmentNumber}}</td><td>{{candidateId}}</td><td>{{name}}</td><td>{{fatherName}}</td><td>{{attendance}}</td><td class="sign"></td></tr>{{/rows}}
+    </tbody>
+  </table>
+  <div class="foot"><div>Assessor signature</div><div>Training partner seal &amp; signature</div></div>
+</body>
+</html>

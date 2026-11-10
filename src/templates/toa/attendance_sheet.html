@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  body { font-family: Arial, sans-serif; color: #1a1a1a; font-size: 10pt; margin: 0; }
+  .org { font-size: 13pt; font-weight: bold; color: #1f3a5f; }
+  h1 { font-size: 15pt; margin: 6px 0 12px; }
+  .info { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 24px; margin-bottom: 14px; }
+  .info span { color: #666; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { border: 1px solid #999; padding: 7px 6px; text-align: left; }
+  th { background: #f2f4f7; }
+  td.sign { width: 30%; }
+  .foot { margin-top: 28px; display: flex; justify-content: space-between; }
+  .foot div { border-top: 1px solid #333; padding-top: 4px; width: 40%; text-align: center; }
+</style>
+</head>
+<body>
+  <div class="org">CUTM Awarding Body · RailTel Training of Assessors</div>
+  <h1>Attendance Sheet</h1>
+  <div class="info">
+    <div><span>Batch ID:</span> <b>{{batchCode}}</b></div>
+    <div><span>Programme:</span> {{programmeName}}</div>
+    <div><span>Training date:</span> <b>{{sessionDate}}</b> {{sessionTime}}</div>
+    <div><span>Session:</span> {{sessionTopic}}</div>
+    <div><span>Training partner:</span> {{trainingPartner}}</div>
+    <div><span>Mode / venue:</span> {{trainingMode}} {{venue}}</div>
+  </div>
+  <table>
+    <thead><tr><th>#</th><th>Registration ID</th><th>Assessor name</th><th>Attendance</th><th>Signature / verification</th></tr></thead>
+    <tbody>
+      {{#rows}}<tr><td>{{index}}</td><td>{{registrationId}}</td><td>{{name}}</td><td>{{status}}</td><td class="sign"></td></tr>{{/rows}}
+    </tbody>
+  </table>
+  <div class="foot"><div>Trainer: {{trainerName}}</div><div>Training partner seal &amp; signature</div></div>
+</body>
+</html>

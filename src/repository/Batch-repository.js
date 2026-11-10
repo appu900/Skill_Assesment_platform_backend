@@ -38,6 +38,9 @@ class BatchRepository extends CrudRepository {
         batchActivePermission: true,
         amountToPaid: paymentAmount,
         perStudentCost: perStudentCost,
+        // ** a resubmitted batch starts a fresh SNA review
+        rejectedByGovernmentBody: false,
+        governmentRejectionReason: null,
       },
       { new: true }
     );

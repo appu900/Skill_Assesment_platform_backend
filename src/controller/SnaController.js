@@ -34,6 +34,15 @@ const approveGovernmentSchemeBatches = asyncHandler(async (req, res) => {
   });
 });
 
+const rejectGovernmentSchemeBatches = asyncHandler(async (req, res) => {
+  const response = await batchService.rejectGovernmentBatch(req.params.id, req.body?.reason, req.user);
+  return res.status(StatusCodes.OK).json({
+    success: true,
+    message: "Batch sent back to the training partner",
+    data: response,
+  });
+});
+
 const getAllSnaDetails = asyncHandler(async (req, res) => {
   const response = await snaService.getAllSna();
   return res.status(StatusCodes.OK).json({
@@ -43,4 +52,4 @@ const getAllSnaDetails = asyncHandler(async (req, res) => {
   });
 });
 
-export { createSNA, snaLogin, approveGovernmentSchemeBatches, getAllSnaDetails };
+export { createSNA, snaLogin, approveGovernmentSchemeBatches, rejectGovernmentSchemeBatches, getAllSnaDetails };

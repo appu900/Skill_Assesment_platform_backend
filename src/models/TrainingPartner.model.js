@@ -68,6 +68,9 @@ const trainingPartnerSchema = new Schema(
     ],
     centerId: { type: String, required: true },
     tpCode: { type: String },
+    // ** true when the admin created this TP (offline onboarding) instead of a public signup
+    createdByAdmin: { type: Boolean, default: false },
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "Admin", default: null },
     scheme: { type: String, required: true },
     affiliation: { type: String },
     dateOfIncorporation: { type: Date },

@@ -5,6 +5,7 @@ import ExamRepository from "../repository/Exam-repository.js";
 import MarkRepository from "../repository/Mark-repository.js";
 import { certificateQueue, JOB_NAMES } from "../queues/index.js";
 import AppError from "../utils/AppError.js";
+import ROLES from "../utils/roles.js";
 import { assertOwnerOrAdmin, isSameId } from "../utils/ownership.js";
 
 class ExamService {
@@ -126,6 +127,7 @@ class ExamService {
     exam.status = "completed";
     exam.attendanceSheet = attendanceSheetUrl;
     exam.resultSheet = resultSheetUrl;
+    exam.resultRejectionReason = null;
     await exam.save();
     return exam;
   }
@@ -163,6 +165,63 @@ class ExamService {
     exam.totalNoOfStudentAbsent = (exam.totalStudents || 0) - present;
     await exam.save();
     return true;
+  }
+
+  // ** results to review: LC/RC sees corporate batches only. "pending" = sheets uploaded, certificates not issued yet
+  async getResultsForReview(user, status) {
+    const query = {};
+    if (user?.role === ROLES.LCRC) {
+      query.batchId = { $in: await this.batchRepository.model.find({ schemeType: "Corporate" }).distinct("_id") };
+    }
+    if (status === "pending") {
+      query.status = "completed";
+      query.certificateIssued = false;
+    }
+    return this.examRepository.model
+      .find(query)
+      .sort({ updatedAt: -1 })
+      .populate("batchId", "batchName ABN_Number schemeType scheme courseName centerName students")
+      .lean();
+  }
+
+  // ** the admin decides every result; an LC/RC only those of corporate batches
+  async getReviewableExam(examId, user) {
+    const exam = await this.getExamOrFail(examId);
+    if (user?.role === ROLES.LCRC) {
+      const batch = await this.batchRepository.get(exam.batchId);
+      if (batch?.schemeType !== "Corporate") {
+        throw AppError.forbidden("LC/RC can only review results of corporate batches");
+      }
+    }
+    return exam;
+  }
+
+  // ** approving a result generates the certificates
+  async approveResult(examId, user) {
+    const exam = await this.getReviewableExam(examId, user);
+    if (exam.status !== "completed") {
+      throw new AppError("the assessment agency has not uploaded the result yet");
+    }
+    return this.publishCeritificates(examId);
+  }
+
+  // ** sends the result back to the assessment agency, which uploads the sheets again
+  async rejectResult(examId, reason, user) {
+    const exam = await this.getReviewableExam(examId, user);
+    if (exam.certificateIssued || ["queued", "processing"].includes(exam.certificateStatus)) {
+      throw new AppError("certificates are already issued for this result");
+    }
+    if (exam.status !== "completed") {
+      throw new AppError("there is no uploaded result to reject");
+    }
+    if (!reason || !String(reason).trim()) {
+      throw new AppError("Please give a reason for the rejection");
+    }
+    exam.status = "not-started";
+    exam.markUploadAndExamCompleteStatus = false;
+    exam.resultRejectionReason = String(reason).trim().slice(0, 500);
+    await exam.save();
+    return { examId: exam._id, rejected: true };
   }
 
   // ** validates the exam and queues certificate generation, the certificate worker does the rest

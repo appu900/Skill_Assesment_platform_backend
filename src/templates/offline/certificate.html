@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  @page { size: A4 landscape; margin: 0; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Georgia, "Times New Roman", serif; color: #1a1a1a; }
+  .page { width: 297mm; height: 210mm; padding: 12mm; }
+  .frame { height: 100%; border: 2px solid #111; outline: 1px solid #111; outline-offset: -5px; padding: 12mm 16mm; display: flex; flex-direction: column; }
+  .top { display: flex; justify-content: space-between; font-family: Arial, sans-serif; }
+  .org { font-size: 13pt; font-weight: bold; letter-spacing: .5px; }
+  .sub { font-size: 9pt; color: #555; margin-top: 2px; }
+  .meta { font-size: 9pt; text-align: right; line-height: 1.5; }
+  h1 { text-align: center; font-size: 28pt; margin: 10mm 0 1mm; font-weight: normal; letter-spacing: 1px; }
+  .lead { text-align: center; font-size: 11pt; color: #444; }
+  .name { text-align: center; font-size: 24pt; margin: 6mm 0 1mm; font-style: italic; }
+  .ids { text-align: center; font-family: Arial, sans-serif; font-size: 9.5pt; color: #555; }
+  .body { text-align: center; font-size: 12pt; line-height: 1.75; margin: 6mm auto 0; max-width: 215mm; }
+  .bottom { margin-top: auto; display: flex; justify-content: space-between; align-items: flex-end; font-family: Arial, sans-serif; font-size: 9pt; }
+  .sign { text-align: center; width: 60mm; border-top: 1px solid #333; padding-top: 2mm; }
+  .qr { text-align: center; color: #555; }
+  .qr img { width: 26mm; height: 26mm; display: block; margin: 0 auto 1mm; }
+</style>
+</head>
+<body>
+<div class="page"><div class="frame">
+  <div class="top">
+    <div>
+      <div class="org">CENTURION UNIVERSITY OF TECHNOLOGY AND MANAGEMENT</div>
+      <div class="sub">Awarding Body · {{scheme}}</div>
+    </div>
+    <div class="meta">Certificate No. <b>{{certificateNumber}}</b><br />Issued on {{issueDate}}</div>
+  </div>
+  <h1>Certificate</h1>
+  <div class="lead">This is to certify that</div>
+  <div class="name">{{name}}</div>
+  <div class="ids">S/D/o {{fatherName}} · Enrolment No. {{enrollmentNumber}}</div>
+  <div class="body">
+    has successfully completed training in <b>{{jobRole}}</b> {{qpCode}} (NSQF level {{nsqfLevel}}, {{sector}} sector)
+    at {{centreName}}, {{district}} {{state}}, conducted by <b>{{trainingPartner}}</b> from {{startDate}} to {{endDate}},
+    and was assessed on {{assessmentDate}} with grade <b>{{grade}}</b> ({{percentage}}%).
+  </div>
+  <div class="bottom">
+    <div class="sign">Controller of Examinations<br />CUTM Awarding Body</div>
+    <div class="qr"><img src="{{qrCode}}" alt="" />Scan to verify</div>
+    <div class="sign">Head, Training Partner<br />{{trainingPartner}}</div>
+  </div>
+</div></div>
+</body>
+</html>

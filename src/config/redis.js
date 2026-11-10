@@ -12,3 +12,18 @@ const createRedisConnection = () => {
 };
 
 export default createRedisConnection;
+
+// ** cache connection: fails fast instead of queueing commands while redis is down,
+// ** so callers can fall back to mongodb (bullmq keeps its own blocking connections above)
+let cacheConnection = null;
+export const getCacheConnection = () => {
+  if (!cacheConnection) {
+    cacheConnection = new IORedis(serverConfig.REDIS_URL, {
+      maxRetriesPerRequest: 1,
+      enableOfflineQueue: false,
+      connectTimeout: 2000,
+    });
+    cacheConnection.on("error", (error) => logger.error("redis cache error", error.message));
+  }
+  return cacheConnection;
+};

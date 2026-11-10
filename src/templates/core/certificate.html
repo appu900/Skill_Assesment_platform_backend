@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  @page { size: A4 landscape; margin: 0; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Georgia, "Times New Roman", serif; color: #1a1a1a; }
+  .page { width: 297mm; height: 210mm; padding: 12mm; }
+  .frame { height: 100%; border: 2px solid #111; outline: 1px solid #111; outline-offset: -5px; padding: 10mm 14mm; display: flex; flex-direction: column; }
+  .top { display: flex; justify-content: space-between; align-items: flex-start; font-family: Arial, sans-serif; }
+  .org { font-size: 13pt; font-weight: bold; letter-spacing: .5px; }
+  .sub { font-size: 9pt; color: #555; margin-top: 2px; }
+  .logo { height: 16mm; max-width: 40mm; object-fit: contain; }
+  .meta { font-size: 9pt; text-align: right; line-height: 1.5; }
+  .middle { display: flex; gap: 10mm; align-items: center; margin-top: 6mm; }
+  .photo { width: 28mm; height: 34mm; border: 0.3mm solid #999; background: #f2f2f2; overflow: hidden; flex-shrink: 0; }
+  .photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .text { flex: 1; text-align: center; }
+  h1 { font-size: 26pt; margin: 0 0 1mm; font-weight: normal; letter-spacing: 1px; }
+  .lead { font-size: 11pt; color: #444; }
+  .name { font-size: 22pt; margin: 4mm 0 1mm; font-style: italic; }
+  .ids { font-family: Arial, sans-serif; font-size: 9pt; color: #555; }
+  .body { font-size: 11.5pt; line-height: 1.7; margin-top: 4mm; }
+  .bottom { margin-top: auto; display: flex; justify-content: space-between; align-items: flex-end; font-family: Arial, sans-serif; font-size: 9pt; }
+  .sign { text-align: center; width: 58mm; border-top: 1px solid #333; padding-top: 2mm; }
+  .qr { text-align: center; color: #555; }
+  .qr img { width: 24mm; height: 24mm; display: block; margin: 0 auto 1mm; }
+</style>
+</head>
+<body>
+<div class="page"><div class="frame">
+  <div class="top">
+    <div>
+      <div class="org">CENTURION UNIVERSITY OF TECHNOLOGY AND MANAGEMENT</div>
+      <div class="sub">Awarding Body · {{scheme}}</div>
+    </div>
+    {{#schemeLogo}}<img class="logo" src="{{schemeLogo}}" alt="" />{{/schemeLogo}}
+    <div class="meta">Certificate No. <b>{{certificateNumber}}</b><br />Issued at {{placeOfIssue}} on {{issueDate}}</div>
+  </div>
+  <div class="middle">
+    <div class="photo">{{#photo}}<img src="{{photo}}" alt="" />{{/photo}}</div>
+    <div class="text">
+      <h1>Certificate of Competency</h1>
+      <div class="lead">This is to certify that</div>
+      <div class="name">{{studentName}}</div>
+      <div class="ids">S/D/o {{fatherName}} · Date of birth {{dob}} · Enrolment No. {{enrollmentNumber}}</div>
+      <div class="body">
+        has successfully completed <b>{{qualification}}</b> (NSQF level {{level}}, {{credit}} credits, {{duration}} hours)
+        at {{trainingCentre}}, {{district}}, {{state}}, conducted by <b>{{trainingPartner}}</b>,
+        and has been awarded grade <b>{{grade}}</b>.
+      </div>
+    </div>
+  </div>
+  <div class="bottom">
+    <div class="sign">Controller of Examinations<br />CUTM Awarding Body</div>
+    <div class="qr"><img src="{{qrCode}}" alt="" />Scan to verify</div>
+    <div class="sign">Head, Training Partner<br />{{trainingPartner}}</div>
+  </div>
+</div></div>
+</body>
+</html>
