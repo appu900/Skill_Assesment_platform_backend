@@ -31,11 +31,13 @@ class BatchRepository extends CrudRepository {
     return Batch.findByIdAndUpdate(batchId, { paymentStatus: true }, { new: true });
   }
 
-  async activateBatchByClient(batchId, paymentAmount, perStudentCost) {
+  async activateBatchByClient(batchId, paymentAmount, perStudentCost, approved = false) {
     return Batch.findByIdAndUpdate(
       batchId,
       {
         batchActivePermission: true,
+        // ** government batches need no SNA approval (client, 2026-11-20); corporate ones still wait for the LC/RC
+        approvedByGovernmentBody: approved,
         amountToPaid: paymentAmount,
         perStudentCost: perStudentCost,
         // ** a resubmitted batch starts a fresh SNA review

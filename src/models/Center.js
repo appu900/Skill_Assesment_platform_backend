@@ -9,9 +9,9 @@ const centerSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  // ** no longer asked for (client, 2026-11-20); kept for older centres
   PRN_NO: {
     type: String,
-    required: true,
   },
 
   schemes: [

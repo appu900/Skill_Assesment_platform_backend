@@ -3,12 +3,14 @@ import { authenticate } from "./auth.js";
 import ROLES from "../utils/roles.js";
 import ToaTrainingPartner from "../models/toa/ToaTrainingPartner.model.js";
 import ToaTrainee from "../models/toa/ToaTrainee.model.js";
+import ToaAdmin from "../models/toa/ToaAdmin.model.js";
 
 const deny = (res, status, message, code) => res.status(status).json({ success: false, message, error: code });
 
 const ACCOUNTS = {
   [ROLES.TOA_TRAINING_PARTNER]: { Model: ToaTrainingPartner, fields: "status tokenVersion mustChangePassword" },
   [ROLES.TOA_ASSESSOR]: { Model: ToaTrainee, fields: "status portalEnabled tokenVersion mustChangePassword password" },
+  [ROLES.TOA_ADMIN]: { Model: ToaAdmin, fields: "status tokenVersion mustChangePassword" },
 };
 
 // ** a ToA account on every request: it must still exist, be allowed to sign in and the token must be current
@@ -26,6 +28,7 @@ const checkAccount = (role, allowPendingPasswordChange) => async (req, res, next
     }
     if (role === ROLES.TOA_TRAINING_PARTNER) req.toaTpId = String(req.user.id);
     if (role === ROLES.TOA_ASSESSOR) req.toaTraineeId = String(req.user.id);
+    if (role === ROLES.TOA_ADMIN) req.toaAdminId = String(req.user.id);
     next();
   } catch (error) {
     next(error);
@@ -38,3 +41,6 @@ export const requireToaTp = [authenticate, checkAccount(ROLES.TOA_TRAINING_PARTN
 export const requireToaTpPendingPassword = [authenticate, checkAccount(ROLES.TOA_TRAINING_PARTNER, true)];
 // ** assessor (trainee) portal
 export const requireToaAssessor = [authenticate, checkAccount(ROLES.TOA_ASSESSOR, true)];
+// ** ToA admin: every admin route of the module; profile + change password stay reachable during the forced change
+export const requireToaAdmin = [authenticate, checkAccount(ROLES.TOA_ADMIN, false)];
+export const requireToaAdminPendingPassword = [authenticate, checkAccount(ROLES.TOA_ADMIN, true)];

@@ -9,6 +9,8 @@ const ROLES = {
   TOA_TRAINING_PARTNER: "ToaTrainingPartner",
   // ** a person trained under RailTel ToA ("assessor" in the FRD); can log in to see results and download certificates
   TOA_ASSESSOR: "ToaAssessor",
+  // ** RailTel ToA administrator: separate login, runs the ToA module (the CUTM admin no longer sees ToA data)
+  TOA_ADMIN: "ToaAdmin",
 };
 
 // ** roles of the skill certification portal; "any logged in user" means one of these, never a ToA account

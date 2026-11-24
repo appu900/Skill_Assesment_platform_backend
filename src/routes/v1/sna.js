@@ -29,9 +29,9 @@ router.post("/", allow(ADMIN), createSNA);
 router.get("/all", allow(ADMIN), getAllSnaDetails);
 
 // ** SNA (scoped to its own state and scheme) or admin
-router.get("/batch/query", allow(SNA, ADMIN), getAllGovernmentBatchesStateAndScehmeWise);
-router.put("/batch/approve/:id", allow(SNA, ADMIN), approveGovernmentSchemeBatches);
-router.put("/batch/reject/:id", allow(SNA, ADMIN), rejectGovernmentSchemeBatches);
+router.get("/batch/query", allow(ADMIN), getAllGovernmentBatchesStateAndScehmeWise);
+router.put("/batch/approve/:id", allow(ADMIN), approveGovernmentSchemeBatches);
+router.put("/batch/reject/:id", allow(ADMIN), rejectGovernmentSchemeBatches);
 router.get("/centers/query", allow(SNA, ADMIN), filterCenterBySchemeAndState);
 router.put("/center/approve/:id", allow(SNA, ADMIN), approveCenter);
 router.put("/center/reject/:id", allow(SNA, ADMIN), rejectCenter);

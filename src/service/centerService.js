@@ -36,14 +36,11 @@ class CenterService {
       throw AppError.notFound("Training partner not found");
     }
 
-    // ** every scheme of a new center starts unapproved, whatever the client sends
-    const schemes = Array.isArray(data.schemes)
-      ? data.schemes.map((scheme) => ({ schemeName: scheme.schemeName, approveStatus: false }))
-      : data.schemes;
-
+    // ** the TP picks its scheme once, at signup: every centre runs that scheme and starts unapproved
+    if (!tp.scheme) throw new AppError("Your account has no scheme; contact the admin");
     const center = await this.centerRepository.create({
-      ...omit(data, ["_id", "trainingOrganizationId", "schemes"]),
-      schemes,
+      ...omit(data, ["_id", "trainingOrganizationId", "schemes", "PRN_NO"]),
+      schemes: [{ schemeName: tp.scheme, approveStatus: false }],
       trainingOrganizationId: tp._id,
     });
     tp.centers.push(center._id);

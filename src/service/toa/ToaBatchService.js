@@ -212,7 +212,7 @@ class ToaBatchService {
     const batch = await this.getForAdmin(id);
     if (batch.status !== "submitted") throw new AppError("only submitted batches can be taken up for review");
     batch.status = "under_review";
-    batch.history.push({ status: "under_review", byRole: ROLES.ADMIN, by: adminId });
+    batch.history.push({ status: "under_review", byRole: ROLES.TOA_ADMIN, by: adminId });
     await batch.save();
     await audit(context, { module: "toa", entity: "ToaBatch", entityId: batch._id, action: "batch_under_review" });
     return batch;
@@ -229,7 +229,7 @@ class ToaBatchService {
     batch.status = status;
     batch.remarks = note || null;
     if (status === "approved") batch.approvedAt = new Date();
-    batch.history.push({ status, remarks: note || undefined, reference: batch.submissionRef, byRole: ROLES.ADMIN, by: adminId });
+    batch.history.push({ status, remarks: note || undefined, reference: batch.submissionRef, byRole: ROLES.TOA_ADMIN, by: adminId });
     await batch.save();
     await audit(context, { module: "toa", entity: "ToaBatch", entityId: batch._id, action: `batch_${status}`, before, after: { status, remarks: note || null } });
 

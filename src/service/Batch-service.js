@@ -96,6 +96,10 @@ class BatchService {
     return { flag: studentsWithOutImage.length === 0, studentsWithOutImage };
   }
 
+  async schemeTypeOf(schemeName) {
+    return (await this.schemeRepository.findBySchemeName(schemeName))?.schemeType;
+  }
+
   async createBatch(data, trainingPartnerId) {
     const trainingPartner = await this.trainingPartnerRepository.get(trainingPartnerId);
     if (!trainingPartner) {
@@ -107,12 +111,17 @@ class BatchService {
 
     const payload = omit(data, PROTECTED_BATCH_FIELDS);
 
-    if (payload.centerId) {
-      const center = await this.centerRepository.get(payload.centerId);
-      if (!center || !isSameId(center.trainingOrganizationId, trainingPartner._id)) {
-        throw new AppError("center does not belong to this training partner");
-      }
+    if (!payload.centerId) throw new AppError("centre is required");
+    const center = await this.centerRepository.get(payload.centerId);
+    if (!center || !isSameId(center.trainingOrganizationId, trainingPartner._id)) {
+      throw new AppError("center does not belong to this training partner");
     }
+    // ** a batch always runs the scheme the TP chose at signup, on a centre approved for it
+    if (!center.schemes?.some((entry) => entry.schemeName === trainingPartner.scheme && entry.approveStatus)) {
+      throw new AppError(`this centre is not yet approved for ${trainingPartner.scheme}`);
+    }
+    payload.scheme = trainingPartner.scheme;
+    payload.schemeType = trainingPartner.schemeType || (await this.schemeTypeOf(trainingPartner.scheme));
 
     payload.trainingOrganization = trainingPartner.organizationName;
     payload.trainingOrganizationId = trainingPartner._id;
@@ -245,7 +254,11 @@ class BatchService {
     const perStudentCost = await this.ratePerCandidate(batch, fees);
     const totalAmount = Math.round(perStudentCost * candidates * (1 + fees.gstPercent / 100) * 100) / 100;
 
-    await this.batchRepository.activateBatchByClient(batchId, totalAmount, perStudentCost);
+    await this.batchRepository.activateBatchByClient(batchId, totalAmount, perStudentCost, batch.schemeType !== "Corporate");
+    // ** the payment invoice the TP sees right after submitting (corporate: once the admin sets the agreed amount)
+    if (totalAmount > 0) {
+      await this.invoiceService.issueForBatch(batch, { candidates, rate: perStudentCost, gstPercent: fees.gstPercent, total: totalAmount });
+    }
     return true;
   }
 
@@ -285,15 +298,9 @@ class BatchService {
     batch.amountToPaid = payableAmount;
     const response = await batch.save();
 
-    await this.invoiceService.upsertBatchInvoice(batch._id, {
-      payer: "TrainingPartner",
-      payee: "Admin",
-      purpose: "batch payment",
-      amount: payableAmount,
-      paymentStatus: false,
-      TrainingPartnerId: batch.trainingOrganizationId,
-      BatchId: batch._id,
-    });
+    // ** the agreed corporate amount is the total payable
+    const candidates = Math.max(batch.students.length, 1);
+    await this.invoiceService.issueForBatch(batch, { candidates, rate: payableAmount / candidates, gstPercent: 0, total: payableAmount });
     return response;
   }
 
@@ -336,9 +343,10 @@ class BatchService {
       throw new AppError("training partner has not uploaded the payment details yet");
     }
     if (!batch.approvedByGovernmentBody) {
-      throw new AppError(
-        batch.schemeType === "Corporate" ? "corporate batch is not approved by the LC/RC yet" : "government batch is not approved by the SNA yet"
-      );
+      if (batch.schemeType === "Corporate") throw new AppError("corporate batch is not approved by the LC/RC yet");
+      // ** batches submitted while the SNA still approved batches: no approval is needed any more
+      if (!batch.batchActivePermission) throw new AppError("batch is not submitted yet");
+      batch.approvedByGovernmentBody = true;
     }
 
     await this.batchRepository.updatePayamentStatus(batchId);
@@ -431,8 +439,9 @@ class BatchService {
 
   // ** a submitted, unapproved batch goes back to the training partner as a draft with a reason
   async sendBatchBack(batch, reason) {
-    if (!batch.batchActivePermission || batch.approvedByGovernmentBody) {
-      throw new AppError("only submitted batches that are not approved yet can be rejected");
+    const final = batch.paymentStatus || (batch.schemeType === "Corporate" && batch.approvedByGovernmentBody);
+    if (!batch.batchActivePermission || final) {
+      throw new AppError("only submitted batches that are not approved or paid yet can be sent back");
     }
     if (!reason || !String(reason).trim()) {
       throw new AppError("Please give a reason for the rejection");
@@ -442,7 +451,9 @@ class BatchService {
     batch.perStudentCost = 0;
     batch.rejectedByGovernmentBody = true;
     batch.governmentRejectionReason = String(reason).trim().slice(0, 500);
+    batch.approvedByGovernmentBody = false;
     await batch.save();
+    await this.invoiceService.cancelForBatch(batch._id, batch.governmentRejectionReason);
     return { batchId: batch._id, rejected: true };
   }
 

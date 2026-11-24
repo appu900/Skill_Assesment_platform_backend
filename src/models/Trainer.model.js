@@ -74,9 +74,9 @@ const TrainerSchema = new mongoose.Schema(
     profilePic: {
       type: String,
     },
+    // ** no longer asked for (client, 2026-11-20); kept for older trainers
     PRN_NO: {
       type: String,
-      required: [true, "this field is required"],
     },
     trainingPartner: {
       type: mongoose.Schema.Types.ObjectId,

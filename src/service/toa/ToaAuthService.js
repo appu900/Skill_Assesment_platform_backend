@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import ToaTrainingPartner from "../../models/toa/ToaTrainingPartner.model.js";
 import ToaTrainee from "../../models/toa/ToaTrainee.model.js";
+import ToaAdmin from "../../models/toa/ToaAdmin.model.js";
 import sendEmail from "../email-service.js";
 import serverConfig from "../../config/serverConfig.js";
 import AppError from "../../utils/AppError.js";
@@ -28,6 +29,7 @@ export const hashToken = (token) => crypto.createHash("sha256").update(String(to
 const ACCOUNTS = {
   tp: { Model: ToaTrainingPartner, role: ROLES.TOA_TRAINING_PARTNER, entity: "ToaTrainingPartner", portal: "toa", greeting: (doc) => doc.contactPerson, label: "RailTel ToA training partner" },
   assessor: { Model: ToaTrainee, role: ROLES.TOA_ASSESSOR, entity: "ToaTrainee", portal: "toa-assessor", greeting: (doc) => doc.name, label: "RailTel ToA assessor" },
+  admin: { Model: ToaAdmin, role: ROLES.TOA_ADMIN, entity: "ToaAdmin", portal: "toa-admin", greeting: (doc) => doc.name, label: "RailTel ToA admin" },
 };
 
 // ** login and password flows of one ToA account type

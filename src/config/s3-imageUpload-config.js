@@ -20,7 +20,7 @@ const upload = multer({
   storage: multerS3({
     s3: s3,
     bucket: serverConfig.AWS_BUCKET_NAME,
-    acl: serverConfig.S3_OBJECT_ACL,
+    ...(serverConfig.S3_OBJECT_ACL && { acl: serverConfig.S3_OBJECT_ACL }),
     contentType: multerS3.AUTO_CONTENT_TYPE,
     metadata: (req, file, cb) => {
       cb(null, { fieldName: file.fieldname });
