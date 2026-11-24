@@ -20,7 +20,8 @@ const toaTrainingPartnerSchema = new mongoose.Schema(
 
     // ** every ToA TP is created by an admin; kept explicit for reports and audits
     createdByAdmin: { type: Boolean, default: true },
-    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "Admin", required: true },
+    // ** the ToA admin (or, for older accounts, the CUTM admin) who created it
+    createdBy: { type: mongoose.Schema.Types.ObjectId, required: true },
   },
   { timestamps: true, collection: "toa_training_partners" }
 );

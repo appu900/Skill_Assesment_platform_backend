@@ -23,7 +23,6 @@ export const privateUploader = (prefixOf) =>
     storage: multerS3({
       s3,
       bucket: serverConfig.AWS_BUCKET_NAME,
-      acl: "private",
       contentType: multerS3.AUTO_CONTENT_TYPE,
       key: (req, file, cb) => {
         const extension = path.extname(file.originalname || "").toLowerCase();

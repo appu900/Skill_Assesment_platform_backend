@@ -158,7 +158,7 @@ class ToaTraineeService {
     const trainee = await this.getForAdmin(id);
     if (trainee.status !== "submitted") throw new AppError("only submitted applications can be taken up for review");
     trainee.status = "under_review";
-    trainee.history.push({ status: "under_review", byRole: ROLES.ADMIN, by: adminId });
+    trainee.history.push({ status: "under_review", byRole: ROLES.TOA_ADMIN, by: adminId });
     await trainee.save();
     await audit(context, { module: "toa", entity: "ToaTrainee", entityId: trainee._id, action: "assessor_under_review" });
     return trainee;
@@ -176,7 +176,7 @@ class ToaTraineeService {
     trainee.status = status;
     trainee.remarks = note || null;
     trainee.decidedAt = new Date();
-    trainee.history.push({ status, remarks: note || undefined, byRole: ROLES.ADMIN, by: adminId });
+    trainee.history.push({ status, remarks: note || undefined, byRole: ROLES.TOA_ADMIN, by: adminId });
 
     let activationToken = null;
     if (status === "approved" && (await toaSettings(trainee.toaTpId._id)).assessorPortalEnabled) {

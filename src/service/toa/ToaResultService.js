@@ -208,7 +208,7 @@ class ToaResultService {
     batch.resultsStatus = "published";
     batch.resultsPublishedAt = new Date();
     batch.status = "completed";
-    batch.history.push({ status: "completed", remarks: `results published, ${issued} certificate(s) issued`, byRole: ROLES.ADMIN, by: adminId });
+    batch.history.push({ status: "completed", remarks: `results published, ${issued} certificate(s) issued`, byRole: ROLES.TOA_ADMIN, by: adminId });
     await batch.save();
     await audit(context, { module: "toa", entity: "ToaBatch", entityId: batch._id, action: "results_published", after: { certificates: issued, assessors: grid.rows.length } });
 

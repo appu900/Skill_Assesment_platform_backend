@@ -10,7 +10,7 @@ const toaTemplateSchema = new mongoose.Schema(
     toaTpId: { type: mongoose.Schema.Types.ObjectId, ref: "ToaTrainingPartner", default: null },
     html: { type: String, required: true },
     version: { type: Number, default: 1 },
-    updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: "Admin" },
+    updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: "ToaAdmin" },
   },
   { timestamps: true, collection: "toa_templates" }
 );

@@ -71,6 +71,13 @@ class TrainingPartnerService {
     if (!trainingPartner || !trainingPartner.checkPassword(password)) {
       throw AppError.unauthorized("Invalid email or password");
     }
+    // ** no access until the admin approves the application
+    if (trainingPartner.applicationStatus === "Pending") {
+      throw AppError.forbidden("Your application is awaiting admin approval. You can log in once it is approved.");
+    }
+    if (trainingPartner.applicationStatus !== "Approved") {
+      throw AppError.forbidden("Your application was not approved. Please contact the admin.");
+    }
     return {
       data: trainingPartner,
       token: trainingPartner.generateJwt(),

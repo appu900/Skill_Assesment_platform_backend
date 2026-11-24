@@ -47,7 +47,8 @@ const serverConfig = {
   // ** optional S3 compatible endpoint (MinIO / LocalStack) for local development, empty uses AWS
   AWS_S3_ENDPOINT: process.env.AWS_S3_ENDPOINT || undefined,
   // ** "public-read" keeps the current frontend working, switch to "private" once signed urls are used
-  S3_OBJECT_ACL: process.env.S3_OBJECT_ACL || "public-read",
+  // ** empty = send no ACL (buckets with "ACLs disabled" reject any ACL); reads are governed by the bucket policy
+  S3_OBJECT_ACL: process.env.S3_OBJECT_ACL || "",
   MAX_UPLOAD_SIZE_MB: Number(process.env.MAX_UPLOAD_SIZE_MB || 10),
 };
 

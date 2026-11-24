@@ -19,3 +19,4 @@ function authHandlers(kind, idOf) {
 
 export const tpAuth = authHandlers("tp", (req) => req.toaTpId);
 export const assessorAuth = authHandlers("assessor", (req) => req.toaTraineeId);
+export const toaAdminAuth = authHandlers("admin", (req) => req.toaAdminId);

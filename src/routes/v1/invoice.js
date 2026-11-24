@@ -7,9 +7,14 @@ import {
   updateAssesmentAgencyPdf,
   updatePaymentStatusOfInvoice,
 } from "../../controller/Assesment-agency-invoice-controller.js";
+import { batchInvoicePdf, listBatchInvoices } from "../../controller/Batch-invoice-controller.js";
 
 const router = express.Router();
-const { ADMIN, ASSESMENT_AGENCY } = ROLES;
+const { ADMIN, ASSESMENT_AGENCY, TRAINING_PARTNER } = ROLES;
+
+// ** batch payment invoices (issued when a training partner submits a batch)
+router.get("/batches", allow(TRAINING_PARTNER, ADMIN), listBatchInvoices);
+router.get("/batch/:id/pdf", allow(TRAINING_PARTNER, ADMIN), batchInvoicePdf);
 
 router.post("/monthly/query", allow(ASSESMENT_AGENCY, ADMIN), getMonthlyInvoice);
 router.post("/:id", allow(ASSESMENT_AGENCY, ADMIN), generateMonthlyInvoice);

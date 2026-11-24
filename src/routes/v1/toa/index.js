@@ -1,14 +1,16 @@
 import express from "express";
 import { allow, ROLES } from "../../../middleware/auth.js";
 import { loginLimiter } from "../../../middleware/rateLimiter.js";
-import { requireToaAssessor, requireToaTp, requireToaTpPendingPassword } from "../../../middleware/toaAuth.js";
-import { assessorAuth, tpAuth } from "../../../controller/toa/Toa-auth-controller.js";
+import { requireToaAdmin, requireToaAdminPendingPassword, requireToaAssessor, requireToaTp, requireToaTpPendingPassword } from "../../../middleware/toaAuth.js";
+import { assessorAuth, toaAdminAuth, tpAuth } from "../../../controller/toa/Toa-auth-controller.js";
+import * as accounts from "../../../controller/toa/Toa-admin-account-controller.js";
 import * as tp from "../../../controller/toa/Toa-tp-controller.js";
 import * as admin from "../../../controller/toa/Toa-admin-controller.js";
 import * as assessor from "../../../controller/toa/Toa-assessor-controller.js";
 import * as open from "../../../controller/toa/Toa-public-controller.js";
 
-// ** RailTel Training of Assessors module: everything lives under /v1/toa and only ToA accounts (or the CUTM admin) get in
+// ** RailTel Training of Assessors module: everything lives under /v1/toa and only ToA accounts get in;
+// ** the CUTM admin only creates the ToA admin accounts (/v1/toa/accounts)
 const router = express.Router();
 
 // ---------------------------------------------------------------- public
@@ -81,9 +83,25 @@ a.put("/notifications/:id/read", assessor.assessorReadNotification);
 a.get("/certificates/:id/pdf", assessor.assessorCertificatePdf);
 router.use("/assessor", a);
 
-// ---------------------------------------------------------------- CUTM admin
+// ---------------------------------------------------------------- CUTM admin: ToA admin accounts only
+const c = express.Router();
+c.use(allow(ROLES.ADMIN));
+c.get("/", accounts.listToaAdmins);
+c.post("/", accounts.createToaAdmin);
+c.put("/:id/status", accounts.setToaAdminStatus);
+c.put("/:id/unlock", accounts.unlockToaAdmin);
+c.put("/:id/reset-password", accounts.resetToaAdminPassword);
+router.use("/accounts", c);
+
+// ---------------------------------------------------------------- ToA admin (own login, client 2026-11-24)
+router.post("/admin/login", loginLimiter, toaAdminAuth.login);
+router.post("/admin/forgot-password", loginLimiter, toaAdminAuth.forgotPassword);
+router.post("/admin/reset-password", loginLimiter, toaAdminAuth.resetPassword);
+router.get("/admin/me", requireToaAdminPendingPassword, toaAdminAuth.profile);
+router.put("/admin/me/password", requireToaAdminPendingPassword, toaAdminAuth.changePassword);
+
 const m = express.Router();
-m.use(allow(ROLES.ADMIN));
+m.use(requireToaAdmin);
 m.post("/tps", admin.createToaTp);
 m.get("/tps", admin.listToaTps);
 m.get("/tps/:id", admin.getToaTp);
