@@ -1,4 +1,6 @@
+import mongoose from "mongoose";
 import AssesmentAgencyRepository from "../repository/AssesmentAgency-repository.js";
+import OfflineAssessor from "../models/offline/OfflineAssessor.model.js";
 import AssessorRepository from "../repository/Assessor-Repository.js";
 import BatchRepository from "../repository/Batch-repository.js";
 import ExamRepository from "../repository/Exam-repository.js";
@@ -7,6 +9,9 @@ import { certificateQueue, JOB_NAMES } from "../queues/index.js";
 import AppError from "../utils/AppError.js";
 import ROLES from "../utils/roles.js";
 import { assertOwnerOrAdmin, isSameId } from "../utils/ownership.js";
+
+// ** shown as the assessing body of exams CUTM conducts itself
+export const CUTM_ASSESSING_BODY = "CUTM Awarding Body";
 
 class ExamService {
   constructor() {
@@ -32,7 +37,7 @@ class ExamService {
     return exam;
   }
 
-  // ** admin assigns a paid batch to an approved assesment agency
+  // ** admin opens the assessment of a paid batch; without an agency CUTM conducts it itself
   async createExam(courseName, batchId, assesmentAgencyId) {
     const batch = await this.batchRepository.get(batchId);
     if (!batch) {
@@ -45,12 +50,15 @@ class ExamService {
       throw new AppError("batch must be submitted and paid before an exam is assigned");
     }
 
-    const assesmentAgency = await this.assesmentAgencyRepository.get(assesmentAgencyId);
-    if (!assesmentAgency) {
-      throw AppError.notFound("assesment agency not found");
-    }
-    if (assesmentAgency.applicationStatus !== "Approved") {
-      throw new AppError("assesment agency is not approved");
+    let assesmentAgency = null;
+    if (assesmentAgencyId) {
+      assesmentAgency = await this.assesmentAgencyRepository.get(assesmentAgencyId);
+      if (!assesmentAgency) {
+        throw AppError.notFound("assesment agency not found");
+      }
+      if (assesmentAgency.applicationStatus !== "Approved") {
+        throw new AppError("assesment agency is not approved");
+      }
     }
 
     const payload = {
@@ -63,8 +71,8 @@ class ExamService {
       CenterCode: batch.CenterCode,
       tpcode: batch.tpcode,
       batchId: batch._id,
-      assesmentAgencyId: assesmentAgency._id,
-      assesmentAgency: assesmentAgency.agencyName,
+      assesmentAgencyId: assesmentAgency?._id ?? null,
+      assesmentAgency: assesmentAgency?.agencyName ?? CUTM_ASSESSING_BODY,
       // ** training partner always comes from the batch, never from the request
       TrainingOrganization: batch.trainingOrganization,
       TrainingPartnerId: batch.trainingOrganizationId,
@@ -92,6 +100,7 @@ class ExamService {
 
   async assignAssesor(examId, assesorId, user) {
     const exam = await this.getOwnedExam(examId, user);
+    if (!exam.assesmentAgencyId) return this.assignCutmAssessor(exam, assesorId);
     const assessor = await this.assessorRepository.get(assesorId);
     if (!assessor) {
       throw AppError.notFound("assessor not found");
@@ -104,6 +113,23 @@ class ExamService {
     const batch = await this.batchRepository.get(exam.batchId);
     if (batch) {
       batch.assessorId = assessor._id;
+      batch.assessorName = assessor.name;
+      await batch.save();
+    }
+    return true;
+  }
+
+  // ** CUTM-conducted exam: the assessor is one of CUTM's own (offline wing list)
+  async assignCutmAssessor(exam, assessorId) {
+    if (!mongoose.isValidObjectId(assessorId)) throw new AppError("invalid assessor id");
+    const assessor = await OfflineAssessor.findById(assessorId);
+    if (!assessor) throw AppError.notFound("assessor not found");
+    if (assessor.status === "inactive") throw new AppError("this assessor is inactive");
+    exam.cutmAssessorId = assessor._id;
+    exam.cutmAssessorName = assessor.name;
+    await exam.save();
+    const batch = await this.batchRepository.get(exam.batchId);
+    if (batch) {
       batch.assessorName = assessor.name;
       await batch.save();
     }

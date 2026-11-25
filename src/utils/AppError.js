@@ -2,9 +2,12 @@ import { StatusCodes } from "http-status-codes";
 
 // ** an error that carries the http status code it should be answered with
 class AppError extends Error {
-  constructor(message, statusCode = StatusCodes.BAD_REQUEST) {
+  // ** errorCode (optional) replaces the "error" field so the frontend can react to it; extra is merged into the body
+  constructor(message, statusCode = StatusCodes.BAD_REQUEST, errorCode = null, extra = null) {
     super(message);
     this.statusCode = statusCode;
+    this.errorCode = errorCode;
+    this.extra = extra;
   }
 
   static notFound(message = "Resource not found") {
