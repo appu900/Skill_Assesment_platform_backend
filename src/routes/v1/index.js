@@ -23,6 +23,7 @@ import lcrcRoutes from "./lcrc.js";
 import toaRoutes from "./toa/index.js";
 import offlineRoutes from "./offline/index.js";
 import certificateFormatRoutes from "./certificate-formats.js";
+import fileRoutes from "./files.js";
 
 const router = express.Router();
 
@@ -49,5 +50,6 @@ router.use("/v1/lcrc",lcrcRoutes)
 router.use("/v1/toa",toaRoutes)
 router.use("/v1/offline",offlineRoutes)
 router.use("/v1/certificate-formats",certificateFormatRoutes)
+router.use("/v1/files",fileRoutes)
 
 export default router;
