@@ -79,15 +79,23 @@ const examSchema = new mongoose.Schema(
       ref: "Batch",
       required: true,
     },
+    // ** null when CUTM conducts the assessment itself (no assessment agency in AMASY, client 2026-11-24)
     assesmentAgencyId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "AssesmentAgency",
-      required: true,
+      default: null,
     },
     assesmentAgency: {
       type: String,
       required: true,
     },
+    // ** CUTM's own assessor (offline wing "CUTM assessors") for exams CUTM conducts
+    cutmAssessorId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "OfflineAssessor",
+      default: null,
+    },
+    cutmAssessorName: { type: String, default: null },
     TrainingOrganization: {
       type: String,
       required: true,

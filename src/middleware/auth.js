@@ -1,7 +1,8 @@
 import jwt from "jsonwebtoken";
 import { StatusCodes } from "http-status-codes";
 import serverConfig from "../config/serverConfig.js";
-import ROLES, { CORE_ROLES } from "../utils/roles.js";
+import ROLES, { CORE_ROLES, TP_NOT_APPROVED } from "../utils/roles.js";
+import TrainingPartner from "../models/TrainingPartner.model.js";
 
 export { ROLES };
 
@@ -44,6 +45,28 @@ const optionalAuthenticate = (req, res, next) => {
   return authenticate(req, res, next);
 };
 
+// ** a training partner only works while its application is approved: checked on every request,
+// ** so a session opened before a rejection (or an old token) stops at once (client, 2026-11-25)
+const assertApprovedTrainingPartner = async (req, res, next) => {
+  try {
+    const tp = await TrainingPartner.findById(req.user.id).select("applicationStatus").lean();
+    if (!tp) {
+      return res.status(StatusCodes.UNAUTHORIZED).json({ success: false, message: "Account not found", error: "SessionEnded" });
+    }
+    if (tp.applicationStatus !== "Approved") {
+      return res.status(StatusCodes.FORBIDDEN).json({
+        success: false,
+        message: tp.applicationStatus === "Pending" ? "Your application is awaiting admin approval." : "Your application was not approved.",
+        error: TP_NOT_APPROVED,
+        applicationStatus: tp.applicationStatus,
+      });
+    }
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
 // ** allow only the given roles, must run after authenticate
 const authorize = (...roles) => (req, res, next) => {
   if (!req.user || !roles.includes(req.user.role)) {
@@ -53,6 +76,7 @@ const authorize = (...roles) => (req, res, next) => {
       error: "UnAuthorizedAccess",
     });
   }
+  if (req.user.role === ROLES.TRAINING_PARTNER) return assertApprovedTrainingPartner(req, res, next);
   next();
 };
 

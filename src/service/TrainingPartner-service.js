@@ -1,7 +1,8 @@
 import TrainingPartnerRepository from "../repository/TrainingPartner-Repository.js";
 import sendEmail from "./email-service.js";
 import AppError from "../utils/AppError.js";
-import ROLES from "../utils/roles.js";
+import { StatusCodes } from "http-status-codes";
+import ROLES, { TP_NOT_APPROVED } from "../utils/roles.js";
 import { omit } from "../utils/fieldFilter.js";
 import { assertOwnerOrAdmin } from "../utils/ownership.js";
 
@@ -72,11 +73,15 @@ class TrainingPartnerService {
       throw AppError.unauthorized("Invalid email or password");
     }
     // ** no access until the admin approves the application
-    if (trainingPartner.applicationStatus === "Pending") {
-      throw AppError.forbidden("Your application is awaiting admin approval. You can log in once it is approved.");
-    }
+    // ** the frontend shows its "application not approved" page on this code
     if (trainingPartner.applicationStatus !== "Approved") {
-      throw AppError.forbidden("Your application was not approved. Please contact the admin.");
+      const pending = trainingPartner.applicationStatus === "Pending";
+      throw new AppError(
+        pending ? "Your application is awaiting admin approval. You can log in once it is approved." : "Your application was not approved. Please contact the admin.",
+        StatusCodes.FORBIDDEN,
+        TP_NOT_APPROVED,
+        { applicationStatus: trainingPartner.applicationStatus, organizationName: trainingPartner.organizationName }
+      );
     }
     return {
       data: trainingPartner,

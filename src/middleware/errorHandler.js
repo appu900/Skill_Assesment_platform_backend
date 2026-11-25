@@ -18,10 +18,14 @@ const errorHandler = (err, req, res, next) => {
   let statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
   let message = "Something went wrong";
   let details;
+  let errorCode;
+  let extra;
 
   if (err instanceof AppError) {
     statusCode = err.statusCode;
     message = err.message;
+    errorCode = err.errorCode;
+    extra = err.extra;
   } else if (err instanceof vineErrors.E_VALIDATION_ERROR) {
     statusCode = StatusCodes.BAD_REQUEST;
     message = "Validation failed";
@@ -51,9 +55,9 @@ const errorHandler = (err, req, res, next) => {
     success: false,
     message,
     // ** "error" is kept because the frontend reads it, internal details are hidden in production
-    error:
-      statusCode >= 500 && serverConfig.NODE_ENV === "production" ? message : err.message,
+    error: errorCode || (statusCode >= 500 && serverConfig.NODE_ENV === "production" ? message : err.message),
     ...(details ? { details } : {}),
+    ...(extra ?? {}),
   });
 };
 

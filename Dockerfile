@@ -1,12 +1,11 @@
-# syntax=docker/dockerfile:1.7
-
 # ---------------------------------------------------------------- dependencies (production only)
 FROM node:22-bookworm-slim AS deps
 WORKDIR /app
 # ** Chromium comes from Debian in the runtime image, so skip Puppeteer's own ~170 MB download
 ENV PUPPETEER_SKIP_DOWNLOAD=true
 COPY package.json package-lock.json ./
-RUN --mount=type=cache,target=/root/.npm npm ci --omit=dev --no-audit --no-fund
+# ** no BuildKit cache mount: Railway rejects cache mounts without its own service id
+RUN npm ci --omit=dev --no-audit --no-fund && npm cache clean --force
 
 # ---------------------------------------------------------------- runtime
 FROM node:22-bookworm-slim AS runtime

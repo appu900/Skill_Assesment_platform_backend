@@ -16,4 +16,7 @@ const ROLES = {
 // ** roles of the skill certification portal; "any logged in user" means one of these, never a ToA account
 export const CORE_ROLES = [ROLES.ADMIN, ROLES.TRAINING_PARTNER, ROLES.ASSESMENT_AGENCY, ROLES.SNA, ROLES.LCRC];
 
+// ** error code of every refusal of a training partner whose application is not approved
+export const TP_NOT_APPROVED = "ApplicationNotApproved";
+
 export default ROLES;
