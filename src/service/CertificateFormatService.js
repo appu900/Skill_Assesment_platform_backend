@@ -13,6 +13,7 @@ import ROLES from "../utils/roles.js";
 import { audit } from "../utils/audit.js";
 import { isSameId } from "../utils/ownership.js";
 import { fillTemplate, htmlToPdf, qrDataUrl } from "../utils/toa/render.js";
+import { keyFromUrl, readObject } from "../utils/s3Files.js";
 import logger from "../utils/logger.js";
 
 const BUILT_IN = path.join(path.dirname(fileURLToPath(import.meta.url)), "../templates/core/certificate.html");
@@ -37,6 +38,13 @@ const LEVELS = [
 async function embed(url) {
   if (!url || !/^https?:\/\//.test(url)) return "";
   try {
+    // ** files in our (private) bucket are read with the AWS key; anything else (e.g. a placeholder logo) over https
+    const key = keyFromUrl(url);
+    if (key) {
+      const { type, bytes } = await readObject(key);
+      if (!type.startsWith("image/") || bytes.length > 2 * 1024 * 1024) return "";
+      return `data:${type};base64,${bytes.toString("base64")}`;
+    }
     const response = await fetch(url, { signal: AbortSignal.timeout(5000) });
     const type = response.headers.get("content-type") ?? "";
     if (!response.ok || !type.startsWith("image/")) return "";
